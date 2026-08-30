@@ -1,327 +1,208 @@
-Igarapé Vivo
+# Igarapé Vivo
 
-Sistema de monitoramento colaborativo de resíduos sólidos em corpos d'água urbanos.
+Sistema colaborativo para registrar, localizar, acompanhar e analisar ocorrências de resíduos sólidos em corpos d'água urbanos.
 
-Sobre o projeto
+## Estado atual
 
-O Igarapé Vivo é um protótipo de aplicação voltado ao registro, georreferenciamento e acompanhamento de resíduos sólidos encontrados em igarapés e outros corpos d'água urbanos.
+As **Fases 1 a 6 estão concluídas**:
 
-A proposta é utilizar tecnologia para transformar observações ambientais dispersas em dados organizados, permitindo visualizar onde existem ocorrências de resíduos, quais tipos são mais frequentes e como esses pontos evoluem ao longo do tempo.
+| Fase | Entrega | Status |
+|---|---|---|
+| 1 — Fundamentos | MVP, banco, mapa e API CRUD | Concluída |
+| 2 — Monitoramento | Pontos, histórico, filtros e dashboard | Concluída |
+| 3 — Gestão | Autenticação, perfis, permissões e status | Concluída |
+| 4 — Dados | CSV, GeoJSON e análises | Concluída |
+| 5 — Qualidade | Segurança, validações e testes | Concluída |
+| 6 — Documentação | Documentação técnica e apresentação | Concluída |
+| 7 — Pesquisa e campo | Metodologia e coleta em ambiente real | Próxima |
 
-O projeto não pretende substituir órgãos públicos, equipes de limpeza ou sistemas oficiais de monitoramento. Seu objetivo é desenvolver uma ferramenta tecnológica de apoio à observação e análise ambiental.
+A interface também recebeu uma reformulação UX/UI posterior à Fase 6, com identidade visual temática, responsividade, acessibilidade e feedbacks de interação.
 
-Problema
+## Problema e objetivo
 
-O descarte inadequado de resíduos sólidos em corpos d'água urbanos pode provocar acúmulo de lixo, obstrução do fluxo da água, degradação ambiental e contribuir para problemas urbanos como alagamentos.
+Fotografias, coordenadas e observações ambientais isoladas dificultam a comparação de um mesmo local ao longo do tempo. O Igarapé Vivo organiza essas observações como dados georreferenciados e históricos.
 
-Apesar da existência de estudos e ações de monitoramento, informações sobre ocorrências podem estar dispersas entre observações de campo, fotografias e diferentes fontes de dados.
+O projeto não substitui órgãos ambientais, equipes de limpeza ou sistemas oficiais. Seu objetivo é oferecer uma ferramenta de apoio para estudantes, pesquisadores, projetos de extensão, grupos ambientais e comunidades.
 
-O projeto propõe centralizar essas informações em uma plataforma simples e visual.
-
-Objetivo
-
-Desenvolver um protótipo capaz de:
-
-- registrar ocorrências de resíduos;
-- armazenar a localização geográfica da ocorrência;
-- registrar fotografias;
-- classificar o tipo de resíduo observado;
-- estimar o nível de acúmulo;
-- apresentar as ocorrências em um mapa;
-- permitir consultar o histórico de um determinado ponto;
-- gerar informações básicas para análise dos locais mais recorrentes;
-- (evolução) filtrar e pesquisar ocorrências;
-- (evolução) acompanhar pontos monitorados e status das ocorrências;
-- (evolução) apresentar dashboard analítico com gráficos;
-- (evolução) exportar os dados para análise externa.
-
-Público-alvo
-
-O protótipo poderá ser utilizado por:
-
-- estudantes e pesquisadores;
-- projetos de extensão;
-- grupos ambientais;
-- comunidades próximas a igarapés;
-- voluntários em atividades de monitoramento;
-- instituições interessadas em dados ambientais.
-
-Funcionamento
-
-O fluxo básico será:
-
-Usuário
-   ↓
-Registra ocorrência
-   ↓
-Localização + fotografia + classificação
-   ↓
-Servidor
-   ↓
-Banco de dados
-   ↓
-Mapa, pontos monitorados e dashboard
-   ↓
-Análise, acompanhamento e exportação das ocorrências
-
-Registro de ocorrência
-
-Cada ocorrência poderá conter:
-
-- latitude;
-- longitude;
-- data e horário;
-- fotografia;
-- tipo de resíduo;
-- nível estimado de acúmulo;
-- observações adicionais;
-- (evolução) ponto monitorado associado;
-- (evolução) status de acompanhamento (Nova, Em análise, Em atendimento, Resolvida, Descartada).
-
-Exemplo:
-
-Ocorrência #038
-
-Local:
-Igarapé do Mindu
-
-Tipo:
-Plástico
-
-Acúmulo:
-Alto
-
-Data:
-24/08/2026
-
-Coordenadas:
--3.xxxxxx, -60.xxxxxx
-
-Fotografia:
-imagem.jpg
-
-Mapa
-
-As ocorrências serão apresentadas em um mapa.
-
-Uma possível representação:
-
-🟢 Baixo acúmulo
-🟡 Médio acúmulo
-🔴 Alto acúmulo
-
-Ao selecionar um ponto, o usuário poderá visualizar as informações daquela ocorrência.
-
-Na evolução, o mapa passa a ser o principal ambiente de exploração, com filtros combináveis (tipo de resíduo, nível, período, local), pesquisa, exibição de pontos críticos, centralização no ponto selecionado e agrupamento de marcadores quando houver muitos registros.
-
-Histórico e ponto monitorado
-
-Um dos diferenciais do projeto será o acompanhamento temporal.
-
-Em vez de registrar apenas:
-
-«"Existe lixo neste local."»
-
-o sistema poderá armazenar várias observações:
-
-01/09 → Acúmulo alto
-15/09 → Acúmulo médio
-30/09 → Acúmulo baixo
-15/10 → Acúmulo alto
-
-Isso permitirá identificar locais em que o acúmulo de resíduos é recorrente.
-
-Na evolução, cada local será associado a um **ponto monitorado**, com página própria contendo histórico, distribuição por tipo e nível, recorrência, status e fotografias — permitindo comparar o estado do mesmo local ao longo do tempo.
-
-Exemplo de interpretação:
-
-«"Este ponto apresentou 12 ocorrências nos últimos 3 meses e registrou nível alto de acúmulo em 4 ocasiões."»
-
-Dashboard
-
-O protótipo poderá apresentar indicadores como:
-
-- quantidade total de ocorrências;
-- ocorrências nos últimos 7 e 30 dias;
-- quantidade de ocorrências por tipo de resíduo;
-- quantidade de ocorrências por região/ponto;
-- pontos com maior recorrência;
-- pontos críticos;
-- evolução das ocorrências ao longo do tempo;
-- ranking dos pontos e comparação entre períodos.
-
-O MVP já exibe um resumo inicial (ocorrências registradas, pontos monitorados, maior ocorrência e pontos críticos). A evolução adiciona gráficos temporais e por categoria.
-
-Exemplo:
-
-OCORRÊNCIAS REGISTRADAS
-128
-
-PONTOS MONITORADOS
-37
-
-MAIOR OCORRÊNCIA
-Plástico
-
-PONTOS CRÍTICOS
-8
-
-Visão computacional
-
-A classificação automática de resíduos por imagem será considerada uma etapa posterior.
-
-A ideia é permitir que uma fotografia seja analisada por um modelo de visão computacional capaz de identificar a presença ou o tipo predominante de resíduos.
-
-Exemplo:
-
-Fotografia
-    ↓
-Modelo de visão computacional
-    ↓
-Resíduos detectados
-    ↓
-Classificação
-
-Essa funcionalidade não faz parte do primeiro MVP. Primeiro será construída a infraestrutura de coleta e organização dos dados.
-
-Escopo do MVP
-
-A primeira versão deverá conter somente o necessário para validar a proposta:
-
-1. cadastro de ocorrência;
-2. obtenção ou inserção da localização;
-3. envio de fotografia;
-4. classificação manual do resíduo;
-5. classificação do nível de acúmulo;
-6. armazenamento no banco de dados;
-7. visualização das ocorrências em mapa;
-8. consulta das informações de uma ocorrência.
-
-Funcionalidades como inteligência artificial, alertas automáticos e monitoramento por câmeras ficam para versões posteriores.
-
-Status do protótipo — Fases 1 a 6 concluídas
-
-O protótipo MVP está funcional e cobre o escopo acima:
-
-- registro de ocorrência com localização (Geolocation API ou clique no mapa);
-- upload de fotografia;
-- classificação de tipo de resíduo e nível de acúmulo;
-- persistência em SQLite;
-- mapa Leaflet com marcadores coloridos por nível de acúmulo;
-- página de detalhe de cada ocorrência;
-- cards de resumo e lista de ocorrências recentes;
-- API completa de CRUD (cadastrar, consultar, atualizar e excluir ocorrências);
-- exportação dos dados em CSV;
-- exportação GeoJSON e exportações filtradas;
-- pontos monitorados, histórico e recorrência;
-- filtros combináveis e clusterização no mapa;
-- dashboard com indicadores e gráficos;
-- autenticação, perfis, permissões e status;
-- validação do conteúdo das imagens, cabeçalhos de segurança e testes automatizados;
-- integrações auxiliares: hidrografia (Overpass), meteorologia (Open-Meteo), geocodificação (Nominatim) e gateway de sensores.
-
-O backend é organizado em camadas dentro do pacote `app/` (rotas, serviços e repositórios), com `create_app()` em `app/__init__.py` e os blueprints de páginas (`app/routes/pages.py`) e de API (`app/routes/api.py`).
-
-Detalhes estão em `ARQUITETURA.md`, `DOCUMENTACAO.md` e `APRESENTACAO.md`.
-
-Tecnologias
-
-Stack escolhida para o protótipo (MVP):
-
-- Frontend: HTML, CSS e JavaScript puro;
-- Backend: Python + Flask;
-- Banco de dados: SQLite (SQL);
-- Mapa: Leaflet (OpenStreetMap), sem chave de API;
-- Armazenamento: SQLite para as informações e pasta local para as fotografias enviadas;
-- Futuro: modelo de machine learning para análise das fotografias.
-
-Evoluções tecnológicas previstas (V2+):
-
-- clusterização de marcadores no mapa (plugin do Leaflet);
-- filtros e pesquisa por API;
-- dashboard analítico com gráficos;
-- exportação em CSV e, posteriormente, GeoJSON;
-- autenticação e perfis de usuário;
-- possível migração para PostgreSQL com suporte espacial conforme a escala.
-
-A arquitetura prioriza simplicidade e facilidade de manutenção. Detalhes completos estão no relatório de arquitetura (ARQUITETURA.md).
-
-Como executar
-
-Crie o ambiente virtual e instale as dependências:
-
-    python3 -m venv .venv
-    .venv/bin/pip install -r requirements.txt
-
-Em seguida, inicie o servidor:
-
-    .venv/bin/python app.py
-
-Abra http://127.0.0.1:5000 no navegador.
-
-O banco de dados (igarape_vivo.db) é criado e preenchido com dados de exemplo automaticamente na primeira execução. As fotografias enviadas são salvas em static/uploads/.
-
-Para executar os testes:
-
-    .venv/bin/pytest -q
-
-Os testes usam banco e uploads temporários. A conta seed `admin@igarape.local` / `admin123` é exclusiva para desenvolvimento e deve ser substituída antes de exposição externa.
-
-Evolução planejada
-
-Versão 1 — MVP
-
-Registro e visualização das ocorrências. *(implementado)*
-
-Versão 2 — Monitoramento
-
-Filtros, dashboard, pontos monitorados, histórico e identificação de recorrências. *(implementado)*
-
-Versão 2.1 — Gestão
-
-Status das ocorrências, fluxo de acompanhamento, autenticação, perfis e permissões, além de melhoria na segurança dos arquivos. *(implementado)*
-
-Versão 2.2 — Dados
-
-Exportação dos dados em CSV/GeoJSON e melhorias analíticas. *(implementado)*
-
-Versão 3 — Inteligência
-
-Classificação automática de resíduos por imagem.
-
-Versão 4 — Monitoramento automático
-
-Sistema de alertas baseado no aumento de resíduos e, futuramente, possibilidade de integração com câmeras ou outros sensores.
-
-Fluxo alvo da evolução
-
-O projeto amplia o fluxo central do MVP:
-
-> registrar → armazenar → localizar → visualizar
-
-para:
+Fluxo central:
 
 > registrar → validar → localizar → visualizar → analisar → acompanhar → comparar → exportar
 
-A principal evolução estrutural é a introdução do conceito de **ponto monitorado**, associado a um histórico de ocorrências, permitindo acompanhar a frequência, a recorrência e a evolução temporal de cada local.
+## Funcionalidades implementadas
 
-ODS relacionados
+### Registro e gestão
 
-O projeto pode contribuir principalmente para:
+- Login, logout e sessão autenticada.
+- Perfis `usuario`, `moderador` e `administrador`.
+- Cadastro de ocorrência com coordenadas, tipo, nível, fotografia e observações.
+- Localização pelo navegador, seleção no mapa ou ponto monitorado.
+- Associação opcional da ocorrência a um ponto monitorado.
+- Status: `Nova`, `Em analise`, `Em atendimento`, `Resolvida` e `Descartada`.
+- CRUD de ocorrências e gestão de pontos conforme permissão.
 
-- ODS 9 — Indústria, Inovação e Infraestrutura
-- ODS 11 — Cidades e Comunidades Sustentáveis
-- ODS 12 — Consumo e Produção Responsáveis
-- ODS 6 — Água Potável e Saneamento
+### Mapa e monitoramento
 
-A relação definitiva com os ODS deverá ser estabelecida de acordo com o objetivo e os resultados efetivamente obtidos no projeto.
+- Leaflet com base OpenStreetMap.
+- Marcadores por nível de acúmulo e agrupamento com MarkerCluster.
+- Filtros combináveis por tipo, nível, ponto, período e texto.
+- Exibição somente de ocorrências de nível alto.
+- Popups, centralização, lista recente e exportações sincronizadas com os filtros.
+- Página de ponto monitorado com mapa, resumo, distribuições, recorrência e histórico.
 
-Princípio do projeto
+### Dashboard e dados
 
-O Igarapé Vivo não pretende "resolver a poluição dos igarapés".
+- Totais gerais e ocorrências nos últimos 7 e 30 dias.
+- Pontos ativos e recorrentes.
+- Resíduo e local mais frequentes.
+- Gráficos por tipo, nível, evolução temporal e ranking de pontos.
+- Exportação CSV e GeoJSON, inclusive com filtros.
 
-Seu objetivo é mais específico:
+### Segurança e qualidade
 
-«Transformar observações sobre resíduos em dados georreferenciados que possam ser visualizados, comparados e acompanhados ao longo do tempo.»
+- Senhas armazenadas com hash do Werkzeug.
+- Cookies `HttpOnly`, `SameSite=Lax` e opção `Secure` por ambiente.
+- Headers `X-Content-Type-Options`, `X-Frame-Options` e `Referrer-Policy`.
+- Validação de coordenadas, domínios e tamanho de campos.
+- Validação de extensão e conteúdo real de imagens com Pillow.
+- Limite de 10 MB por requisição.
+- Respostas públicas sem `senha_hash` ou `usuario_id`.
+- Logs de autenticação e operações sem dados sensíveis.
+- Resposta genérica para erros internos da API.
+- 20 testes automatizados com banco e uploads temporários.
 
-Essa delimitação mantém o projeto tecnicamente viável e permite que novas funcionalidades sejam adicionadas posteriormente.
+## Experiência e interface
+
+A camada visual combina `static/css/style.css` com a reformulação em `static/css/ui.css`.
+
+- Paleta inspirada em floresta, água, argila e areia.
+- Tipografia Lora e Manrope, com fallbacks locais.
+- Cabeçalho fixo, navegação ativa e área de conta.
+- Layouts específicos para mapa, dashboard, formulário, login, detalhes e histórico.
+- Breakpoints para desktop, tablet e celular.
+- Preview da fotografia antes do envio.
+- Botões bloqueados durante requisições e mensagens contextuais.
+- Estados vazios e falhas de rede apresentados ao usuário.
+- Skip link, foco visível, regiões ARIA, `aria-live` e suporte a `prefers-reduced-motion`.
+
+## Critérios atuais
+
+Tipos de resíduo:
+
+`Plastico`, `Metal`, `Vidro`, `Organico`, `Papel`, `Misto`, `Outro`.
+
+Níveis de acúmulo:
+
+- `Baixo`: itens isolados, sem bloqueio visível.
+- `Medio`: concentração perceptível e localizada.
+- `Alto`: grande concentração ou possível obstrução.
+
+Esses níveis são estimativas visuais do protótipo e ainda precisam de validação na Fase 7.
+
+Um ponto é considerado recorrente quando possui ao menos três ocorrências no histórico total. No mapa, o filtro de criticidade representa ocorrências classificadas como nível `Alto`.
+
+## Tecnologias
+
+- Python 3 + Flask 3.1.
+- SQLite.
+- HTML, CSS, JavaScript e templates Jinja.
+- Leaflet, OpenStreetMap e Leaflet.markercluster.
+- Chart.js.
+- Pillow para validação de imagens.
+- pytest para testes automatizados.
+- Integrações auxiliares: Overpass, Open-Meteo, Nominatim e gateway JSON de sensores.
+
+## Estrutura
+
+```text
+igarape-limpo/
+├── app.py
+├── config.py
+├── database.py
+├── schema.sql
+├── app/
+│   ├── __init__.py
+│   ├── routes/
+│   ├── services/
+│   ├── repositories/
+│   ├── integrations/
+│   └── utils/
+├── templates/
+├── static/
+│   ├── css/
+│   ├── js/
+│   └── uploads/
+├── tests/
+├── ARQUITETURA.md
+├── DOCUMENTACAO.md
+├── APRESENTACAO.md
+└── TODO.MD
+```
+
+## Instalação e execução
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python app.py
+```
+
+Acesse `http://127.0.0.1:5000`.
+
+Na primeira execução, o banco e os dados seed são criados automaticamente. As imagens ficam em `static/uploads/`.
+
+Conta seed de desenvolvimento:
+
+```text
+E-mail: admin@igarape.local
+Senha: admin123
+```
+
+Essa credencial deve ser substituída antes de qualquer exposição externa. Configure `IGARAPE_SECRET_KEY` e use `IGARAPE_HTTPS=1` quando a aplicação estiver atrás de HTTPS.
+
+## Testes
+
+```bash
+.venv/bin/pytest -q
+```
+
+Resultado consolidado atual: **20 testes aprovados**. A suíte cobre páginas, autenticação, proteção de rotas, filtros, dashboard, exportações, privacidade, imagens, limite de upload e headers de segurança.
+
+## Integrações externas
+
+O backend possui adaptadores e endpoints para:
+
+- hidrografia via Overpass/OpenStreetMap;
+- meteorologia via Open-Meteo;
+- geocodificação reversa via Nominatim;
+- gateway JSON de sensores e exportação CSV.
+
+Esses adaptadores ainda não formam um painel visual completo. O gateway recebe URL e token do cliente no protótipo e precisa de configuração no servidor e allowlist antes de produção.
+
+## Limitações
+
+- Não há resultados ambientais de coleta formal; os registros atuais são seed e testes.
+- SQLite e armazenamento local de imagens não atendem alta concorrência.
+- Não há migrações versionadas, recuperação de senha ou proteção CSRF dedicada.
+- Um usuário autenticado ainda pode atualizar ocorrências que não criou.
+- Fotografias não são redimensionadas e seus metadados não são removidos.
+- Mapa, fontes, gráficos e integrações externas dependem de internet.
+- Critérios de recorrência e criticidade ainda são simplificados.
+
+## Próxima fase
+
+A Fase 7 depende de decisões e atividades fora do código:
+
+1. definir a área inicial e fontes de dados;
+2. validar metodologia e critérios;
+3. executar coleta controlada;
+4. testar dispositivos, conexão, localização e fotografia em campo;
+5. registrar resultados, problemas de usabilidade e correções.
+
+Visão computacional e alertas permanecem como trabalhos futuros, posteriores à formação de um histórico confiável.
+
+## Documentos
+
+- `ARQUITETURA.md`: componentes, fluxos, segurança e implantação.
+- `DOCUMENTACAO.md`: banco, API, metodologia, critérios e testes.
+- `APRESENTACAO.md`: roteiro de apresentação e demonstração.
+- `TODO.MD`: painel de fases e histórico de progresso.

@@ -16,13 +16,14 @@ Lista de etapas para desenvolvimento do protótipo.
 | 2 | Monitoramento (V2) | ✅ **Concluída** | Ponto monitorado, histórico, filtros, dashboard |
 | 3 | Gestão (V2.1) | ✅ **Concluída** | Autenticação, perfis, permissões e status |
 | 4 | Dados (V2.2) | ✅ **Concluída** | Exportação CSV/GeoJSON e análises |
-| 5 | Qualidade e Segurança | ✅ **Concluída** | Validações, testes, limites de arquivo |
+| 5 | Qualidade e Segurança | ✅ **Concluída** | Pillow, privacidade, cookies, headers, logs e 20 testes |
 | 6 | Documentação e Apresentação | ✅ **Concluída** | README, API, arquitetura, demo |
+| Pós-Fase 6 | Reformulação UX/UI | ✅ **Concluída** | Identidade visual, responsividade, acessibilidade e feedbacks |
 | 7 | Pesquisa e Teste de campo | ⏳ **Próxima** | Fontes de dados, metodologia, coleta |
 | Futuro | Visão computacional | 🔮 Futuro | Classificação automática por imagem |
 | Futuro | Alertas | 🔮 Futuro | Detecção de tendências e notificações |
 
-## Fase atual: **FASE 7 — Pesquisa e Teste de campo**
+## Próxima fase: **FASE 7 — Pesquisa e Teste de campo**
 
 Próximos passos nesta fase (na ordem):
 
@@ -123,11 +124,21 @@ MVP definido (protótipo implementado):
 Frontend — evolução V2:
 
 - [x] <FASE2> Adicionar filtros e pesquisa (tipo, nível, período, local).
-- [ ] <FASE7> Adicionar preview de fotografia no formulário.
-- [ ] <FASE7> Adicionar indicador de progresso/carregamento no envio.
+- [x] <UX/UI> Adicionar preview de fotografia no formulário.
+- [x] <UX/UI> Adicionar estado de carregamento no envio.
 - [x] <FASE2> Criar página de ponto monitorado.
 - [x] <FASE2> Criar página de dashboard com gráficos.
 - [x] <FASE3> Criar página de login.
+
+Frontend — reformulação UX/UI:
+
+- [x] <UX/UI> Criar identidade visual ambiental e sistema de componentes.
+- [x] <UX/UI> Reformular navegação, mapa, dashboard, formulários, login e detalhes.
+- [x] <UX/UI> Adaptar layouts para desktop, tablet e celular.
+- [x] <UX/UI> Adicionar estados vazios, falhas de rede e feedbacks contextuais.
+- [x] <UX/UI> Melhorar acessibilidade com skip link, foco visível, ARIA e redução de movimento.
+- [x] <UX/UI> Sincronizar exportações com os filtros do mapa.
+- [x] <UX/UI> Sanitizar conteúdo dinâmico de popups e listas.
 
 7. Mapa
 
@@ -239,11 +250,11 @@ Etapa posterior.
 - [x] <FASE6> Demonstrar registro de ocorrência.
 - [x] <FASE6> Demonstrar mapa.
 - [x] <FASE6> Demonstrar histórico.
-- [x] <FASE6> Apresentar resultados da coleta.
+- [x] <FASE6> Apresentar resultados técnicos e informar que a coleta de campo ainda não ocorreu.
 - [x] <FASE6> Apresentar limitações.
 - [x] <FASE6> Apresentar possibilidades futuras.
 
-Ordem recomendada de desenvolvimento
+Sequência histórica/original de desenvolvimento
 
 Pesquisa
    ↓
@@ -285,12 +296,37 @@ Somente depois:
 
 A inteligência artificial é uma possível evolução do projeto, não um requisito para que o protótipo seja considerado funcional.
 
+Sequência atual:
+
+Pesquisa e validação
+   ↓
+Coleta de campo controlada
+   ↓
+Avaliação em dispositivos e conexões reais
+   ↓
+Correções de usabilidade e metodologia
+   ↓
+Calibração dos critérios ambientais
+
 ---
 
 # Histórico de progresso
 
 > Registro do que foi implementado em cada sessão, para acompanhamento
 > e para que não haja perda de contexto entre sessões.
+
+## Sessão 2026-08-30 (Reformulação UX/UI)
+
+Concluído:
+
+- Criado `static/css/ui.css` com nova identidade visual, componentes e breakpoints responsivos.
+- Reformulados cabeçalho, mapa, filtros, dashboard, formulário, login, ocorrência, ponto e página 404.
+- Adicionados preview de fotografia, estados de carregamento, estados vazios e mensagens de falha.
+- Adicionadas melhorias de acessibilidade, incluindo skip link, foco visível, ARIA e reduced motion.
+- Atualizados scripts do mapa e dashboard para feedback de rede, exportações filtradas e renderização segura.
+- Mantidos 20 testes automatizados aprovados após a reformulação.
+
+Próximo passo registrado nesta sessão: **Fase 7 — Pesquisa e Teste de campo**.
 
 ## Sessão 2026-08-30 (Fase 6 — Documentação e Apresentação)
 
@@ -301,7 +337,7 @@ Concluído:
 - Atualizado README com o estado implementado, testes e referências documentais.
 - Diferenciados resultados técnicos, dados seed e resultados de campo ainda não coletados.
 
-Próximo passo: **Fase 7 — Pesquisa e Teste de campo**.
+Próximo passo registrado naquela sessão: **Fase 7 — Pesquisa e Teste de campo**.
 
 ## Sessão 2026-08-30 (Fase 5 — Qualidade e Segurança)
 
@@ -313,9 +349,9 @@ Concluído:
 - Uploads agora validam extensão e conteúdo real da imagem com Pillow, mantendo o limite de 10 MB.
 - Adicionados cookies de sessão protegidos, cabeçalhos HTTP de segurança e erro 500 genérico na API.
 - Adicionados logs de login, logout, criação de usuário e operações sobre ocorrências sem dados sensíveis.
-- Criada suíte automatizada isolada do banco principal, cobrindo autenticação, filtros, exportações, uploads e páginas.
+- Criada suíte automatizada isolada do banco principal, com 20 testes cobrindo autenticação, filtros, exportações, uploads e páginas.
 
-Próximo passo: **Fase 6 — Documentação e Apresentação**.
+Próximo passo registrado naquela sessão: **Fase 6 — Documentação e Apresentação**.
 
 ## Sessão 2026-08-30 (Fase 4 — Dados V2.2)
 
@@ -325,7 +361,7 @@ Concluído:
 - Exportações passaram a aceitar filtros por query string (tipo, nível, período, ponto_id, busca).
 - Atualizado painel de fases: Fase 4 marcada como concluída.
 
-Próximo passo: **Fase 5 — Qualidade e Segurança**.
+Próximo passo registrado naquela sessão: **Fase 5 — Qualidade e Segurança**.
 
 ## Sessão 2026-08-30 (fundamentos / MVP)
 
@@ -351,4 +387,4 @@ Observação: o projeto já conta com integrações auxiliares implementadas
 Nominatim e gateway de sensores) e endpoint de exportação em CSV, que estão
 implementados mas ainda não constavam como itens do TODO original.
 
-Próximo passo: **FASE 5 — Qualidade e Segurança** (validações, testes, limites de arquivo).
+Próximo passo registrado naquela sessão: **FASE 2 — Monitoramento**.

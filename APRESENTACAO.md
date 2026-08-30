@@ -15,7 +15,7 @@ Apresentar em aproximadamente 10 minutos o problema, a proposta, o funcionamento
 ### 2. Justificativa
 
 - Dados georreferenciados tornam observações comparáveis.
-- Uma interface simples permite registrar, visualizar e exportar informações.
+- Uma interface responsiva e acessível permite registrar, visualizar e exportar informações com feedback claro.
 - O projeto apoia estudo e monitoramento; não substitui órgãos ambientais.
 
 ### 3. Solução proposta
@@ -31,15 +31,17 @@ Destacar:
 - filtros e dashboard;
 - autenticação e perfis;
 - exportação CSV/GeoJSON;
-- validações e testes automatizados.
+- validações e testes automatizados;
+- identidade visual ambiental, responsividade e acessibilidade.
 
 ### 4. Arquitetura
 
-- Frontend HTML/CSS/JavaScript.
+- Frontend com templates Jinja, HTML, JavaScript por página e duas camadas de CSS (`style.css` e `ui.css`).
 - Backend Flask organizado em rotas, serviços e repositórios.
 - SQLite para dados e pasta local para imagens.
 - Leaflet/OpenStreetMap para mapas.
 - Chart.js para gráficos.
+- Pillow para validação de imagens e pytest para qualidade.
 
 ### 5. Demonstração do protótipo
 
@@ -53,13 +55,14 @@ Preparação:
 Roteiro:
 
 1. **Login:** demonstrar sessão e perfil.
-2. **Registro:** abrir “Nova ocorrência”, selecionar ponto/localização, tipo e nível; fotografia é opcional.
-3. **Mapa:** aplicar filtros combinados e mostrar clusterização e popup.
+2. **Registro:** mostrar formulário por etapas, feedback de localização, preview da fotografia e estado de envio.
+3. **Mapa:** aplicar filtros combinados, mostrar total, clusterização, popup e exportações filtradas.
 4. **Detalhe:** abrir ocorrência e mostrar status; administrador/moderador pode alterá-lo.
 5. **Histórico:** abrir o ponto monitorado e comparar ocorrências relacionadas.
 6. **Dashboard:** mostrar totais, distribuições, evolução e ranking.
 7. **Exportação:** baixar CSV e GeoJSON, opcionalmente filtrados.
-8. **Qualidade:** citar validação de imagem, limite de 10 MB e testes automatizados.
+8. **UX/UI:** reduzir a janela para demonstrar adaptação móvel, navegação, estados vazios e foco visível.
+9. **Qualidade:** citar Pillow, limite de 10 MB, cookies/headers protegidos, logs sem dados sensíveis e 20 testes.
 
 Plano alternativo sem internet:
 
@@ -71,10 +74,11 @@ Plano alternativo sem internet:
 
 Resultados técnicos atuais:
 
-- Fases 1 a 5 implementadas.
+- Fases 1 a 6 concluídas; Fase 7 é a próxima.
 - CRUD, monitoramento, gestão, análise e exportação operacionais.
 - 20 testes automatizados aprovados em banco temporário.
 - Upload falso rejeitado e limite de tamanho validado.
+- Interface reformulada em todas as páginas, com responsividade, acessibilidade, preview e feedback de carregamento.
 
 Resultados de campo:
 
@@ -96,7 +100,8 @@ Resultados de campo:
 - Teste de campo e refinamento metodológico.
 - PostgreSQL/PostGIS e armazenamento de objetos.
 - Auditoria, segurança de produção e otimização de imagens.
-- Integração com fontes oficiais e sensores.
+- Consolidar na interface os adaptadores de Overpass, Open-Meteo, Nominatim e sensores já existentes no backend.
+- Configurar gateways e credenciais exclusivamente no servidor.
 - Índice de criticidade validado.
 - Visão computacional e alertas após formação de histórico confiável.
 
@@ -109,6 +114,10 @@ Resultados de campo:
 - Executar `.venv/bin/pytest -q`.
 - Verificar login e logout.
 - Confirmar mapa, dashboard e detalhes.
+- Verificar desktop e viewport móvel.
+- Confirmar preview da fotografia e estados de carregamento.
+- Navegar por teclado e verificar foco visível.
+- Confirmar carregamento das fontes, Leaflet e Chart.js.
 - Preparar uma ocorrência de demonstração sem dados pessoais.
 - Confirmar exportações CSV e GeoJSON.
 - Não usar dados seed como evidência de resultado ambiental.

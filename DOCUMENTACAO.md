@@ -4,7 +4,7 @@
 
 O Igarapé Vivo registra ocorrências georreferenciadas de resíduos, associa registros a pontos monitorados, apresenta histórico e indicadores e exporta dados em CSV e GeoJSON.
 
-Esta documentação descreve o estado implementado até a Fase 5. Visão computacional, alertas e resultados de coleta de campo não fazem parte da versão atual.
+Esta documentação descreve o estado implementado até a Fase 6 e a reformulação UX/UI posterior. A Fase 7 é a próxima. Visão computacional, alertas e resultados de coleta de campo não fazem parte da versão atual.
 
 ## 2. Banco de dados
 
@@ -52,7 +52,7 @@ O protótipo usa SQLite no arquivo `igarape_vivo.db`. O schema inicial está em 
 | `local_nome` | TEXT | Opcional, até 160 caracteres |
 | `data_atualizacao` | TEXT | Atualizada em alterações |
 
-Índices atuais: coordenadas de ocorrências e coordenadas de pontos. Consultas futuras em maior escala devem adicionar índices por data, tipo, nível, ponto e status.
+Instalações novas criadas por `schema.sql` possuem índices de coordenadas para ocorrências e pontos. Bancos legados devem ter esses índices verificados, pois a migração simples não recria todos eles. Consultas futuras em maior escala devem adicionar índices por data, tipo, nível, ponto e status.
 
 ## 3. API HTTP
 
@@ -128,7 +128,7 @@ Filtros combináveis:
 | GET | `/integracao/status` | Estado configurado das integrações |
 | POST | `/export/sensores.csv` | Exporta dados do gateway |
 
-Serviços externos podem retornar `502` sem impedir o funcionamento do mapa e do banco local.
+Os adaptadores e endpoints estão implementados no backend, mas ainda não existe um painel visual completo das integrações. O Nominatim não preenche automaticamente o formulário. O gateway recebe URL e token do cliente no protótipo e deve usar configuração no servidor e allowlist antes de produção. Serviços externos podem retornar `502` sem impedir o funcionamento do mapa e do banco local.
 
 ## 4. Metodologia de coleta proposta
 
@@ -178,10 +178,44 @@ Atualmente, um ponto é considerado recorrente quando possui pelo menos três oc
 - Fotografias ficam em `static/uploads` com nome UUID.
 - Pillow verifica o conteúdo real das imagens; o limite total da requisição é 10 MB.
 - Sessões usam cookies `HttpOnly` e `SameSite=Lax`; `Secure` é ativado por `IGARAPE_HTTPS=1`.
+- Respostas incluem proteção contra MIME sniffing e framing, além de política de referência.
 - Respostas públicas removem `senha_hash` e `usuario_id`.
+- Logs registram autenticação e operações sem armazenar senha ou token.
+- Erros internos da API retornam mensagem genérica e ficam registrados no servidor.
 - CSV e GeoJSON facilitam análise externa e interoperabilidade geográfica.
 
-## 7. Resultados dos testes
+## 7. Experiência e interface
+
+A reformulação visual adicionou `static/css/ui.css` sobre os estilos base e reorganizou todos os templates sem alterar os contratos usados pela API.
+
+### Identidade e componentes
+
+- Paleta de floresta, água, argila e areia.
+- Lora para títulos e Manrope para controles e leitura.
+- Marca visual, cabeçalho sticky, navegação ativa e área de conta.
+- Cabeçalhos de página, cards, painéis, listas, badges e estados vazios consistentes.
+- Layouts específicos para mapa, dashboard, formulário, login, ocorrência, ponto e página 404.
+
+### Fluxos melhorados
+
+- Filtros exibem loading, total encontrado e falhas de rede.
+- Exportações do mapa acompanham os filtros atuais.
+- Popups e listas usam conteúdo sanitizado.
+- Formulário possui seções, ajuda contextual, preview de fotografia e botão bloqueado durante envio.
+- Geolocalização diferencia permissão negada de indisponibilidade.
+- Login e atualização de status apresentam feedback e evitam envio duplicado.
+
+### Responsividade e acessibilidade
+
+- Breakpoints em 980, 700 e 420 px.
+- Grids, mapas, navegação e formulários se adaptam a telas menores.
+- Skip link, foco visível, `aria-current`, labels e mensagens `aria-live`.
+- Regiões de mapa e gráficos possuem nomes acessíveis.
+- Animações são desativadas quando `prefers-reduced-motion` está ativo.
+
+Essas melhorias foram verificadas por renderização e regressão automatizada. Testes com dispositivos, redes e tecnologias assistivas reais permanecem na Fase 7.
+
+## 8. Resultados dos testes
 
 Em 30/08/2026, a suíte automatizada executou 20 testes com sucesso:
 
@@ -206,7 +240,13 @@ Comando:
 
 Os testes usam banco e pasta de uploads temporários, sem modificar os dados locais.
 
-## 8. Limitações
+Resultados adicionais da reformulação:
+
+- todas as páginas principais renderizam com resposta `200`;
+- scripts do mapa, formulário e dashboard passam na validação de sintaxe;
+- a suíte permaneceu com 20 testes aprovados após o redesign.
+
+## 9. Limitações
 
 - Não há resultados ambientais reais nem validação da metodologia em campo.
 - SQLite e armazenamento local não são indicados para alta concorrência.
@@ -218,7 +258,7 @@ Os testes usam banco e pasta de uploads temporários, sem modificar os dados loc
 - Recorrência e criticidade ainda usam regras simplificadas.
 - A fotografia é validada, mas não é redimensionada nem tem metadados removidos.
 
-## 9. Trabalhos futuros
+## 10. Trabalhos futuros
 
 - Executar coleta de campo e calibrar critérios.
 - Adicionar propriedade e auditoria completa das alterações.
