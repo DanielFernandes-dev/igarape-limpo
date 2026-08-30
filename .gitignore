@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.pyc
+igarape_vivo.db
+static/uploads/*
+!static/uploads/.gitkeep

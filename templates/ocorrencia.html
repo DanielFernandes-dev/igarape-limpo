@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Ocorrência #{{ o.id }} — Igarapé Vivo{% endblock %}
+
+{% block conteudo %}
+<a class="voltar" href="{{ url_for('index') }}">&larr; Voltar ao mapa</a>
+
+<article class="detalhe">
+    <h2>Ocorrência #{{ "%03d" % o.id }}</h2>
+
+    {% if o.fotografia %}
+    <img class="foto" src="{{ url_for('static', filename='uploads/' + o.fotografia) }}"
+         alt="Fotografia da ocorrência">
+    {% else %}
+    <p class="sem-foto">Sem fotografia registrada.</p>
+    {% endif %}
+
+    <dl class="info">
+        <dt>Local</dt>
+        <dd>{{ o.local_nome or "—" }}</dd>
+
+        <dt>Tipo de resíduo</dt>
+        <dd>{{ o.tipo_residuo }}</dd>
+
+        <dt>Nível de acúmulo</dt>
+        <dd>
+            <span class="bolinha" style="background:{{ cor_niveis[o.nivel_acumulo] }}"></span>
+            {{ o.nivel_acumulo }}
+        </dd>
+
+        <dt>Data e horário</dt>
+        <dd>{{ o.data_hora }}</dd>
+
+        <dt>Coordenadas</dt>
+        <dd>{{ "%.5f" % o.latitude }}, {{ "%.5f" % o.longitude }}</dd>
+
+        <dt>Observações</dt>
+        <dd>{{ o.observacoes or "—" }}</dd>
+    </dl>
+
+    <div id="mapa-detalhe"></div>
+</article>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    var lat = {{ o.latitude }};
+    var lng = {{ o.longitude }};
+    var cor = "{{ cor_niveis[o.nivel_acumulo] }}";
+</script>
+<script src="{{ url_for('static', filename='js/detalhe.js') }}"></script>
+{% endblock %}

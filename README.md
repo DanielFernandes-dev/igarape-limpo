@@ -182,18 +182,31 @@ Funcionalidades como inteligência artificial, alertas automáticos e monitorame
 
 Tecnologias
 
-A escolha definitiva das tecnologias será feita durante o desenvolvimento.
+Stack escolhida para o protótipo (MVP):
 
-Possíveis componentes:
-
-- Frontend: HTML, CSS e JavaScript;
-- Backend: tecnologia estudada no curso;
-- Banco de dados: SQL;
-- Mapa: biblioteca ou serviço de mapas;
-- Armazenamento: banco de dados para informações e serviço adequado para imagens;
+- Frontend: HTML, CSS e JavaScript puro;
+- Backend: Python + Flask;
+- Banco de dados: SQLite (SQL);
+- Mapa: Leaflet (OpenStreetMap), sem chave de API;
+- Armazenamento: SQLite para as informações e pasta local para as fotografias enviadas;
 - Futuro: modelo de machine learning para análise das fotografias.
 
-A arquitetura deverá priorizar simplicidade e facilidade de manutenção.
+A arquitetura prioriza simplicidade e facilidade de manutenção.
+
+Como executar
+
+Crie o ambiente virtual e instale as dependências:
+
+    python3 -m venv .venv
+    .venv/bin/pip install -r requirements.txt
+
+Em seguida, inicie o servidor:
+
+    .venv/bin/python app.py
+
+Abra http://127.0.0.1:5000 no navegador.
+
+O banco de dados (igarape_vivo.db) é criado e preenchido com dados de exemplo automaticamente na primeira execução. As fotografias enviadas são salvas em static/uploads/.
 
 Evolução planejada
 

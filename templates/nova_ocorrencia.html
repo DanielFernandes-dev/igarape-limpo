@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Nova ocorrência — Igarapé Vivo{% endblock %}
+
+{% block conteudo %}
+<h2>Registrar ocorrência</h2>
+
+<section class="form-layout">
+    <form id="form-ocorrencia" class="form">
+        <div class="campo">
+            <label for="local_nome">Local (opcional)</label>
+            <input type="text" id="local_nome" name="local_nome"
+                   placeholder="Ex.: Igarapé do Mindu">
+        </div>
+
+        <div class="campo">
+            <label>Localização</label>
+            <div class="coordenadas">
+                <input type="number" step="any" id="latitude" name="latitude" placeholder="Latitude" required>
+                <input type="number" step="any" id="longitude" name="longitude" placeholder="Longitude" required>
+            </div>
+            <div class="acoes-localizacao">
+                <button type="button" id="btn-localizar" class="btn">Usar minha localização</button>
+                <span class="dica">ou clique no mapa ao lado para marcar o ponto.</span>
+            </div>
+            <p id="msg-localizacao" class="msg"></p>
+        </div>
+
+        <div class="campo">
+            <label for="tipo_residuo">Tipo de resíduo</label>
+            <select id="tipo_residuo" name="tipo_residuo" required>
+                <option value="">Selecione...</option>
+                {% for t in tipos_residuo %}
+                <option value="{{ t }}">{{ t }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="campo">
+            <label for="nivel_acumulo">Nível de acúmulo</label>
+            <select id="nivel_acumulo" name="nivel_acumulo" required>
+                <option value="">Selecione...</option>
+                {% for n in niveis_acumulo %}
+                <option value="{{ n }}">{{ n }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="campo">
+            <label for="fotografia">Fotografia (opcional)</label>
+            <input type="file" id="fotografia" name="fotografia" accept="image/*">
+        </div>
+
+        <div class="campo">
+            <label for="observacoes">Observações (opcional)</label>
+            <textarea id="observacoes" name="observacoes" rows="3"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primario">Salvar ocorrência</button>
+        <p id="msg-form" class="msg"></p>
+    </form>
+
+    <div id="mapa-form"></div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}

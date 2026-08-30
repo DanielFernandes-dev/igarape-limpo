@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Mapa — Igarapé Vivo{% endblock %}
+
+{% block conteudo %}
+<section class="cards">
+    <div class="card">
+        <span class="card-valor" id="contador-ocorrencias">—</span>
+        <span class="card-rotulo">OCORRÊNCIAS REGISTRADAS</span>
+    </div>
+    <div class="card">
+        <span class="card-valor" id="contador-pontos">—</span>
+        <span class="card-rotulo">PONTOS MONITORADOS</span>
+    </div>
+    <div class="card">
+        <span class="card-valor" id="maior-ocorrencia">—</span>
+        <span class="card-rotulo">MAIOR OCORRÊNCIA</span>
+    </div>
+    <div class="card">
+        <span class="card-valor" id="pontos-criticos">—</span>
+        <span class="card-rotulo">PONTOS CRÍTICOS</span>
+    </div>
+</section>
+
+<section class="mapa-container">
+    <div id="mapa"></div>
+</section>
+
+<section class="legenda">
+    <span class="legenda-item"><span class="bolinha" style="background:#22c55e"></span> Baixo acúmulo</span>
+    <span class="legenda-item"><span class="bolinha" style="background:#eab308"></span> Médio acúmulo</span>
+    <span class="legenda-item"><span class="bolinha" style="background:#ef4444"></span> Alto acúmulo</span>
+</section>
+
+<div id="lista-recente">
+    <h2>Ocorrências recentes</h2>
+    <ul id="lista"></ul>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='js/map.js') }}"></script>
+{% endblock %}
