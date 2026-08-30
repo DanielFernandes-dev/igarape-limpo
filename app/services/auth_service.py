@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.repositories import usuario_repository
@@ -29,12 +27,14 @@ def verificar_senha(senha_hash, senha):
 
 
 def autenticar(email, senha):
+    if len(email) > 254 or len(senha) > 128:
+        raise ErroValidacao("Credenciais inválidas.", status=401)
     usuario = usuario_repository.obter_por_email(email)
     if usuario is None or not dict(usuario).get("ativo"):
         raise ErroValidacao("Credenciais inválidas.", status=401)
     if not verificar_senha(dict(usuario)["senha_hash"], senha):
         raise ErroValidacao("Credenciais inválidas.", status=401)
-    return dict(usuario)
+    return serializar(dict(usuario))
 
 
 def serializar(usuario):
@@ -63,10 +63,14 @@ def criar_usuario(dados):
 
     if not nome or not email:
         raise ErroValidacao("Nome e e-mail são obrigatórios.")
+    if len(nome) > 120 or len(email) > 254:
+        raise ErroValidacao("Nome ou e-mail excede o tamanho permitido.")
     if "@" not in email:
         raise ErroValidacao("E-mail inválido.")
     if not senha or len(senha) < 6:
         raise ErroValidacao("Senha deve ter ao menos 6 caracteres.")
+    if len(senha) > 128:
+        raise ErroValidacao("Senha excede o tamanho permitido.")
     if perfil not in ("usuario", "moderador", "administrador"):
         raise ErroValidacao("Perfil inválido.")
 
@@ -114,7 +118,7 @@ def atualizar_usuario(usuario_id, dados):
 
 
 def alterar_senha(usuario_id, senha_atual, nova_senha):
-    usuario = usuario_repository.obter_por_id(usuario_id)
+    usuario = usuario_repository.obter_autenticacao_por_id(usuario_id)
     if usuario is None:
         raise ErroValidacao("Usuário não encontrado.", status=404)
     usuario_dict = dict(usuario)

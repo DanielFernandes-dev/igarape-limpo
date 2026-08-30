@@ -18,6 +18,13 @@ def obter_por_id(usuario_id):
     )
 
 
+def obter_autenticacao_por_id(usuario_id):
+    return database.query_one(
+        "SELECT * FROM usuarios WHERE id = ?",
+        (usuario_id,),
+    )
+
+
 def obter_por_email(email):
     return database.query_one(
         "SELECT * FROM usuarios WHERE email = ?",

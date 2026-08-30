@@ -13,6 +13,8 @@ def validar_dados(dados):
     nome = (dados.get("nome") or "").strip()
     if not nome:
         raise ErroValidacao("O nome do ponto é obrigatório.")
+    if len(nome) > 120:
+        raise ErroValidacao("O nome do ponto excede 120 caracteres.")
 
     try:
         latitude = float(dados.get("latitude"))
@@ -27,11 +29,15 @@ def validar_dados(dados):
     if status not in ("Ativo", "Inativo"):
         raise ErroValidacao("Status do ponto inválido.")
 
+    descricao = (dados.get("descricao") or "").strip()
+    if len(descricao) > 1000:
+        raise ErroValidacao("A descrição excede 1000 caracteres.")
+
     return {
         "nome": nome,
         "latitude": latitude,
         "longitude": longitude,
-        "descricao": (dados.get("descricao") or "").strip() or None,
+        "descricao": descricao or None,
         "status": status,
     }
 

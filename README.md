@@ -199,7 +199,7 @@ A primeira versão deverá conter somente o necessário para validar a proposta:
 
 Funcionalidades como inteligência artificial, alertas automáticos e monitoramento por câmeras ficam para versões posteriores.
 
-Status do MVP — implementado
+Status do protótipo — Fases 1 a 6 concluídas
 
 O protótipo MVP está funcional e cobre o escopo acima:
 
@@ -212,11 +212,17 @@ O protótipo MVP está funcional e cobre o escopo acima:
 - cards de resumo e lista de ocorrências recentes;
 - API completa de CRUD (cadastrar, consultar, atualizar e excluir ocorrências);
 - exportação dos dados em CSV;
+- exportação GeoJSON e exportações filtradas;
+- pontos monitorados, histórico e recorrência;
+- filtros combináveis e clusterização no mapa;
+- dashboard com indicadores e gráficos;
+- autenticação, perfis, permissões e status;
+- validação do conteúdo das imagens, cabeçalhos de segurança e testes automatizados;
 - integrações auxiliares: hidrografia (Overpass), meteorologia (Open-Meteo), geocodificação (Nominatim) e gateway de sensores.
 
 O backend é organizado em camadas dentro do pacote `app/` (rotas, serviços e repositórios), com `create_app()` em `app/__init__.py` e os blueprints de páginas (`app/routes/pages.py`) e de API (`app/routes/api.py`).
 
-A evolução para o monitoramento (pontos, históricos, dashboard, filtros, gestão e exportação) está descrita nas versões V2 acima.
+Detalhes estão em `ARQUITETURA.md`, `DOCUMENTACAO.md` e `APRESENTACAO.md`.
 
 Tecnologias
 
@@ -255,6 +261,12 @@ Abra http://127.0.0.1:5000 no navegador.
 
 O banco de dados (igarape_vivo.db) é criado e preenchido com dados de exemplo automaticamente na primeira execução. As fotografias enviadas são salvas em static/uploads/.
 
+Para executar os testes:
+
+    .venv/bin/pytest -q
+
+Os testes usam banco e uploads temporários. A conta seed `admin@igarape.local` / `admin123` é exclusiva para desenvolvimento e deve ser substituída antes de exposição externa.
+
 Evolução planejada
 
 Versão 1 — MVP
@@ -263,15 +275,15 @@ Registro e visualização das ocorrências. *(implementado)*
 
 Versão 2 — Monitoramento
 
-Filtros, dashboard, pontos monitorados, histórico e identificação de recorrências.
+Filtros, dashboard, pontos monitorados, histórico e identificação de recorrências. *(implementado)*
 
 Versão 2.1 — Gestão
 
-Status das ocorrências, fluxo de acompanhamento, autenticação, perfis e permissões, além de melhoria na segurança dos arquivos.
+Status das ocorrências, fluxo de acompanhamento, autenticação, perfis e permissões, além de melhoria na segurança dos arquivos. *(implementado)*
 
 Versão 2.2 — Dados
 
-Exportação dos dados em CSV/GeoJSON e melhorias analíticas.
+Exportação dos dados em CSV/GeoJSON e melhorias analíticas. *(implementado)*
 
 Versão 3 — Inteligência
 

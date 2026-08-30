@@ -2,6 +2,7 @@ import os
 import uuid
 
 from flask import g, url_for
+from PIL import Image, UnidentifiedImageError
 
 import config
 from app.integrations import sensor_gateway
@@ -47,6 +48,13 @@ def validar_dados(dados):
     if dados.get("ponto_id") not in (None, ""):
         ponto_id = _validar_ponto_id(dados.get("ponto_id"))
 
+    observacoes = dados.get("observacoes", "").strip()
+    local_nome = dados.get("local_nome", "").strip()
+    if len(local_nome) > 160:
+        raise ErroValidacao("Nome do local excede 160 caracteres.")
+    if len(observacoes) > 2000:
+        raise ErroValidacao("Observações excedem 2000 caracteres.")
+
     return {
         "ponto_id": ponto_id,
         "latitude": latitude,
@@ -54,8 +62,8 @@ def validar_dados(dados):
         "tipo_residuo": tipo,
         "nivel_acumulo": nivel,
         "status": status,
-        "observacoes": dados.get("observacoes", "").strip() or None,
-        "local_nome": dados.get("local_nome", "").strip() or None,
+        "observacoes": observacoes or None,
+        "local_nome": local_nome or None,
         "fotografia": None,
     }
 
@@ -92,6 +100,8 @@ def validar_filtros(args):
 
     busca = (args.get("busca") or "").strip()
     if busca:
+        if len(busca) > 100:
+            raise ErroValidacao("Busca excede 100 caracteres.")
         filtros["busca"] = busca
 
     data_inicio = (args.get("data_inicio") or "").strip()
@@ -123,6 +133,10 @@ def salvar_fotografia(arquivo):
     if not _extensao_permitida(arquivo.filename):
         raise ErroValidacao("Formato de imagem não permitido.")
     extensao = arquivo.filename.rsplit(".", 1)[-1].lower()
+    formato = _detectar_formato_imagem(arquivo)
+    extensoes_formato = {"jpeg": {"jpg", "jpeg"}, "png": {"png"}, "gif": {"gif"}, "webp": {"webp"}}
+    if formato is None or extensao not in extensoes_formato[formato]:
+        raise ErroValidacao("O conteúdo do arquivo não corresponde a uma imagem permitida.")
     nome = f"ocorr_{uuid.uuid4().hex}.{extensao}"
     arquivo.save(os.path.join(config.UPLOAD_FOLDER, nome))
     return nome
@@ -182,6 +196,7 @@ def _remover_arquivo(nome):
 
 def serializar(registro, pontos_cache=None):
     item = dict(registro)
+    item.pop("usuario_id", None)
     item["fotografia"] = (
         url_for("static", filename="uploads/" + registro["fotografia"])
         if registro["fotografia"]
@@ -216,6 +231,18 @@ def _extensao_permitida(nome_arquivo):
         "." in nome_arquivo
         and nome_arquivo.rsplit(".", 1)[1].lower() in config.ALLOWED_EXTENSIONS
     )
+
+
+def _detectar_formato_imagem(arquivo):
+    try:
+        imagem = Image.open(arquivo.stream)
+        formato = (imagem.format or "").lower()
+        imagem.verify()
+        return formato if formato in {"jpeg", "png", "gif", "webp"} else None
+    except (UnidentifiedImageError, OSError, ValueError):
+        return None
+    finally:
+        arquivo.stream.seek(0)
 
 
 def exportar_csv_ocorrencias(filtros=None):

@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, session, url_for
+from flask import Blueprint, current_app, jsonify, request, session, url_for
 
 import config
 from app.integrations import nominatim, openmeteo, overpass, sensor_gateway
@@ -35,21 +35,28 @@ def _requer_autenticacao():
 @api.post("/auth/login")
 def login():
     dados = request.get_json(silent=True) or {}
+    if not isinstance(dados, dict):
+        return jsonify({"erro": "Corpo JSON inválido."}), 400
     email = (dados.get("email") or "").strip().lower()
     senha = dados.get("senha") or ""
     if not email or not senha:
         return jsonify({"erro": "E-mail e senha são obrigatórios."}), 400
     try:
         usuario = auth_service.autenticar(email, senha)
-    except ErroValidacao as e:
+    except auth_service.ErroValidacao as e:
+        current_app.logger.warning("Falha de login de %s", request.remote_addr)
         return jsonify({"erro": e.mensagem}), e.status
     session["usuario_id"] = usuario["id"]
+    current_app.logger.info("Login efetuado pelo usuário %s", usuario["id"])
     return jsonify({"usuario": auth_service.serializar(usuario)})
 
 
 @api.post("/auth/logout")
 def logout():
+    usuario_id = session.get("usuario_id")
     session.pop("usuario_id", None)
+    if usuario_id:
+        current_app.logger.info("Logout efetuado pelo usuário %s", usuario_id)
     return jsonify({"ok": True})
 
 
@@ -79,10 +86,14 @@ def criar_usuario():
         return usuario
     if usuario.get("perfil") != "administrador":
         return jsonify({"erro": "Sem permissão."}), 403
+    dados = request.get_json(silent=True) or {}
+    if not isinstance(dados, dict):
+        return jsonify({"erro": "Corpo JSON inválido."}), 400
     try:
-        novo_id = auth_service.criar_usuario(request.get_json(silent=True) or {})
-    except ErroValidacao as e:
+        novo_id = auth_service.criar_usuario(dados)
+    except auth_service.ErroValidacao as e:
         return jsonify({"erro": e.mensagem}), e.status
+    current_app.logger.info("Usuário %s criado pelo administrador %s", novo_id, usuario["id"])
     return jsonify({"id": novo_id}), 201
 
 
@@ -117,6 +128,7 @@ def criar_ocorrencia():
         novo_id = ocorrencia_service.criar(formulario, arquivo)
     except ErroValidacao as e:
         return jsonify({"erro": e.mensagem}), e.status
+    current_app.logger.info("Ocorrência %s criada pelo usuário %s", novo_id, usuario["id"])
     return (
         jsonify({"id": novo_id, "url": url_for("pages.detalhe", ocorrencia_id=novo_id)}),
         201,
@@ -139,6 +151,7 @@ def atualizar_ocorrencia(ocorrencia_id):
         ocorrencia_service.atualizar(ocorrencia_id, dados, arquivo)
     except ErroValidacao as e:
         return jsonify({"erro": e.mensagem}), e.status
+    current_app.logger.info("Ocorrência %s atualizada pelo usuário %s", ocorrencia_id, usuario["id"])
     return jsonify({"id": ocorrencia_id})
 
 
@@ -153,6 +166,7 @@ def excluir_ocorrencia(ocorrencia_id):
         ocorrencia_service.excluir(ocorrencia_id)
     except ErroValidacao as e:
         return jsonify({"erro": e.mensagem}), e.status
+    current_app.logger.info("Ocorrência %s excluída pelo usuário %s", ocorrencia_id, usuario["id"])
     return jsonify({"id": ocorrencia_id, "excluida": True})
 
 

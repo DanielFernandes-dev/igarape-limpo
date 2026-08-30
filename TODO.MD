@@ -16,23 +16,23 @@ Lista de etapas para desenvolvimento do protótipo.
 | 2 | Monitoramento (V2) | ✅ **Concluída** | Ponto monitorado, histórico, filtros, dashboard |
 | 3 | Gestão (V2.1) | ✅ **Concluída** | Autenticação, perfis, permissões e status |
 | 4 | Dados (V2.2) | ✅ **Concluída** | Exportação CSV/GeoJSON e análises |
-| 5 | Qualidade e Segurança | ⏳ Próxima | Validações, testes, limites de arquivo |
-| 6 | Documentação e Apresentação | ⏳ Depois | README, API, arquitetura, demo |
-| 7 | Pesquisa e Teste de campo | ⏳ Depende de decisões | Fontes de dados, metodologia, coleta |
+| 5 | Qualidade e Segurança | ✅ **Concluída** | Validações, testes, limites de arquivo |
+| 6 | Documentação e Apresentação | ✅ **Concluída** | README, API, arquitetura, demo |
+| 7 | Pesquisa e Teste de campo | ⏳ **Próxima** | Fontes de dados, metodologia, coleta |
 | Futuro | Visão computacional | 🔮 Futuro | Classificação automática por imagem |
 | Futuro | Alertas | 🔮 Futuro | Detecção de tendências e notificações |
 
-## Fase atual: **FASE 5 — Qualidade e Segurança**
+## Fase atual: **FASE 7 — Pesquisa e Teste de campo**
 
 Próximos passos nesta fase (na ordem):
 
-1. Revisar validações de entrada e segurança de arquivos.
-2. Aumentar cobertura de testes automatizados.
-3. Revisar limites de upload e tipos permitidos.
-4. Implementar logs de eventos importantes.
-5. Preparar ambiente para homologação/testes de campo.
+1. Definir área inicial e fontes de dados.
+2. Validar metodologia e critérios com participantes responsáveis.
+3. Executar coleta de campo controlada.
+4. Avaliar precisão, usabilidade e comportamento em dispositivos reais.
+5. Registrar resultados e correções necessárias.
 
-Os itens desta fase estão marcados com `[ ] <FASE5>` no corpo abaixo.
+Os itens desta fase estão marcados com `[ ] <FASE7>` no corpo abaixo.
 
 ---
 
@@ -210,7 +210,7 @@ Etapa posterior.
 - [x] <FASE5> Validar arquivos enviados.
 - [x] <FASE5> Limitar tamanho das fotografias.
 - [x] <FASE5> Implementar tratamento adequado de erros.
-- [ ] <FASE5> Evitar exposição desnecessária de dados pessoais.
+- [x] <FASE5> Evitar exposição desnecessária de dados pessoais.
 - [ ] <FASE7> Testar diferentes dispositivos.
 - [ ] <FASE7> Testar conexão lenta.
 - [ ] <FASE7> Testar comportamento sem localização disponível.
@@ -221,27 +221,27 @@ Etapa posterior.
 
 - [x] <FASE6> Atualizar README.
 - [x] <FASE6> Documentar arquitetura.
-- [ ] <FASE6> Documentar banco de dados.
-- [ ] <FASE6> Documentar API.
-- [ ] <FASE6> Documentar metodologia de coleta.
-- [ ] <FASE6> Documentar critérios de classificação.
-- [ ] <FASE6> Registrar decisões técnicas.
-- [ ] <FASE6> Registrar limitações do protótipo.
-- [ ] <FASE6> Registrar resultados dos testes.
-- [ ] <FASE6> Documentar possíveis trabalhos futuros.
+- [x] <FASE6> Documentar banco de dados.
+- [x] <FASE6> Documentar API.
+- [x] <FASE6> Documentar metodologia de coleta.
+- [x] <FASE6> Documentar critérios de classificação.
+- [x] <FASE6> Registrar decisões técnicas.
+- [x] <FASE6> Registrar limitações do protótipo.
+- [x] <FASE6> Registrar resultados dos testes.
+- [x] <FASE6> Documentar possíveis trabalhos futuros.
 
 14. Apresentação final
 
-- [ ] <FASE6> Preparar demonstração do protótipo.
-- [ ] <FASE6> Preparar problema identificado.
-- [ ] <FASE6> Apresentar justificativa.
-- [ ] <FASE6> Apresentar solução.
-- [ ] <FASE6> Demonstrar registro de ocorrência.
-- [ ] <FASE6> Demonstrar mapa.
-- [ ] <FASE6> Demonstrar histórico.
-- [ ] <FASE6> Apresentar resultados da coleta.
-- [ ] <FASE6> Apresentar limitações.
-- [ ] <FASE6> Apresentar possibilidades futuras.
+- [x] <FASE6> Preparar demonstração do protótipo.
+- [x] <FASE6> Preparar problema identificado.
+- [x] <FASE6> Apresentar justificativa.
+- [x] <FASE6> Apresentar solução.
+- [x] <FASE6> Demonstrar registro de ocorrência.
+- [x] <FASE6> Demonstrar mapa.
+- [x] <FASE6> Demonstrar histórico.
+- [x] <FASE6> Apresentar resultados da coleta.
+- [x] <FASE6> Apresentar limitações.
+- [x] <FASE6> Apresentar possibilidades futuras.
 
 Ordem recomendada de desenvolvimento
 
@@ -291,6 +291,31 @@ A inteligência artificial é uma possível evolução do projeto, não um requi
 
 > Registro do que foi implementado em cada sessão, para acompanhamento
 > e para que não haja perda de contexto entre sessões.
+
+## Sessão 2026-08-30 (Fase 6 — Documentação e Apresentação)
+
+Concluído:
+
+- Criado `DOCUMENTACAO.md` com banco, API, metodologia, critérios, decisões, testes, limitações e trabalhos futuros.
+- Criado `APRESENTACAO.md` com estrutura, roteiro de demonstração, contingência e checklist.
+- Atualizado README com o estado implementado, testes e referências documentais.
+- Diferenciados resultados técnicos, dados seed e resultados de campo ainda não coletados.
+
+Próximo passo: **Fase 7 — Pesquisa e Teste de campo**.
+
+## Sessão 2026-08-30 (Fase 5 — Qualidade e Segurança)
+
+Concluído:
+
+- Corrigido o tratamento de credenciais inválidas, identificado pelos testes automatizados.
+- Removidos `senha_hash` e `usuario_id` das respostas públicas.
+- Adicionadas validações de tamanho para textos, credenciais e pesquisas.
+- Uploads agora validam extensão e conteúdo real da imagem com Pillow, mantendo o limite de 10 MB.
+- Adicionados cookies de sessão protegidos, cabeçalhos HTTP de segurança e erro 500 genérico na API.
+- Adicionados logs de login, logout, criação de usuário e operações sobre ocorrências sem dados sensíveis.
+- Criada suíte automatizada isolada do banco principal, cobrindo autenticação, filtros, exportações, uploads e páginas.
+
+Próximo passo: **Fase 6 — Documentação e Apresentação**.
 
 ## Sessão 2026-08-30 (Fase 4 — Dados V2.2)
 
