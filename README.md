@@ -132,8 +132,9 @@ igarape-limpo/
 │   ├── js/
 │   └── uploads/
 ├── tests/
+├── docs/
+│   └── obsidian/                 # documentação técnica navegável
 ├── ARQUITETURA.md
-├── DOCUMENTACAO.md
 ├── APRESENTACAO.md
 └── TODO.MD
 ```
@@ -202,7 +203,7 @@ Visão computacional e alertas permanecem como trabalhos futuros, posteriores à
 
 ## Documentos
 
+- [`docs/obsidian/00 - Início.md`](docs/obsidian/00%20-%20In%C3%ADcio.md): base de conhecimento navegável para abrir como cofre no Obsidian.
 - `ARQUITETURA.md`: componentes, fluxos, segurança e implantação.
-- `DOCUMENTACAO.md`: banco, API, metodologia, critérios e testes.
 - `APRESENTACAO.md`: roteiro de apresentação e demonstração.
 - `TODO.MD`: painel de fases e histórico de progresso.
