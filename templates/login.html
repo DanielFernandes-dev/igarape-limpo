@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Login — Igarapé Vivo{% endblock %}
+
+{% block conteudo %}
+<div class="auth-container">
+    <h2>Login</h2>
+
+    <form id="form-login" class="form">
+        <div class="campo">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" name="email" required autocomplete="email">
+        </div>
+
+        <div class="campo">
+            <label for="senha">Senha</label>
+            <input type="password" id="senha" name="senha" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" class="btn btn-primario">Entrar</button>
+        <p id="msg-login" class="msg"></p>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const form = document.getElementById("form-login");
+const msg = document.getElementById("msg-login");
+
+form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    msg.textContent = "Entrando...";
+    msg.className = "msg ok";
+
+    const email = document.getElementById("email").value.trim();
+    const senha = document.getElementById("senha").value;
+
+    try {
+        const resp = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, senha }),
+        });
+        const data = await resp.json();
+        if (!resp.ok) {
+            msg.textContent = data.erro || "Erro ao entrar.";
+            msg.className = "msg erro";
+            return;
+        }
+        window.location.href = "/";
+    } catch (err) {
+        msg.textContent = "Erro de conexão.";
+        msg.className = "msg erro";
+    }
+});
+</script>
+{% endblock %}

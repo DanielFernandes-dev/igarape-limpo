@@ -29,7 +29,11 @@ Desenvolver um protótipo capaz de:
 - estimar o nível de acúmulo;
 - apresentar as ocorrências em um mapa;
 - permitir consultar o histórico de um determinado ponto;
-- gerar informações básicas para análise dos locais mais recorrentes.
+- gerar informações básicas para análise dos locais mais recorrentes;
+- (evolução) filtrar e pesquisar ocorrências;
+- (evolução) acompanhar pontos monitorados e status das ocorrências;
+- (evolução) apresentar dashboard analítico com gráficos;
+- (evolução) exportar os dados para análise externa.
 
 Público-alvo
 
@@ -56,9 +60,9 @@ Servidor
    ↓
 Banco de dados
    ↓
-Mapa e dashboard
+Mapa, pontos monitorados e dashboard
    ↓
-Análise das ocorrências
+Análise, acompanhamento e exportação das ocorrências
 
 Registro de ocorrência
 
@@ -70,7 +74,9 @@ Cada ocorrência poderá conter:
 - fotografia;
 - tipo de resíduo;
 - nível estimado de acúmulo;
-- observações adicionais.
+- observações adicionais;
+- (evolução) ponto monitorado associado;
+- (evolução) status de acompanhamento (Nova, Em análise, Em atendimento, Resolvida, Descartada).
 
 Exemplo:
 
@@ -106,7 +112,9 @@ Uma possível representação:
 
 Ao selecionar um ponto, o usuário poderá visualizar as informações daquela ocorrência.
 
-Histórico
+Na evolução, o mapa passa a ser o principal ambiente de exploração, com filtros combináveis (tipo de resíduo, nível, período, local), pesquisa, exibição de pontos críticos, centralização no ponto selecionado e agrupamento de marcadores quando houver muitos registros.
+
+Histórico e ponto monitorado
 
 Um dos diferenciais do projeto será o acompanhamento temporal.
 
@@ -123,15 +131,26 @@ o sistema poderá armazenar várias observações:
 
 Isso permitirá identificar locais em que o acúmulo de resíduos é recorrente.
 
+Na evolução, cada local será associado a um **ponto monitorado**, com página própria contendo histórico, distribuição por tipo e nível, recorrência, status e fotografias — permitindo comparar o estado do mesmo local ao longo do tempo.
+
+Exemplo de interpretação:
+
+«"Este ponto apresentou 12 ocorrências nos últimos 3 meses e registrou nível alto de acúmulo em 4 ocasiões."»
+
 Dashboard
 
 O protótipo poderá apresentar indicadores como:
 
 - quantidade total de ocorrências;
+- ocorrências nos últimos 7 e 30 dias;
 - quantidade de ocorrências por tipo de resíduo;
-- quantidade de ocorrências por região;
+- quantidade de ocorrências por região/ponto;
 - pontos com maior recorrência;
-- evolução das ocorrências ao longo do tempo.
+- pontos críticos;
+- evolução das ocorrências ao longo do tempo;
+- ranking dos pontos e comparação entre períodos.
+
+O MVP já exibe um resumo inicial (ocorrências registradas, pontos monitorados, maior ocorrência e pontos críticos). A evolução adiciona gráficos temporais e por categoria.
 
 Exemplo:
 
@@ -180,6 +199,25 @@ A primeira versão deverá conter somente o necessário para validar a proposta:
 
 Funcionalidades como inteligência artificial, alertas automáticos e monitoramento por câmeras ficam para versões posteriores.
 
+Status do MVP — implementado
+
+O protótipo MVP está funcional e cobre o escopo acima:
+
+- registro de ocorrência com localização (Geolocation API ou clique no mapa);
+- upload de fotografia;
+- classificação de tipo de resíduo e nível de acúmulo;
+- persistência em SQLite;
+- mapa Leaflet com marcadores coloridos por nível de acúmulo;
+- página de detalhe de cada ocorrência;
+- cards de resumo e lista de ocorrências recentes;
+- API completa de CRUD (cadastrar, consultar, atualizar e excluir ocorrências);
+- exportação dos dados em CSV;
+- integrações auxiliares: hidrografia (Overpass), meteorologia (Open-Meteo), geocodificação (Nominatim) e gateway de sensores.
+
+O backend é organizado em camadas dentro do pacote `app/` (rotas, serviços e repositórios), com `create_app()` em `app/__init__.py` e os blueprints de páginas (`app/routes/pages.py`) e de API (`app/routes/api.py`).
+
+A evolução para o monitoramento (pontos, históricos, dashboard, filtros, gestão e exportação) está descrita nas versões V2 acima.
+
 Tecnologias
 
 Stack escolhida para o protótipo (MVP):
@@ -191,7 +229,16 @@ Stack escolhida para o protótipo (MVP):
 - Armazenamento: SQLite para as informações e pasta local para as fotografias enviadas;
 - Futuro: modelo de machine learning para análise das fotografias.
 
-A arquitetura prioriza simplicidade e facilidade de manutenção.
+Evoluções tecnológicas previstas (V2+):
+
+- clusterização de marcadores no mapa (plugin do Leaflet);
+- filtros e pesquisa por API;
+- dashboard analítico com gráficos;
+- exportação em CSV e, posteriormente, GeoJSON;
+- autenticação e perfis de usuário;
+- possível migração para PostgreSQL com suporte espacial conforme a escala.
+
+A arquitetura prioriza simplicidade e facilidade de manutenção. Detalhes completos estão no relatório de arquitetura (ARQUITETURA.md).
 
 Como executar
 
@@ -212,19 +259,39 @@ Evolução planejada
 
 Versão 1 — MVP
 
-Registro e visualização das ocorrências.
+Registro e visualização das ocorrências. *(implementado)*
 
-Versão 2 — Análise
+Versão 2 — Monitoramento
 
-Histórico, estatísticas e identificação de pontos recorrentes.
+Filtros, dashboard, pontos monitorados, histórico e identificação de recorrências.
+
+Versão 2.1 — Gestão
+
+Status das ocorrências, fluxo de acompanhamento, autenticação, perfis e permissões, além de melhoria na segurança dos arquivos.
+
+Versão 2.2 — Dados
+
+Exportação dos dados em CSV/GeoJSON e melhorias analíticas.
 
 Versão 3 — Inteligência
 
 Classificação automática de resíduos por imagem.
 
-Versão 4 — Monitoramento
+Versão 4 — Monitoramento automático
 
 Sistema de alertas baseado no aumento de resíduos e, futuramente, possibilidade de integração com câmeras ou outros sensores.
+
+Fluxo alvo da evolução
+
+O projeto amplia o fluxo central do MVP:
+
+> registrar → armazenar → localizar → visualizar
+
+para:
+
+> registrar → validar → localizar → visualizar → analisar → acompanhar → comparar → exportar
+
+A principal evolução estrutural é a introdução do conceito de **ponto monitorado**, associado a um histórico de ocorrências, permitindo acompanhar a frequência, a recorrência e a evolução temporal de cada local.
 
 ODS relacionados
 

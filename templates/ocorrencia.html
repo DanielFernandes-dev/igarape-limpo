@@ -3,7 +3,7 @@
 {% block title %}Ocorrência #{{ o.id }} — Igarapé Vivo{% endblock %}
 
 {% block conteudo %}
-<a class="voltar" href="{{ url_for('index') }}">&larr; Voltar ao mapa</a>
+<a class="voltar" href="{{ url_for('pages.index') }}">&larr; Voltar ao mapa</a>
 
 <article class="detalhe">
     <h2>Ocorrência #{{ "%03d" % o.id }}</h2>
@@ -31,6 +31,22 @@
         <dt>Data e horário</dt>
         <dd>{{ o.data_hora }}</dd>
 
+        <dt>Status</dt>
+        <dd>
+            <span id="status-atual">{{ o.status }}</span>
+            {% if current_user and current_user.perfil in ('moderador', 'administrador') %}
+            <form id="form-status" class="form-status">
+                <select id="novo-status" name="status">
+                    {% for s in status_ocorrencia %}
+                    <option value="{{ s }}" {{ 'selected' if o.status == s }}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-pequeno">Atualizar</button>
+            </form>
+            <p id="msg-status" class="msg"></p>
+            {% endif %}
+        </dd>
+
         <dt>Coordenadas</dt>
         <dd>{{ "%.5f" % o.latitude }}, {{ "%.5f" % o.longitude }}</dd>
 
@@ -50,4 +66,33 @@
     var cor = "{{ cor_niveis[o.nivel_acumulo] }}";
 </script>
 <script src="{{ url_for('static', filename='js/detalhe.js') }}"></script>
+<script>
+document.getElementById('form-status')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = document.getElementById('msg-status');
+    msg.textContent = 'Atualizando...';
+    msg.className = 'msg ok';
+
+    const status = document.getElementById('novo-status').value;
+    try {
+        const resp = await fetch(`/api/ocorrencias/{{ o.id }}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status }),
+        });
+        const data = await resp.json();
+        if (!resp.ok) {
+            msg.textContent = data.erro || 'Erro ao atualizar status.';
+            msg.className = 'msg erro';
+            return;
+        }
+        document.getElementById('status-atual').textContent = status;
+        msg.textContent = 'Status atualizado.';
+        msg.className = 'msg ok';
+    } catch (err) {
+        msg.textContent = 'Erro de conexão.';
+        msg.className = 'msg erro';
+    }
+});
+</script>
 {% endblock %}

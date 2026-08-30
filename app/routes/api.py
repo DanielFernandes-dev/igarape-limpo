@@ -1,0 +1,343 @@
+from flask import Blueprint, jsonify, request, session, url_for
+
+import config
+from app.integrations import nominatim, openmeteo, overpass, sensor_gateway
+from app.repositories import ocorrencia_repository, ponto_repository
+from app.services import (
+    auth_service,
+    estatistica_service,
+    integracao_service,
+    ocorrencia_service,
+    ponto_service,
+)
+from app.services.ocorrencia_service import ErroValidacao
+from app.utils import http
+
+api = Blueprint("api", __name__, url_prefix="/api")
+
+
+def _usuario_atual():
+    from flask import g
+
+    return getattr(g, "current_user", None)
+
+
+def _requer_autenticacao():
+    usuario = _usuario_atual()
+    if usuario is None:
+        return jsonify({"erro": "Não autenticado."}), 401
+    return usuario
+
+
+# ------------------ Autenticação ------------------
+
+
+@api.post("/auth/login")
+def login():
+    dados = request.get_json(silent=True) or {}
+    email = (dados.get("email") or "").strip().lower()
+    senha = dados.get("senha") or ""
+    if not email or not senha:
+        return jsonify({"erro": "E-mail e senha são obrigatórios."}), 400
+    try:
+        usuario = auth_service.autenticar(email, senha)
+    except ErroValidacao as e:
+        return jsonify({"erro": e.mensagem}), e.status
+    session["usuario_id"] = usuario["id"]
+    return jsonify({"usuario": auth_service.serializar(usuario)})
+
+
+@api.post("/auth/logout")
+def logout():
+    session.pop("usuario_id", None)
+    return jsonify({"ok": True})
+
+
+@api.get("/auth/me")
+def eu():
+    usuario = _usuario_atual()
+    if usuario is None:
+        return jsonify({"erro": "Não autenticado."}), 401
+    return jsonify({"usuario": auth_service.serializar(usuario)})
+
+
+@api.get("/auth/usuarios")
+def listar_usuarios():
+    usuario = _requer_autenticacao()
+    if isinstance(usuario, tuple):
+        return usuario
+    if usuario.get("perfil") not in ("moderador", "administrador"):
+        return jsonify({"erro": "Sem permissão."}), 403
+    itens = [auth_service.serializar(u) for u in auth_service.usuario_repository.listar_todos()]
+    return jsonify({"usuarios": itens})
+
+
+@api.post("/auth/usuarios")
+def criar_usuario():
+    usuario = _requer_autenticacao()
+    if isinstance(usuario, tuple):
+        return usuario
+    if usuario.get("perfil") != "administrador":
+        return jsonify({"erro": "Sem permissão."}), 403
+    try:
+        novo_id = auth_service.criar_usuario(request.get_json(silent=True) or {})
+    except ErroValidacao as e:
+        return jsonify({"erro": e.mensagem}), e.status
+    return jsonify({"id": novo_id}), 201
+
+
+# ------------------ Ocorrências ------------------
+
+
+@api.get("/ocorrencias")
+def listar_ocorrencias():
+    try:
+        filtros = ocorrencia_service.validar_filtros(request.args)
+    except ErroValidacao as e:
+        return jsonify({"erro": e.mensagem}), e.status
+    return jsonify(ocorrencia_service.listar(filtros))
+
+
+@api.get("/ocorrencias/<int:ocorrencia_id>")
+def obter_ocorrencia(ocorrencia_id):
+    r = ocorrencia_repository.obter_por_id(ocorrencia_id)
+    if r is None:
+        return jsonify({"erro": "Ocorrência não encontrada"}), 404
+    return jsonify(ocorrencia_service.serializar(r))
+
+
+@api.post("/ocorrencias")
+def criar_ocorrencia():
+    usuario = _requer_autenticacao()
+    if isinstance(usuario, tuple):
+        return usuario
+    formulario = request.form
+    arquivo = request.files.get("fotografia")
+    try:
+        novo_id = ocorrencia_service.criar(formulario, arquivo)
+    except ErroValidacao as e:
+        return jsonify({"erro": e.mensagem}), e.status
+    return (
+        jsonify({"id": novo_id, "url": url_for("pages.detalhe", ocorrencia_id=novo_id)}),
+        201,
+    )
+
+
+@api.put("/ocorrencias/<int:ocorrencia_id>")
+@api.patch("/ocorrencias/<int:ocorrencia_id>")
+def atualizar_ocorrencia(ocorrencia_id):
+    usuario = _requer_autenticacao()
+    if isinstance(usuario, tuple):
+        return usuario
+    if request.content_type and "application/json" in request.content_type:
+        dados = request.get_json(silent=True) or {}
+        arquivo = None
+    else:
+        dados = dict(request.form)
+        arquivo = request.files.get("fotografia")
+    try:
+        ocorrencia_service.atualizar(ocorrencia_id, dados, arquivo)
+    except ErroValidacao as e:
+        return jsonify({"erro": e.mensagem}), e.status
+    return jsonify({"id": ocorrencia_id})
+
+
+@api.delete("/ocorrencias/<int:ocorrencia_id>")
+def excluir_ocorrencia(ocorrencia_id):
+    usuario = _requer_autenticacao()
+    if isinstance(usuario, tuple):
+        return usuario
+    if usuario.get("perfil") not in ("moderador", "administrador"):
+        return jsonify({"erro": "Sem permissão."}), 403
+    try:
+        ocorrencia_service.excluir(ocorrencia_id)
+    except ErroValidacao as e:
+        return jsonify({"erro": e.mensagem}), e.status
+    return jsonify({"id": ocorrencia_id, "excluida": True})
+
+
+@api.errorhandler(413)
+def arquivo_grande(e):
+    return jsonify({"erro": "Arquivo muito grande. Máximo 10 MB."}), 413
+
+
+# ------------------ Pontos monitorados ------------------
+
+
+@api.get("/pontos")
+def listar_pontos():
+    return jsonify(ponto_service.listar_pontos())
+
+
+@api.get("/pontos/<int:ponto_id>")
+def obter_ponto(ponto_id):
+    resumo = ponto_service.obter_resumo_por_id(ponto_id)
+    if resumo is None:
+        return jsonify({"erro": "Ponto monitorado não encontrado"}), 404
+    return jsonify(resumo)
+
+
+@api.post("/pontos")
+def criar_ponto():
+    usuario = _requer_autenticacao()
+    if isinstance(usuario, tuple):
+        return usuario
+    if usuario.get("perfil") not in ("moderador", "administrador"):
+        return jsonify({"erro": "Sem permissão."}), 403
+    try:
+        novo_id = ponto_service.criar(request.form)
+    except ErroValidacao as e:
+        return jsonify({"erro": e.mensagem}), e.status
+    return jsonify({"id": novo_id, "url": url_for("pages.ponto", ponto_id=novo_id)}), 201
+
+
+@api.patch("/pontos/<int:ponto_id>")
+@api.put("/pontos/<int:ponto_id>")
+def atualizar_ponto(ponto_id):
+    usuario = _requer_autenticacao()
+    if isinstance(usuario, tuple):
+        return usuario
+    if usuario.get("perfil") not in ("moderador", "administrador"):
+        return jsonify({"erro": "Sem permissão."}), 403
+    try:
+        ponto_service.atualizar(ponto_id, request.form)
+    except ponto_service.PontoNaoEncontrado:
+        return jsonify({"erro": "Ponto monitorado não encontrado"}), 404
+    except ErroValidacao as e:
+        return jsonify({"erro": e.mensagem}), e.status
+    return jsonify({"id": ponto_id})
+
+
+@api.get("/pontos/<int:ponto_id>/historico")
+def historico_ponto(ponto_id):
+    resumo = ponto_service.obter_resumo_por_id(ponto_id)
+    if resumo is None:
+        return jsonify({"erro": "Ponto monitorado não encontrado"}), 404
+    return jsonify({"ocorrencias": resumo["ocorrencias"]})
+
+
+# ------------------ Dashboard ------------------
+
+
+@api.get("/dashboard/resumo")
+def dashboard_resumo():
+    return jsonify(estatistica_service.resumo())
+
+
+@api.get("/dashboard/series")
+def dashboard_series():
+    try:
+        periodo = int(request.args.get("dias", 30))
+    except (TypeError, ValueError):
+        periodo = 30
+    if not 1 <= periodo <= 365:
+        periodo = 30
+    return jsonify(estatistica_service.series(periodo))
+
+
+@api.get("/dashboard/ranking")
+def dashboard_ranking():
+    try:
+        limite = int(request.args.get("limite", 10))
+    except (TypeError, ValueError):
+        limite = 10
+    return jsonify({"ranking": estatistica_service.ranking(min(limite, 50))})
+
+
+# ------------------ Exportação ------------------
+
+
+@api.get("/export/ocorrencias.geojson")
+def exportar_ocorrencias_geojson():
+    return jsonify(ocorrencia_service.exportar_geojson_ocorrencias())
+
+
+# ------------------ Integrações ------------------
+
+
+@api.get("/integracao/hidrografia")
+def hidrografia():
+    try:
+        resultado = overpass.buscar_hidrografia(
+            config.BOUNDING_BOX,
+            trechos_maximo=config.MAX_HIDROGRAFIA_TRECHOS,
+        )
+        return jsonify(resultado)
+    except http.HttpError as e:
+        return jsonify({"erro": e.message}), 502
+
+
+@api.get("/integracao/meteo")
+def meteo():
+    lat = request.args.get("lat")
+    lon = request.args.get("lon")
+    if lat is None or lon is None:
+        return jsonify({"erro": "Parâmetros lat e lon são obrigatórios."}), 400
+    try:
+        resultado = openmeteo.buscar_clima(float(lat), float(lon))
+        return jsonify(resultado)
+    except http.HttpError as e:
+        return jsonify({"erro": e.message}), 502
+
+
+@api.get("/integracao/geocode")
+def geocode():
+    lat = request.args.get("lat")
+    lon = request.args.get("lon")
+    if lat is None or lon is None:
+        return jsonify({"erro": "Parâmetros lat e lon são obrigatórios."}), 400
+    try:
+        resultado = nominatim.buscar_local(float(lat), float(lon))
+        return jsonify(resultado)
+    except http.HttpError as e:
+        return jsonify({"erro": e.message}), 502
+
+
+@api.post("/integracao/sensores")
+def sensores():
+    corpo = request.get_json(silent=True) or {}
+    url = (corpo.get("url") or "").strip()
+    token = (corpo.get("token") or "").strip() or None
+    if not url:
+        return jsonify({"erro": "Informe a URL do gateway."}), 400
+    try:
+        estacoes = sensor_gateway.conectar_gateway(url, token)
+        return jsonify({"estacoes": estacoes})
+    except http.HttpError as e:
+        return jsonify({"erro": e.message}), 502
+
+
+@api.get("/integracao/status")
+def status_integracoes():
+    return jsonify(integracao_service.status_integracoes())
+
+
+@api.get("/export/ocorrencias.csv")
+def exportar_ocorrencias():
+    csv = ocorrencia_service.exportar_csv_ocorrencias()
+    nome = "ocorrencias.csv"
+    return _responder_csv(csv, nome)
+
+
+@api.post("/export/sensores.csv")
+def exportar_sensores():
+    corpo = request.get_json(silent=True) or {}
+    url = (corpo.get("url") or "").strip()
+    token = (corpo.get("token") or "").strip() or None
+    if not url:
+        return jsonify({"erro": "Informe a URL do gateway."}), 400
+    try:
+        csv = ocorrencia_service.exportar_csv_sensores(url, token)
+    except http.HttpError as e:
+        return jsonify({"erro": e.message}), 502
+    return _responder_csv(csv, "sensores.csv")
+
+
+def _responder_csv(conteudo, nome_arquivo):
+    from flask import Response
+
+    return Response(
+        conteudo,
+        mimetype="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={nome_arquivo}"},
+    )

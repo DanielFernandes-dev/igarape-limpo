@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Ponto — {{ p.nome }} — Igarapé Vivo{% endblock %}
+
+{% block conteudo %}
+<a class="voltar" href="{{ url_for('pages.index') }}">&larr; Voltar ao mapa</a>
+
+<article class="detalhe">
+    <h2>{{ p.nome }}</h2>
+    <p class="dica">
+        {% if p.status == 'Ativo' %}<span class="badge badge-ativo">Ativo</span>
+        {% else %}<span class="badge badge-inativo">Inativo</span>{% endif %}
+        {% if p.recorrente %}<span class="badge badge-atenção">Ponto recorrente</span>{% endif %}
+    </p>
+
+    {% if p.descricao %}<p>{{ p.descricao }}</p>{% endif %}
+
+    <section class="cards">
+        <div class="card">
+            <span class="card-valor">{{ p.total_ocorrencias }}</span>
+            <span class="card-rotulo">OCORRÊNCIAS</span>
+        </div>
+        <div class="card">
+            <span class="card-valor">{{ p.ultimo_nivel or "—" }}</span>
+            <span class="card-rotulo">ÚLTIMO NÍVEL</span>
+        </div>
+        <div class="card">
+            <span class="card-valor">{{ p.ultima_ocorrencia or "—" }}</span>
+            <span class="card-rotulo">ÚLTIMA OCORRÊNCIA</span>
+        </div>
+    </section>
+
+    <div id="mapa-ponto"></div>
+
+    <h3>Distribuição por tipo de resíduo</h3>
+    <ul class="distribuicao">
+        {% for tipo, qtde in p.por_tipo.items() %}
+        <li><span>{{ tipo }}</span><span>{{ qtde }}</span></li>
+        {% endfor %}
+    </ul>
+
+    <h3>Distribuição por nível de acúmulo</h3>
+    <ul class="distribuicao">
+        {% for nivel, qtde in p.por_nivel.items() %}
+        <li>
+            <span class="bolinha" style="background:{{ cor_niveis[nivel] }}"></span>
+            <span>{{ nivel }}</span><span>{{ qtde }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+
+    {% if p.recorrente %}
+    <p class="chamada">
+        Este ponto apresentou <b>{{ p.total_ocorrencias }}</b> ocorrências, acima do limite
+        de recorrência ({{ p.limiar_recorrencia }}), indicando acúmulo recorrente de resíduos.
+    </p>
+    {% endif %}
+
+    <h3>Histórico de ocorrências</h3>
+    {% if p.ocorrencias %}
+    <ul id="lista">
+        {% for o in p.ocorrencias %}
+        <li>
+            <a href="{{ url_for('pages.detalhe', ocorrencia_id=o.id) }}">Ocorrência #{{ "%03d" % o.id }}</a>
+            <span>{{ o.tipo_residuo }} · {{ o.nivel_acumulo }} · {{ o.status }} · {{ o.data_hora }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="sem-foto">Nenhuma ocorrência registrada neste ponto.</p>
+    {% endif %}
+</article>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    var ponto = {
+        lat: {{ p.latitude }},
+        lng: {{ p.longitude }}
+    };
+</script>
+<script src="{{ url_for('static', filename='js/ponto.js') }}"></script>
+{% endblock %}

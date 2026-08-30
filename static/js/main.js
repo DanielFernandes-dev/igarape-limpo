@@ -47,6 +47,16 @@ document.getElementById("btn-localizar").addEventListener("click", () => {
     );
 });
 
+document.getElementById("ponto_id")?.addEventListener("change", (e) => {
+    const opt = e.target.selectedOptions[0];
+    if (opt && opt.dataset.lat && opt.dataset.lng) {
+        const lat = parseFloat(opt.dataset.lat);
+        const lng = parseFloat(opt.dataset.lng);
+        definirPonto(lat, lng);
+        mensagem(`Ponto monitorado selecionado: ${opt.textContent}`, "ok");
+    }
+});
+
 const form = document.getElementById("form-ocorrencia");
 form.addEventListener("submit", async (e) => {
     e.preventDefault();

@@ -10,10 +10,17 @@
 <body>
     <header class="topo">
         <h1 class="logo">Igarapé Vivo</h1>
-        <nav class="nav">
-            <a href="{{ url_for('index') }}" class="{{ 'ativo' if request.endpoint == 'index' }}">Mapa</a>
-            <a href="{{ url_for('nova') }}" class="{{ 'ativo' if request.endpoint == 'nova' }}">Nova ocorrência</a>
-        </nav>
+<nav class="nav">
+    <a href="{{ url_for('pages.index') }}" class="{{ 'ativo' if request.endpoint == 'pages.index' }}">Mapa</a>
+    <a href="{{ url_for('pages.dashboard') }}" class="{{ 'ativo' if request.endpoint == 'pages.dashboard' }}">Dashboard</a>
+    <a href="{{ url_for('pages.nova') }}" class="{{ 'ativo' if request.endpoint == 'pages.nova' }}">Nova ocorrência</a>
+    {% if current_user %}
+        <span class="nav-user">{{ current_user.nome }} ({{ current_user.perfil }})</span>
+        <a href="#" id="link-logout" class="{{ 'ativo' if request.endpoint == 'pages.logout' }}">Sair</a>
+    {% else %}
+        <a href="{{ url_for('pages.login') }}" class="{{ 'ativo' if request.endpoint == 'pages.login' }}">Login</a>
+    {% endif %}
+</nav>
     </header>
 
     <main class="conteudo">
@@ -25,5 +32,12 @@
     </footer>
 
     {% block scripts %}{% endblock %}
+<script>
+document.getElementById('link-logout')?.addEventListener('click', async (e) => {
+    e.preventDefault();
+    await fetch('/logout', { method: 'POST' });
+    window.location.href = '/';
+});
+</script>
 </body>
 </html>

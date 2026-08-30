@@ -42,6 +42,9 @@ body {
 
 .nav a:hover { background: rgba(255,255,255,0.15); }
 .nav a.ativo { background: var(--primaria-escura); font-weight: 600; }
+.nav-user { color: var(--branco); padding: 0.75rem 1rem; font-size: 0.9rem; opacity: 0.9; }
+
+.auth-container { max-width: 420px; margin: 2rem auto; }
 
 .conteudo {
     flex: 1;
@@ -58,6 +61,68 @@ body {
     font-size: 0.85rem;
     background: var(--branco);
     border-top: 1px solid #e2e8f0;
+}
+
+/* Filtros */
+.filtros {
+    background: var(--branco);
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 1.5rem;
+}
+
+.form-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.filtro-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 140px;
+    flex: 1 1 160px;
+}
+
+.filtro-grupo label {
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--cinza);
+}
+
+.filtro-grupo input,
+.filtro-grupo select {
+    padding: 0.5rem 0.65rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    background: var(--branco);
+}
+
+.filtro-grupo-busca { flex: 2 1 220px; }
+
+.filtro-check {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.filtro-check input { width: auto; }
+
+.filtro-acoes {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+@media (max-width: 760px) {
+    .form-filtros { flex-direction: column; }
+    .filtro-acoes { width: 100%; }
+    .filtro-acoes .btn { flex: 1; }
 }
 
 /* Cards de resumo */
@@ -220,6 +285,33 @@ input:focus, select:focus, textarea:focus {
     gap: 0.5rem 1rem;
     margin: 1rem 0;
 }
+
+.form-status {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.form-status select {
+    padding: 0.4rem 0.5rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: var(--branco);
+}
+
+.btn-pequeno {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    background: var(--primaria);
+    color: var(--branco);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-pequeno:hover { background: var(--primaria-escura); }
 
 .info dt { font-weight: 600; color: var(--cinza); }
 .info dd { margin: 0; }

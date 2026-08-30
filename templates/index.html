@@ -3,6 +3,60 @@
 {% block title %}Mapa — Igarapé Vivo{% endblock %}
 
 {% block conteudo %}
+<section class="filtros">
+    <form id="form-filtros" class="form-filtros">
+        <div class="filtro-grupo">
+            <label for="f-tipo">Tipo de resíduo</label>
+            <select id="f-tipo" name="tipo_residuo">
+                <option value="">Todos</option>
+                {% for t in tipos_residuo %}
+                <option value="{{ t }}">{{ t }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="filtro-grupo">
+            <label for="f-nivel">Nível de acúmulo</label>
+            <select id="f-nivel" name="nivel_acumulo">
+                <option value="">Todos</option>
+                {% for n in niveis_acumulo %}
+                <option value="{{ n }}">{{ n }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="filtro-grupo">
+            <label for="f-ponto">Ponto monitorado</label>
+            <select id="f-ponto" name="ponto_id">
+                <option value="">Todos</option>
+                {% for p in pontos %}
+                <option value="{{ p.id }}">{{ p.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="filtro-grupo">
+            <label for="f-inicio">Data início</label>
+            <input type="date" id="f-inicio" name="data_inicio">
+        </div>
+        <div class="filtro-grupo">
+            <label for="f-fim">Data fim</label>
+            <input type="date" id="f-fim" name="data_fim">
+        </div>
+        <div class="filtro-grupo filtro-grupo-busca">
+            <label for="f-busca">Local / observação</label>
+            <input type="text" id="f-busca" name="busca" placeholder="Buscar...">
+        </div>
+        <div class="filtro-grupo filtro-check">
+            <label>
+                <input type="checkbox" id="f-criticos" name="apenas_criticos">
+                Apenas pontos críticos
+            </label>
+        </div>
+        <div class="filtro-acoes">
+            <button type="submit" class="btn btn-primario">Aplicar filtros</button>
+            <button type="button" id="btn-limpar-filtros" class="btn">Limpar</button>
+        </div>
+    </form>
+</section>
+
 <section class="cards">
     <div class="card">
         <span class="card-valor" id="contador-ocorrencias">—</span>
@@ -40,5 +94,8 @@
 
 {% block scripts %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
 <script src="{{ url_for('static', filename='js/map.js') }}"></script>
 {% endblock %}

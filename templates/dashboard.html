@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — Igarapé Vivo{% endblock %}
+
+{% block conteudo %}
+<h2>Dashboard</h2>
+
+<section class="cards">
+    <div class="card">
+        <span class="card-valor" id="d-total-ocorrencias">—</span>
+        <span class="card-rotulo">TOTAL DE OCORRÊNCIAS</span>
+    </div>
+    <div class="card">
+        <span class="card-valor" id="d-7dias">—</span>
+        <span class="card-rotulo">ÚLTIMOS 7 DIAS</span>
+    </div>
+    <div class="card">
+        <span class="card-valor" id="d-30dias">—</span>
+        <span class="card-rotulo">ÚLTIMOS 30 DIAS</span>
+    </div>
+    <div class="card">
+        <span class="card-valor" id="d-pontos-ativos">—</span>
+        <span class="card-rotulo">PONTOS ATIVOS</span>
+    </div>
+    <div class="card">
+        <span class="card-valor" id="d-pontos-criticos">—</span>
+        <span class="card-rotulo">PONTOS CRÍTICOS</span>
+    </div>
+    <div class="card">
+        <span class="card-valor" id="d-residuo">—</span>
+        <span class="card-rotulo">RESÍDUO MAIS FREQUENTE</span>
+    </div>
+    <div class="card">
+        <span class="card-valor" id="d-local">—</span>
+        <span class="card-rotulo">LOCAL COM MAIS OCORRÊNCIAS</span>
+    </div>
+    <div class="card">
+        <span class="card-valor" id="d-recorrentes">—</span>
+        <span class="card-rotulo">OCORRÊNCIAS RECORRENTES</span>
+    </div>
+</section>
+
+<div class="graficos">
+    <div class="grafico-box">
+        <h3>Ocorrências por tipo de resíduo</h3>
+        <canvas id="grafico-tipo"></canvas>
+    </div>
+    <div class="grafico-box">
+        <h3>Ocorrências por nível de acúmulo</h3>
+        <canvas id="grafico-nivel"></canvas>
+    </div>
+    <div class="grafico-box grafico-box-largo">
+        <h3>Evolução das ocorrências (30 dias)</h3>
+        <canvas id="grafico-evolucao"></canvas>
+    </div>
+    <div class="grafico-box grafico-box-largo">
+        <h3>Ranking de pontos mais críticos</h3>
+        <canvas id="grafico-ranking"></canvas>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

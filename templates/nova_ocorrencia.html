@@ -14,6 +14,18 @@
         </div>
 
         <div class="campo">
+            <label for="ponto_id">Ponto monitorado (opcional)</label>
+            <select id="ponto_id" name="ponto_id">
+                <option value="">Nenhum / Não informado</option>
+                {% for p in pontos %}
+                <option value="{{ p.id }}"
+                    data-lat="{{ p.latitude }}"
+                    data-lng="{{ p.longitude }}">{{ p.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="campo">
             <label>Localização</label>
             <div class="coordenadas">
                 <input type="number" step="any" id="latitude" name="latitude" placeholder="Latitude" required>
