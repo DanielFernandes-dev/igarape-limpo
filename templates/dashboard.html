@@ -3,66 +3,36 @@
 {% block title %}Dashboard — Igarapé Vivo{% endblock %}
 
 {% block conteudo %}
-<div class="exportacoes">
-    <a href="/api/export/ocorrencias.csv" class="btn btn-exportar">Exportar CSV</a>
-    <a href="/api/export/ocorrencias.geojson" class="btn btn-exportar">Exportar GeoJSON</a>
-</div>
+<header class="page-header">
+    <div class="page-header-copy">
+        <p class="eyebrow">Leitura consolidada</p>
+        <h1>Painel de monitoramento</h1>
+        <p class="page-intro">Indicadores para reconhecer padrões, comparar períodos e priorizar os pontos que pedem atenção.</p>
+    </div>
+    <div class="page-actions">
+        <a href="/api/export/ocorrencias.csv" class="btn btn-exportar">Baixar CSV</a>
+        <a href="/api/export/ocorrencias.geojson" class="btn btn-exportar">Baixar GeoJSON</a>
+    </div>
+</header>
 
-<h2>Dashboard</h2>
-
-<section class="cards">
-    <div class="card">
-        <span class="card-valor" id="d-total-ocorrencias">—</span>
-        <span class="card-rotulo">TOTAL DE OCORRÊNCIAS</span>
-    </div>
-    <div class="card">
-        <span class="card-valor" id="d-7dias">—</span>
-        <span class="card-rotulo">ÚLTIMOS 7 DIAS</span>
-    </div>
-    <div class="card">
-        <span class="card-valor" id="d-30dias">—</span>
-        <span class="card-rotulo">ÚLTIMOS 30 DIAS</span>
-    </div>
-    <div class="card">
-        <span class="card-valor" id="d-pontos-ativos">—</span>
-        <span class="card-rotulo">PONTOS ATIVOS</span>
-    </div>
-    <div class="card">
-        <span class="card-valor" id="d-pontos-criticos">—</span>
-        <span class="card-rotulo">PONTOS CRÍTICOS</span>
-    </div>
-    <div class="card">
-        <span class="card-valor" id="d-residuo">—</span>
-        <span class="card-rotulo">RESÍDUO MAIS FREQUENTE</span>
-    </div>
-    <div class="card">
-        <span class="card-valor" id="d-local">—</span>
-        <span class="card-rotulo">LOCAL COM MAIS OCORRÊNCIAS</span>
-    </div>
-    <div class="card">
-        <span class="card-valor" id="d-recorrentes">—</span>
-        <span class="card-rotulo">OCORRÊNCIAS RECORRENTES</span>
-    </div>
+<section class="cards" aria-label="Indicadores gerais">
+    <div class="card"><span class="card-valor" id="d-total-ocorrencias">—</span><span class="card-rotulo">TOTAL DE OCORRÊNCIAS</span><span class="card-nota">base completa</span></div>
+    <div class="card"><span class="card-valor" id="d-7dias">—</span><span class="card-rotulo">ÚLTIMOS 7 DIAS</span><span class="card-nota">atividade recente</span></div>
+    <div class="card"><span class="card-valor" id="d-30dias">—</span><span class="card-rotulo">ÚLTIMOS 30 DIAS</span><span class="card-nota">janela mensal</span></div>
+    <div class="card"><span class="card-valor" id="d-pontos-ativos">—</span><span class="card-rotulo">PONTOS ATIVOS</span><span class="card-nota">em monitoramento</span></div>
+    <div class="card"><span class="card-valor" id="d-pontos-criticos">—</span><span class="card-rotulo">PONTOS RECORRENTES</span><span class="card-nota">acima do limiar</span></div>
+    <div class="card"><span class="card-valor" id="d-residuo">—</span><span class="card-rotulo">RESÍDUO MAIS FREQUENTE</span><span class="card-nota">categoria predominante</span></div>
+    <div class="card"><span class="card-valor" id="d-local">—</span><span class="card-rotulo">LOCAL COM MAIS REGISTROS</span><span class="card-nota">concentração observada</span></div>
+    <div class="card"><span class="card-valor" id="d-recorrentes">—</span><span class="card-rotulo">OCORRÊNCIAS RECORRENTES</span><span class="card-nota">pontos no limiar</span></div>
 </section>
 
-<div class="graficos">
-    <div class="grafico-box">
-        <h3>Ocorrências por tipo de resíduo</h3>
-        <canvas id="grafico-tipo"></canvas>
-    </div>
-    <div class="grafico-box">
-        <h3>Ocorrências por nível de acúmulo</h3>
-        <canvas id="grafico-nivel"></canvas>
-    </div>
-    <div class="grafico-box grafico-box-largo">
-        <h3>Evolução das ocorrências (30 dias)</h3>
-        <canvas id="grafico-evolucao"></canvas>
-    </div>
-    <div class="grafico-box grafico-box-largo">
-        <h3>Ranking de pontos mais críticos</h3>
-        <canvas id="grafico-ranking"></canvas>
-    </div>
-</div>
+<div id="dashboard-status" class="msg" role="status" aria-live="polite"></div>
+<section class="graficos" aria-label="Gráficos analíticos">
+    <article class="grafico-box"><h3>Tipos de resíduo</h3><canvas id="grafico-tipo" role="img" aria-label="Gráfico de ocorrências por tipo de resíduo"></canvas></article>
+    <article class="grafico-box"><h3>Níveis de acúmulo</h3><canvas id="grafico-nivel" role="img" aria-label="Gráfico de ocorrências por nível de acúmulo"></canvas></article>
+    <article class="grafico-box grafico-box-largo"><h3>Evolução nos últimos 30 dias</h3><canvas id="grafico-evolucao" role="img" aria-label="Gráfico da evolução diária de ocorrências"></canvas></article>
+    <article class="grafico-box grafico-box-largo"><h3>Ranking de pontos monitorados</h3><canvas id="grafico-ranking" role="img" aria-label="Gráfico do ranking de pontos por ocorrências"></canvas></article>
+</section>
 {% endblock %}
 
 {% block scripts %}

@@ -3,87 +3,54 @@
 {% block title %}Ponto — {{ p.nome }} — Igarapé Vivo{% endblock %}
 
 {% block conteudo %}
-<a class="voltar" href="{{ url_for('pages.index') }}">&larr; Voltar ao mapa</a>
+<a class="voltar" href="{{ url_for('pages.index') }}">← Voltar ao mapa</a>
+<header class="page-header">
+    <div class="page-header-copy">
+        <p class="eyebrow">Ponto monitorado #{{ p.id }}</p>
+        <h1>{{ p.nome }}</h1>
+        <p class="page-intro">{{ p.descricao or "Acompanhamento histórico desta localização." }}</p>
+    </div>
+    <div class="page-actions">
+        <a href="/api/export/ocorrencias.csv?ponto_id={{ p.id }}" class="btn btn-exportar">Baixar CSV</a>
+        <a href="/api/export/ocorrencias.geojson?ponto_id={{ p.id }}" class="btn btn-exportar">Baixar GeoJSON</a>
+    </div>
+</header>
 
 <article class="detalhe">
-    <h2>{{ p.nome }}</h2>
-    <p class="dica">
-        {% if p.status == 'Ativo' %}<span class="badge badge-ativo">Ativo</span>
-        {% else %}<span class="badge badge-inativo">Inativo</span>{% endif %}
-        {% if p.recorrente %}<span class="badge badge-atenção">Ponto recorrente</span>{% endif %}
-    </p>
+    <div class="ponto-cabecalho">
+        <div class="ponto-badges">
+            {% if p.status == 'Ativo' %}<span class="badge badge-ativo">Ponto ativo</span>{% else %}<span class="badge badge-inativo">Ponto inativo</span>{% endif %}
+            {% if p.recorrente %}<span class="badge badge-atencao">Recorrente</span>{% endif %}
+        </div>
+    </div>
 
-    {% if p.descricao %}<p>{{ p.descricao }}</p>{% endif %}
-
-    <section class="exportacoes">
-        <a href="/api/export/ocorrencias.csv?ponto_id={{ p.id }}" class="btn btn-exportar">Exportar CSV</a>
-        <a href="/api/export/ocorrencias.geojson?ponto_id={{ p.id }}" class="btn btn-exportar">Exportar GeoJSON</a>
+    <section class="cards" aria-label="Resumo do ponto">
+        <div class="card"><span class="card-valor">{{ p.total_ocorrencias }}</span><span class="card-rotulo">OCORRÊNCIAS</span><span class="card-nota">histórico completo</span></div>
+        <div class="card"><span class="card-valor">{{ p.ultimo_nivel or "—" }}</span><span class="card-rotulo">ÚLTIMO NÍVEL</span><span class="card-nota">observação mais recente</span></div>
+        <div class="card"><span class="card-valor">{{ p.ultima_ocorrencia or "—" }}</span><span class="card-rotulo">ÚLTIMA OCORRÊNCIA</span><span class="card-nota">data do registro</span></div>
     </section>
 
-    <section class="cards">
-        <div class="card">
-            <span class="card-valor">{{ p.total_ocorrencias }}</span>
-            <span class="card-rotulo">OCORRÊNCIAS</span>
-        </div>
-        <div class="card">
-            <span class="card-valor">{{ p.ultimo_nivel or "—" }}</span>
-            <span class="card-rotulo">ÚLTIMO NÍVEL</span>
-        </div>
-        <div class="card">
-            <span class="card-valor">{{ p.ultima_ocorrencia or "—" }}</span>
-            <span class="card-rotulo">ÚLTIMA OCORRÊNCIA</span>
-        </div>
+    <section class="detalhe-mapa" aria-labelledby="titulo-mapa-ponto">
+        <div class="painel-cabecalho"><div><h2 id="titulo-mapa-ponto">Posição do ponto</h2><p>Referência geográfica usada para agrupar o histórico.</p></div></div>
+        <div id="mapa-ponto" role="region" aria-label="Mapa do ponto monitorado"></div>
     </section>
 
-    <div id="mapa-ponto"></div>
+    <div class="analise-grid">
+        <section class="mini-painel"><h3>Distribuição por tipo</h3><ul class="distribuicao">{% for tipo, qtde in p.por_tipo.items() %}<li><span></span><span>{{ tipo }}</span><span>{{ qtde }}</span></li>{% else %}<li class="estado-vazio">Sem dados.</li>{% endfor %}</ul></section>
+        <section class="mini-painel"><h3>Distribuição por nível</h3><ul class="distribuicao">{% for nivel, qtde in p.por_nivel.items() %}<li><span class="bolinha" style="background:{{ cor_niveis[nivel] }}"></span><span>{{ nivel }}</span><span>{{ qtde }}</span></li>{% else %}<li class="estado-vazio">Sem dados.</li>{% endfor %}</ul></section>
+    </div>
 
-    <h3>Distribuição por tipo de resíduo</h3>
-    <ul class="distribuicao">
-        {% for tipo, qtde in p.por_tipo.items() %}
-        <li><span>{{ tipo }}</span><span>{{ qtde }}</span></li>
-        {% endfor %}
-    </ul>
+    {% if p.recorrente %}<p class="chamada">Este ponto apresentou <strong>{{ p.total_ocorrencias }}</strong> ocorrências, atingindo o limiar de recorrência de {{ p.limiar_recorrencia }} registros.</p>{% endif %}
 
-    <h3>Distribuição por nível de acúmulo</h3>
-    <ul class="distribuicao">
-        {% for nivel, qtde in p.por_nivel.items() %}
-        <li>
-            <span class="bolinha" style="background:{{ cor_niveis[nivel] }}"></span>
-            <span>{{ nivel }}</span><span>{{ qtde }}</span>
-        </li>
-        {% endfor %}
-    </ul>
-
-    {% if p.recorrente %}
-    <p class="chamada">
-        Este ponto apresentou <b>{{ p.total_ocorrencias }}</b> ocorrências, acima do limite
-        de recorrência ({{ p.limiar_recorrencia }}), indicando acúmulo recorrente de resíduos.
-    </p>
-    {% endif %}
-
-    <h3>Histórico de ocorrências</h3>
-    {% if p.ocorrencias %}
-    <ul id="lista">
-        {% for o in p.ocorrencias %}
-        <li>
-            <a href="{{ url_for('pages.detalhe', ocorrencia_id=o.id) }}">Ocorrência #{{ "%03d" % o.id }}</a>
-            <span>{{ o.tipo_residuo }} · {{ o.nivel_acumulo }} · {{ o.status }} · {{ o.data_hora }}</span>
-        </li>
-        {% endfor %}
-    </ul>
-    {% else %}
-    <p class="sem-foto">Nenhuma ocorrência registrada neste ponto.</p>
-    {% endif %}
+    <section class="lista-card" aria-labelledby="titulo-historico">
+        <div class="painel-cabecalho"><div><h2 id="titulo-historico">Histórico de ocorrências</h2><p>Registros associados a esta localização.</p></div></div>
+        {% if p.ocorrencias %}<ul id="lista">{% for o in p.ocorrencias %}<li><a href="{{ url_for('pages.detalhe', ocorrencia_id=o.id) }}">Ocorrência #{{ "%03d" % o.id }}</a><span>{{ o.tipo_residuo }} · {{ o.nivel_acumulo }} · {{ o.status }} · {{ o.data_hora }}</span></li>{% endfor %}</ul>{% else %}<p class="estado-vazio">Nenhuma ocorrência registrada neste ponto.</p>{% endif %}
+    </section>
 </article>
 {% endblock %}
 
 {% block scripts %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-    var ponto = {
-        lat: {{ p.latitude }},
-        lng: {{ p.longitude }}
-    };
-</script>
+<script>var ponto = { lat: {{ p.latitude }}, lng: {{ p.longitude }} };</script>
 <script src="{{ url_for('static', filename='js/ponto.js') }}"></script>
 {% endblock %}

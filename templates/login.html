@@ -4,22 +4,22 @@
 
 {% block conteudo %}
 <div class="auth-container">
-    <h2>Login</h2>
-
-    <form id="form-login" class="form">
-        <div class="campo">
-            <label for="email">E-mail</label>
-            <input type="email" id="email" name="email" required autocomplete="email">
-        </div>
-
-        <div class="campo">
-            <label for="senha">Senha</label>
-            <input type="password" id="senha" name="senha" required autocomplete="current-password">
-        </div>
-
-        <button type="submit" class="btn btn-primario">Entrar</button>
-        <p id="msg-login" class="msg"></p>
-    </form>
+    <div class="auth-shell">
+        <section class="auth-contexto">
+            <p class="eyebrow">Área de gestão</p>
+            <h1>Dados ambientais com contexto.</h1>
+            <p>Entre para registrar ocorrências e, conforme seu perfil, acompanhar o status dos registros.</p>
+        </section>
+        <form id="form-login" class="form auth-form">
+            <p class="eyebrow">Acesso seguro</p>
+            <h2>Entrar na plataforma</h2>
+            <div class="campo"><label for="email">E-mail</label><input type="email" id="email" name="email" required autocomplete="email" placeholder="voce@exemplo.com"></div>
+            <div class="campo"><label for="senha">Senha</label><input type="password" id="senha" name="senha" required autocomplete="current-password" placeholder="Sua senha"></div>
+            <button type="submit" id="btn-login" class="btn btn-primario">Entrar</button>
+            <p id="msg-login" class="msg" role="status" aria-live="polite"></p>
+            <p class="auth-nota">O acesso é destinado a participantes autorizados do monitoramento.</p>
+        </form>
+    </div>
 </div>
 {% endblock %}
 
@@ -27,32 +27,19 @@
 <script>
 const form = document.getElementById("form-login");
 const msg = document.getElementById("msg-login");
-
+const botao = document.getElementById("btn-login");
 form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    msg.textContent = "Entrando...";
-    msg.className = "msg ok";
-
+    e.preventDefault(); botao.disabled = true; botao.textContent = "Entrando...";
+    msg.textContent = "Verificando credenciais..."; msg.className = "msg ok";
     const email = document.getElementById("email").value.trim();
     const senha = document.getElementById("senha").value;
-
     try {
-        const resp = await fetch("/api/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, senha }),
-        });
+        const resp = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, senha }) });
         const data = await resp.json();
-        if (!resp.ok) {
-            msg.textContent = data.erro || "Erro ao entrar.";
-            msg.className = "msg erro";
-            return;
-        }
+        if (!resp.ok) { msg.textContent = data.erro || "Não foi possível entrar."; msg.className = "msg erro"; return; }
         window.location.href = "/";
-    } catch (err) {
-        msg.textContent = "Erro de conexão.";
-        msg.className = "msg erro";
-    }
+    } catch (err) { msg.textContent = "Não foi possível conectar ao servidor."; msg.className = "msg erro"; }
+    finally { botao.disabled = false; botao.textContent = "Entrar"; }
 });
 </script>
 {% endblock %}

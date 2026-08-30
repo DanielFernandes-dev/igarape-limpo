@@ -1,4 +1,5 @@
-const mapa = L.map("mapa-detalhe").setView([lat, lng], 16);
+const mapa = L.map("mapa-detalhe", { zoomControl: false }).setView([lat, lng], 16);
+L.control.zoom({ position: "bottomright" }).addTo(mapa);
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
@@ -7,8 +8,8 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 
 L.circleMarker([lat, lng], {
     radius: 10,
-    color: cor,
+    color: "#ffffff",
     fillColor: cor,
-    fillOpacity: 0.7,
-    weight: 2,
+    fillOpacity: 0.92,
+    weight: 3,
 }).addTo(mapa);

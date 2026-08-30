@@ -1,4 +1,5 @@
-const mapa = L.map("mapa-ponto").setView([ponto.lat, ponto.lng], 15);
+const mapa = L.map("mapa-ponto", { zoomControl: false }).setView([ponto.lat, ponto.lng], 15);
+L.control.zoom({ position: "bottomright" }).addTo(mapa);
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
@@ -7,8 +8,8 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 
 L.circleMarker([ponto.lat, ponto.lng], {
     radius: 10,
-    color: "#0e7490",
-    fillColor: "#0e7490",
-    fillOpacity: 0.7,
-    weight: 2,
-}).addTo(mapa).bindPopup("<strong>Ponto monitorado</strong>").openPopup();
+    color: "#ffffff",
+    fillColor: "#14747b",
+    fillOpacity: 0.92,
+    weight: 3,
+}).addTo(mapa).bindPopup("<strong>Ponto monitorado</strong><br><span>Referência do histórico</span>").openPopup();

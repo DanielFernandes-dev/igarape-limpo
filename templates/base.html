@@ -3,38 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#123c32">
+    <meta name="description" content="Monitoramento colaborativo de resíduos em corpos d'água urbanos.">
     <title>{% block title %}Igarapé Vivo{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ui.css') }}">
+    {% block styles %}{% endblock %}
 </head>
 <body>
+    <a class="skip-link" href="#conteudo-principal">Ir para o conteúdo</a>
     <header class="topo">
-        <h1 class="logo">Igarapé Vivo</h1>
-<nav class="nav">
-    <a href="{{ url_for('pages.index') }}" class="{{ 'ativo' if request.endpoint == 'pages.index' }}">Mapa</a>
-    <a href="{{ url_for('pages.dashboard') }}" class="{{ 'ativo' if request.endpoint == 'pages.dashboard' }}">Dashboard</a>
-    <a href="{{ url_for('pages.nova') }}" class="{{ 'ativo' if request.endpoint == 'pages.nova' }}">Nova ocorrência</a>
-    {% if current_user %}
-        <span class="nav-user">{{ current_user.nome }} ({{ current_user.perfil }})</span>
-        <a href="#" id="link-logout" class="{{ 'ativo' if request.endpoint == 'pages.logout' }}">Sair</a>
-    {% else %}
-        <a href="{{ url_for('pages.login') }}" class="{{ 'ativo' if request.endpoint == 'pages.login' }}">Login</a>
-    {% endif %}
-</nav>
+        <div class="topo-inner">
+            <a class="marca" href="{{ url_for('pages.index') }}" aria-label="Igarapé Vivo, página inicial">
+                <svg class="marca-simbolo" viewBox="0 0 48 48" aria-hidden="true">
+                    <path d="M39 7C23 8 11 16 9 31c8-5 14-6 23-7-8 3-14 7-18 14 9 4 21 1 26-9 4-8 1-17-1-22Z"/>
+                    <path class="marca-rio" d="M9 39c8-10 16-13 29-16"/>
+                </svg>
+                <span><strong>Igarapé</strong><small>Vivo</small></span>
+            </a>
+            <nav class="nav" aria-label="Navegação principal">
+                <a href="{{ url_for('pages.index') }}" class="{{ 'ativo' if request.endpoint in ('pages.index', 'pages.detalhe', 'pages.ponto') }}" {% if request.endpoint in ('pages.index', 'pages.detalhe', 'pages.ponto') %}aria-current="page"{% endif %}>Mapa</a>
+                <a href="{{ url_for('pages.dashboard') }}" class="{{ 'ativo' if request.endpoint == 'pages.dashboard' }}" {% if request.endpoint == 'pages.dashboard' %}aria-current="page"{% endif %}>Dashboard</a>
+                <a href="{{ url_for('pages.nova') }}" class="nav-destaque {{ 'ativo' if request.endpoint == 'pages.nova' }}" {% if request.endpoint == 'pages.nova' %}aria-current="page"{% endif %}>Nova ocorrência</a>
+            </nav>
+            <div class="conta">
+                {% if current_user %}
+                    <span class="avatar" aria-hidden="true">{{ current_user.nome[0] }}</span>
+                    <span class="nav-user"><strong>{{ current_user.nome }}</strong><small>{{ current_user.perfil }}</small></span>
+                    <button type="button" id="link-logout" class="btn-sair">Sair</button>
+                {% else %}
+                    <a href="{{ url_for('pages.login') }}" class="btn-login {{ 'ativo' if request.endpoint == 'pages.login' }}">Entrar</a>
+                {% endif %}
+            </div>
+        </div>
     </header>
 
-    <main class="conteudo">
+    <main class="conteudo" id="conteudo-principal" tabindex="-1">
         {% block conteudo %}{% endblock %}
     </main>
 
     <footer class="rodape">
-        Monitoramento colaborativo de resíduos em corpos d'água urbanos
+        <div class="rodape-inner">
+            <span class="rodape-marca">Igarapé Vivo</span>
+            <span>Dados locais para observar, comparar e cuidar.</span>
+        </div>
     </footer>
 
     {% block scripts %}{% endblock %}
 <script>
 document.getElementById('link-logout')?.addEventListener('click', async (e) => {
-    e.preventDefault();
+    e.currentTarget.disabled = true;
     await fetch('/logout', { method: 'POST' });
     window.location.href = '/';
 });

@@ -3,76 +3,92 @@
 {% block title %}Nova ocorrência — Igarapé Vivo{% endblock %}
 
 {% block conteudo %}
-<h2>Registrar ocorrência</h2>
+<header class="page-header">
+    <div class="page-header-copy">
+        <p class="eyebrow">Novo registro de campo</p>
+        <h1>Registrar ocorrência</h1>
+        <p class="page-intro">Informe o local, classifique o resíduo e revise a posição no mapa antes de enviar.</p>
+    </div>
+    <div class="page-actions"><a class="btn btn-secundario" href="{{ url_for('pages.index') }}">Cancelar e voltar</a></div>
+</header>
+
+{% if not current_user %}
+<div class="aviso" role="alert"><span>É necessário entrar na plataforma para enviar um registro.</span><a href="{{ url_for('pages.login') }}">Acessar conta</a></div>
+{% endif %}
 
 <section class="form-layout">
     <form id="form-ocorrencia" class="form">
-        <div class="campo">
-            <label for="local_nome">Local (opcional)</label>
-            <input type="text" id="local_nome" name="local_nome"
-                   placeholder="Ex.: Igarapé do Mindu">
-        </div>
-
-        <div class="campo">
-            <label for="ponto_id">Ponto monitorado (opcional)</label>
-            <select id="ponto_id" name="ponto_id">
-                <option value="">Nenhum / Não informado</option>
-                {% for p in pontos %}
-                <option value="{{ p.id }}"
-                    data-lat="{{ p.latitude }}"
-                    data-lng="{{ p.longitude }}">{{ p.nome }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="campo">
-            <label>Localização</label>
-            <div class="coordenadas">
-                <input type="number" step="any" id="latitude" name="latitude" placeholder="Latitude" required>
-                <input type="number" step="any" id="longitude" name="longitude" placeholder="Longitude" required>
+        <fieldset class="form-secao">
+            <legend>1. Onde você observou?</legend>
+            <div class="campo">
+                <label for="local_nome">Nome de referência</label>
+                <input type="text" id="local_nome" name="local_nome" placeholder="Ex.: Igarapé do Mindu" maxlength="160">
+                <p class="campo-ajuda">Opcional. Use um nome reconhecível para facilitar buscas.</p>
             </div>
-            <div class="acoes-localizacao">
-                <button type="button" id="btn-localizar" class="btn">Usar minha localização</button>
-                <span class="dica">ou clique no mapa ao lado para marcar o ponto.</span>
+            <div class="campo">
+                <label for="ponto_id">Ponto monitorado</label>
+                <select id="ponto_id" name="ponto_id">
+                    <option value="">Nenhum ponto associado</option>
+                    {% for p in pontos %}
+                    <option value="{{ p.id }}" data-lat="{{ p.latitude }}" data-lng="{{ p.longitude }}">{{ p.nome }}</option>
+                    {% endfor %}
+                </select>
             </div>
-            <p id="msg-localizacao" class="msg"></p>
-        </div>
+            <div class="campo">
+                <span class="campo-label">Coordenadas</span>
+                <div class="coordenadas">
+                    <div><label for="latitude">Latitude</label><input type="number" step="any" id="latitude" name="latitude" placeholder="-3.000000" required></div>
+                    <div><label for="longitude">Longitude</label><input type="number" step="any" id="longitude" name="longitude" placeholder="-60.000000" required></div>
+                </div>
+                <div class="acoes-localizacao">
+                    <button type="button" id="btn-localizar" class="btn btn-secundario">Usar minha localização</button>
+                    <span class="dica">Você também pode clicar diretamente no mapa.</span>
+                </div>
+                <p id="msg-localizacao" class="msg" role="status" aria-live="polite"></p>
+            </div>
+        </fieldset>
 
-        <div class="campo">
-            <label for="tipo_residuo">Tipo de resíduo</label>
-            <select id="tipo_residuo" name="tipo_residuo" required>
-                <option value="">Selecione...</option>
-                {% for t in tipos_residuo %}
-                <option value="{{ t }}">{{ t }}</option>
-                {% endfor %}
-            </select>
-        </div>
+        <fieldset class="form-secao">
+            <legend>2. O que foi encontrado?</legend>
+            <div class="campo">
+                <label for="tipo_residuo">Tipo predominante de resíduo</label>
+                <select id="tipo_residuo" name="tipo_residuo" required>
+                    <option value="">Selecione uma categoria</option>
+                    {% for t in tipos_residuo %}<option value="{{ t }}">{{ t }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="campo">
+                <label for="nivel_acumulo">Nível estimado de acúmulo</label>
+                <select id="nivel_acumulo" name="nivel_acumulo" required>
+                    <option value="">Selecione um nível</option>
+                    {% for n in niveis_acumulo %}<option value="{{ n }}">{{ n }}</option>{% endfor %}
+                </select>
+                <p class="campo-ajuda">Baixo: itens isolados. Médio: concentração localizada. Alto: grande concentração ou possível obstrução.</p>
+            </div>
+        </fieldset>
 
-        <div class="campo">
-            <label for="nivel_acumulo">Nível de acúmulo</label>
-            <select id="nivel_acumulo" name="nivel_acumulo" required>
-                <option value="">Selecione...</option>
-                {% for n in niveis_acumulo %}
-                <option value="{{ n }}">{{ n }}</option>
-                {% endfor %}
-            </select>
-        </div>
+        <fieldset class="form-secao">
+            <legend>3. Evidência e contexto</legend>
+            <div class="campo upload-box">
+                <label for="fotografia">Fotografia</label>
+                <input type="file" id="fotografia" name="fotografia" accept="image/png,image/jpeg,image/gif,image/webp">
+                <p class="campo-ajuda">Opcional. PNG, JPG, GIF ou WebP, até 10 MB. Evite pessoas e placas.</p>
+                <img id="preview-foto" class="preview-foto" alt="Pré-visualização da fotografia selecionada">
+            </div>
+            <div class="campo">
+                <label for="observacoes">Observações</label>
+                <textarea id="observacoes" name="observacoes" rows="4" maxlength="2000" placeholder="Descreva condições relevantes do local..."></textarea>
+            </div>
+        </fieldset>
 
-        <div class="campo">
-            <label for="fotografia">Fotografia (opcional)</label>
-            <input type="file" id="fotografia" name="fotografia" accept="image/*">
-        </div>
-
-        <div class="campo">
-            <label for="observacoes">Observações (opcional)</label>
-            <textarea id="observacoes" name="observacoes" rows="3"></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primario">Salvar ocorrência</button>
-        <p id="msg-form" class="msg"></p>
+        <button type="submit" id="btn-salvar" class="btn btn-primario" {% if not current_user %}disabled{% endif %}>Salvar ocorrência</button>
+        <p id="msg-form" class="msg" role="status" aria-live="polite"></p>
     </form>
 
-    <div id="mapa-form"></div>
+    <aside class="mapa-card mapa-form-card" aria-labelledby="titulo-mapa-form">
+        <div class="painel-cabecalho"><div><h2 id="titulo-mapa-form">Confirme a posição</h2><p>Clique no mapa para ajustar o marcador.</p></div></div>
+        <div id="mapa-form" role="region" aria-label="Mapa para selecionar a localização"></div>
+    </aside>
 </section>
 {% endblock %}
 

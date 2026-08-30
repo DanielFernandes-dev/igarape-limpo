@@ -2,105 +2,102 @@
 
 {% block title %}Mapa — Igarapé Vivo{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+{% endblock %}
+
 {% block conteudo %}
-<section class="filtros">
+<header class="page-header">
+    <div class="page-header-copy">
+        <p class="eyebrow">Observação ambiental colaborativa</p>
+        <h1>O território em perspectiva</h1>
+        <p class="page-intro">Explore ocorrências, identifique recorrências e acompanhe como cada ponto muda ao longo do tempo.</p>
+    </div>
+    <div class="page-actions">
+        <a class="btn btn-claro" href="{{ url_for('pages.nova') }}">Registrar ocorrência</a>
+    </div>
+</header>
+
+<section class="filtros" aria-labelledby="titulo-filtros">
+    <h2 class="filtros-titulo" id="titulo-filtros">Refinar visualização</h2>
     <form id="form-filtros" class="form-filtros">
         <div class="filtro-grupo">
             <label for="f-tipo">Tipo de resíduo</label>
             <select id="f-tipo" name="tipo_residuo">
                 <option value="">Todos</option>
-                {% for t in tipos_residuo %}
-                <option value="{{ t }}">{{ t }}</option>
-                {% endfor %}
+                {% for t in tipos_residuo %}<option value="{{ t }}">{{ t }}</option>{% endfor %}
             </select>
         </div>
         <div class="filtro-grupo">
             <label for="f-nivel">Nível de acúmulo</label>
             <select id="f-nivel" name="nivel_acumulo">
                 <option value="">Todos</option>
-                {% for n in niveis_acumulo %}
-                <option value="{{ n }}">{{ n }}</option>
-                {% endfor %}
+                {% for n in niveis_acumulo %}<option value="{{ n }}">{{ n }}</option>{% endfor %}
             </select>
         </div>
         <div class="filtro-grupo">
             <label for="f-ponto">Ponto monitorado</label>
             <select id="f-ponto" name="ponto_id">
                 <option value="">Todos</option>
-                {% for p in pontos %}
-                <option value="{{ p.id }}">{{ p.nome }}</option>
-                {% endfor %}
+                {% for p in pontos %}<option value="{{ p.id }}">{{ p.nome }}</option>{% endfor %}
             </select>
         </div>
         <div class="filtro-grupo">
-            <label for="f-inicio">Data início</label>
+            <label for="f-inicio">Data inicial</label>
             <input type="date" id="f-inicio" name="data_inicio">
         </div>
         <div class="filtro-grupo">
-            <label for="f-fim">Data fim</label>
+            <label for="f-fim">Data final</label>
             <input type="date" id="f-fim" name="data_fim">
         </div>
         <div class="filtro-grupo filtro-grupo-busca">
-            <label for="f-busca">Local / observação</label>
-            <input type="text" id="f-busca" name="busca" placeholder="Buscar...">
+            <label for="f-busca">Local ou observação</label>
+            <input type="search" id="f-busca" name="busca" placeholder="Ex.: Igarapé do Mindu">
         </div>
         <div class="filtro-grupo filtro-check">
-            <label>
-                <input type="checkbox" id="f-criticos" name="apenas_criticos">
-                Apenas pontos críticos
-            </label>
+            <label><input type="checkbox" id="f-criticos" name="apenas_criticos"> Apenas nível alto</label>
         </div>
         <div class="filtro-acoes">
-            <button type="submit" class="btn btn-primario">Aplicar filtros</button>
-            <button type="button" id="btn-limpar-filtros" class="btn">Limpar</button>
+            <button type="submit" class="btn">Aplicar filtros</button>
+            <button type="button" id="btn-limpar-filtros" class="btn btn-secundario">Limpar</button>
         </div>
     </form>
 </section>
 
-<section class="cards">
-    <div class="card">
-        <span class="card-valor" id="contador-ocorrencias">—</span>
-        <span class="card-rotulo">OCORRÊNCIAS REGISTRADAS</span>
+<section class="cards" aria-label="Resumo das ocorrências">
+    <div class="card"><span class="card-valor" id="contador-ocorrencias">—</span><span class="card-rotulo">OCORRÊNCIAS REGISTRADAS</span><span class="card-nota">no recorte atual</span></div>
+    <div class="card"><span class="card-valor" id="contador-pontos">—</span><span class="card-rotulo">PONTOS MONITORADOS</span><span class="card-nota">localizações distintas</span></div>
+    <div class="card"><span class="card-valor" id="maior-ocorrencia">—</span><span class="card-rotulo">RESÍDUO MAIS FREQUENTE</span><span class="card-nota">categoria predominante</span></div>
+    <div class="card"><span class="card-valor" id="pontos-criticos">—</span><span class="card-rotulo">OCORRÊNCIAS CRÍTICAS</span><span class="card-nota">classificadas como alto</span></div>
+</section>
+
+<section class="mapa-card" aria-labelledby="titulo-mapa">
+    <div class="painel-cabecalho">
+        <div><h2 id="titulo-mapa">Mapa de ocorrências</h2><p id="resultado-filtros" role="status" aria-live="polite">Carregando dados do território...</p></div>
     </div>
-    <div class="card">
-        <span class="card-valor" id="contador-pontos">—</span>
-        <span class="card-rotulo">PONTOS MONITORADOS</span>
-    </div>
-    <div class="card">
-        <span class="card-valor" id="maior-ocorrencia">—</span>
-        <span class="card-rotulo">MAIOR OCORRÊNCIA</span>
-    </div>
-    <div class="card">
-        <span class="card-valor" id="pontos-criticos">—</span>
-        <span class="card-rotulo">PONTOS CRÍTICOS</span>
+    <div id="mapa" role="region" aria-label="Mapa interativo das ocorrências"></div>
+    <div class="mapa-rodape">
+        <div class="legenda" aria-label="Legenda de níveis de acúmulo">
+            <span class="legenda-item"><span class="bolinha" style="background:#22c55e"></span> Baixo</span>
+            <span class="legenda-item"><span class="bolinha" style="background:#eab308"></span> Médio</span>
+            <span class="legenda-item"><span class="bolinha" style="background:#ef4444"></span> Alto</span>
+        </div>
+        <div class="exportacoes">
+            <a id="exportar-csv" href="/api/export/ocorrencias.csv" class="btn btn-exportar">Baixar CSV</a>
+            <a id="exportar-geojson" href="/api/export/ocorrencias.geojson" class="btn btn-exportar">Baixar GeoJSON</a>
+        </div>
     </div>
 </section>
 
-<section class="mapa-container">
-    <div id="mapa"></div>
-</section>
-
-<section class="exportacoes">
-    <a href="/api/export/ocorrencias.csv" class="btn btn-exportar">Exportar CSV</a>
-    <a href="/api/export/ocorrencias.geojson" class="btn btn-exportar">Exportar GeoJSON</a>
-</section>
-
-<section class="legenda">
-    <span class="legenda-item"><span class="bolinha" style="background:#22c55e"></span> Baixo acúmulo</span>
-    <span class="legenda-item"><span class="bolinha" style="background:#eab308"></span> Médio acúmulo</span>
-    <span class="legenda-item"><span class="bolinha" style="background:#ef4444"></span> Alto acúmulo</span>
-</section>
-
-<div id="lista-recente">
-    <h2>Ocorrências recentes</h2>
+<section id="lista-recente" class="lista-card" aria-labelledby="titulo-recentes">
+    <div class="painel-cabecalho"><div><h2 id="titulo-recentes">Ocorrências recentes</h2><p>Registros mais novos dentro dos filtros selecionados.</p></div></div>
     <ul id="lista"></ul>
-</div>
+</section>
 {% endblock %}
 
 {% block scripts %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
 <script src="{{ url_for('static', filename='js/map.js') }}"></script>
 {% endblock %}

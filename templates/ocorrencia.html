@@ -3,96 +3,75 @@
 {% block title %}Ocorrência #{{ o.id }} — Igarapé Vivo{% endblock %}
 
 {% block conteudo %}
-<a class="voltar" href="{{ url_for('pages.index') }}">&larr; Voltar ao mapa</a>
+<a class="voltar" href="{{ url_for('pages.index') }}">← Voltar ao mapa</a>
+<header class="page-header">
+    <div class="page-header-copy">
+        <p class="eyebrow">Registro #{{ "%03d" % o.id }}</p>
+        <h1>{{ o.local_nome or "Ocorrência monitorada" }}</h1>
+        <p class="page-intro">Detalhes, classificação e posição geográfica deste registro.</p>
+    </div>
+    <div class="page-actions"><span class="status-pill" id="status-atual">{{ o.status }}</span></div>
+</header>
 
 <article class="detalhe">
-    <h2>Ocorrência #{{ "%03d" % o.id }}</h2>
+    <div class="detalhe-grid">
+        <div>
+            {% if o.fotografia %}
+            <img class="foto" src="{{ url_for('static', filename='uploads/' + o.fotografia) }}" alt="Fotografia da ocorrência #{{ o.id }}">
+            {% else %}
+            <div class="foto-placeholder"><span>Registro sem fotografia.<br>Os dados geográficos continuam disponíveis.</span></div>
+            {% endif %}
+        </div>
+        <div>
+            <dl class="info">
+                <dt>Local</dt><dd>{{ o.local_nome or "Não informado" }}</dd>
+                <dt>Tipo de resíduo</dt><dd>{{ o.tipo_residuo }}</dd>
+                <dt>Nível de acúmulo</dt><dd><span class="bolinha" style="background:{{ cor_niveis[o.nivel_acumulo] }}"></span> {{ o.nivel_acumulo }}</dd>
+                <dt>Data e horário</dt><dd>{{ o.data_hora }}</dd>
+                <dt>Coordenadas</dt><dd>{{ "%.5f" % o.latitude }}, {{ "%.5f" % o.longitude }}</dd>
+                <dt>Observações</dt><dd>{{ o.observacoes or "Nenhuma observação adicional." }}</dd>
+            </dl>
 
-    {% if o.fotografia %}
-    <img class="foto" src="{{ url_for('static', filename='uploads/' + o.fotografia) }}"
-         alt="Fotografia da ocorrência">
-    {% else %}
-    <p class="sem-foto">Sem fotografia registrada.</p>
-    {% endif %}
-
-    <dl class="info">
-        <dt>Local</dt>
-        <dd>{{ o.local_nome or "—" }}</dd>
-
-        <dt>Tipo de resíduo</dt>
-        <dd>{{ o.tipo_residuo }}</dd>
-
-        <dt>Nível de acúmulo</dt>
-        <dd>
-            <span class="bolinha" style="background:{{ cor_niveis[o.nivel_acumulo] }}"></span>
-            {{ o.nivel_acumulo }}
-        </dd>
-
-        <dt>Data e horário</dt>
-        <dd>{{ o.data_hora }}</dd>
-
-        <dt>Status</dt>
-        <dd>
-            <span id="status-atual">{{ o.status }}</span>
             {% if current_user and current_user.perfil in ('moderador', 'administrador') %}
-            <form id="form-status" class="form-status">
+            <form id="form-status" class="form-status" aria-label="Atualizar status da ocorrência">
+                <label for="novo-status">Alterar status</label>
                 <select id="novo-status" name="status">
-                    {% for s in status_ocorrencia %}
-                    <option value="{{ s }}" {{ 'selected' if o.status == s }}>{{ s }}</option>
-                    {% endfor %}
+                    {% for s in status_ocorrencia %}<option value="{{ s }}" {{ 'selected' if o.status == s }}>{{ s }}</option>{% endfor %}
                 </select>
                 <button type="submit" class="btn btn-pequeno">Atualizar</button>
             </form>
-            <p id="msg-status" class="msg"></p>
+            <p id="msg-status" class="msg" role="status" aria-live="polite"></p>
             {% endif %}
-        </dd>
+        </div>
+    </div>
 
-        <dt>Coordenadas</dt>
-        <dd>{{ "%.5f" % o.latitude }}, {{ "%.5f" % o.longitude }}</dd>
-
-        <dt>Observações</dt>
-        <dd>{{ o.observacoes or "—" }}</dd>
-    </dl>
-
-    <div id="mapa-detalhe"></div>
+    <section class="detalhe-mapa" aria-labelledby="titulo-localizacao">
+        <div class="painel-cabecalho"><div><h2 id="titulo-localizacao">Localização</h2><p>Posição registrada para esta ocorrência.</p></div></div>
+        <div id="mapa-detalhe" role="region" aria-label="Mapa da localização da ocorrência"></div>
+    </section>
 </article>
 {% endblock %}
 
 {% block scripts %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-    var lat = {{ o.latitude }};
-    var lng = {{ o.longitude }};
-    var cor = "{{ cor_niveis[o.nivel_acumulo] }}";
-</script>
+<script>var lat = {{ o.latitude }}; var lng = {{ o.longitude }}; var cor = "{{ cor_niveis[o.nivel_acumulo] }}";</script>
 <script src="{{ url_for('static', filename='js/detalhe.js') }}"></script>
 <script>
 document.getElementById('form-status')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const msg = document.getElementById('msg-status');
-    msg.textContent = 'Atualizando...';
-    msg.className = 'msg ok';
-
+    const botao = e.currentTarget.querySelector('button');
+    botao.disabled = true;
+    msg.textContent = 'Atualizando status...'; msg.className = 'msg ok';
     const status = document.getElementById('novo-status').value;
     try {
-        const resp = await fetch(`/api/ocorrencias/{{ o.id }}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status }),
-        });
+        const resp = await fetch(`/api/ocorrencias/{{ o.id }}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status }) });
         const data = await resp.json();
-        if (!resp.ok) {
-            msg.textContent = data.erro || 'Erro ao atualizar status.';
-            msg.className = 'msg erro';
-            return;
-        }
+        if (!resp.ok) { msg.textContent = data.erro || 'Erro ao atualizar status.'; msg.className = 'msg erro'; return; }
         document.getElementById('status-atual').textContent = status;
-        msg.textContent = 'Status atualizado.';
-        msg.className = 'msg ok';
-    } catch (err) {
-        msg.textContent = 'Erro de conexão.';
-        msg.className = 'msg erro';
-    }
+        msg.textContent = 'Status atualizado com sucesso.'; msg.className = 'msg ok';
+    } catch (err) { msg.textContent = 'Não foi possível conectar ao servidor.'; msg.className = 'msg erro'; }
+    finally { botao.disabled = false; }
 });
 </script>
 {% endblock %}
