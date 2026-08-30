@@ -15,6 +15,11 @@
 
     {% if p.descricao %}<p>{{ p.descricao }}</p>{% endif %}
 
+    <section class="exportacoes">
+        <a href="/api/export/ocorrencias.csv?ponto_id={{ p.id }}" class="btn btn-exportar">Exportar CSV</a>
+        <a href="/api/export/ocorrencias.geojson?ponto_id={{ p.id }}" class="btn btn-exportar">Exportar GeoJSON</a>
+    </section>
+
     <section class="cards">
         <div class="card">
             <span class="card-valor">{{ p.total_ocorrencias }}</span>

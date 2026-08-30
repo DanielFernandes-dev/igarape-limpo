@@ -218,17 +218,17 @@ def _extensao_permitida(nome_arquivo):
     )
 
 
-def exportar_csv_ocorrencias():
+def exportar_csv_ocorrencias(filtros=None):
     from app.utils import export
 
-    linhas = [dict(r) for r in ocorrencia_repository.listar_todas()]
+    linhas = [dict(r) for r in ocorrencia_repository.listar_todas(filtros)]
     return export.to_csv(export.ocorrencias_para_linhas(linhas))
 
 
-def exportar_geojson_ocorrencias():
+def exportar_geojson_ocorrencias(filtros=None):
     from app.utils import export
 
-    linhas = [dict(r) for r in ocorrencia_repository.listar_todas()]
+    linhas = [dict(r) for r in ocorrencia_repository.listar_todas(filtros)]
     return export.to_geojson(export.ocorrencias_para_geojson(linhas))
 
 

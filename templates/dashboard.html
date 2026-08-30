@@ -3,6 +3,11 @@
 {% block title %}Dashboard — Igarapé Vivo{% endblock %}
 
 {% block conteudo %}
+<div class="exportacoes">
+    <a href="/api/export/ocorrencias.csv" class="btn btn-exportar">Exportar CSV</a>
+    <a href="/api/export/ocorrencias.geojson" class="btn btn-exportar">Exportar GeoJSON</a>
+</div>
+
 <h2>Dashboard</h2>
 
 <section class="cards">

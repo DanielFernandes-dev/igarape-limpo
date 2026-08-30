@@ -247,9 +247,24 @@ def dashboard_ranking():
 # ------------------ Exportação ------------------
 
 
+@api.get("/export/ocorrencias.csv")
+def exportar_ocorrencias():
+    try:
+        filtros = ocorrencia_service.validar_filtros(request.args)
+    except ocorrencia_service.ErroValidacao as e:
+        return jsonify({"erro": e.mensagem}), e.status
+    csv = ocorrencia_service.exportar_csv_ocorrencias(filtros)
+    nome = "ocorrencias.csv"
+    return _responder_csv(csv, nome)
+
+
 @api.get("/export/ocorrencias.geojson")
 def exportar_ocorrencias_geojson():
-    return jsonify(ocorrencia_service.exportar_geojson_ocorrencias())
+    try:
+        filtros = ocorrencia_service.validar_filtros(request.args)
+    except ocorrencia_service.ErroValidacao as e:
+        return jsonify({"erro": e.mensagem}), e.status
+    return jsonify(ocorrencia_service.exportar_geojson_ocorrencias(filtros))
 
 
 # ------------------ Integrações ------------------
@@ -310,13 +325,6 @@ def sensores():
 @api.get("/integracao/status")
 def status_integracoes():
     return jsonify(integracao_service.status_integracoes())
-
-
-@api.get("/export/ocorrencias.csv")
-def exportar_ocorrencias():
-    csv = ocorrencia_service.exportar_csv_ocorrencias()
-    nome = "ocorrencias.csv"
-    return _responder_csv(csv, nome)
 
 
 @api.post("/export/sensores.csv")

@@ -15,26 +15,24 @@ Lista de etapas para desenvolvimento do protótipo.
 | 1 | Fundamentos (MVP) | ✅ **Concluída** | Backend, Frontend, Mapa, banco, API CRUD |
 | 2 | Monitoramento (V2) | ✅ **Concluída** | Ponto monitorado, histórico, filtros, dashboard |
 | 3 | Gestão (V2.1) | ✅ **Concluída** | Autenticação, perfis, permissões e status |
-| 4 | Dados (V2.2) | ⏳ Próxima | Exportação CSV/GeoJSON e análises |
-| 5 | Qualidade e Segurança | ⏳ Depois | Validações, testes, limites de arquivo |
+| 4 | Dados (V2.2) | ✅ **Concluída** | Exportação CSV/GeoJSON e análises |
+| 5 | Qualidade e Segurança | ⏳ Próxima | Validações, testes, limites de arquivo |
 | 6 | Documentação e Apresentação | ⏳ Depois | README, API, arquitetura, demo |
 | 7 | Pesquisa e Teste de campo | ⏳ Depende de decisões | Fontes de dados, metodologia, coleta |
 | Futuro | Visão computacional | 🔮 Futuro | Classificação automática por imagem |
 | Futuro | Alertas | 🔮 Futuro | Detecção de tendências e notificações |
 
-## Fase atual: **FASE 2 — Monitoramento (V2)**
+## Fase atual: **FASE 5 — Qualidade e Segurança**
 
 Próximos passos nesta fase (na ordem):
 
-1. Criar tabela de **pontos monitorados** e associar ocorrências (`ponto_id`).
-2. Criar repositório, serviço e rotas de **pontos monitorados**.
-3. Adicionar **filtros** (tipo, nível, período, local) na listagem/mapa.
-4. Criar **página do ponto monitorado** com histórico.
-5. Criar **página de dashboard** com gráficos e estatísticas.
+1. Revisar validações de entrada e segurança de arquivos.
+2. Aumentar cobertura de testes automatizados.
+3. Revisar limites de upload e tipos permitidos.
+4. Implementar logs de eventos importantes.
+5. Preparar ambiente para homologação/testes de campo.
 
-Os itens desta fase estão marcados com `[ ] <FASE2>` no corpo abaixo e podem ser
-acompanhados por busca (`Ctrl+F`: **FASE2**). Quando uma fase termina, o check é
-marcado e o bloco `<FASE_N>` passa a `[x]`.
+Os itens desta fase estão marcados com `[ ] <FASE5>` no corpo abaixo.
 
 ---
 
@@ -294,6 +292,16 @@ A inteligência artificial é uma possível evolução do projeto, não um requi
 > Registro do que foi implementado em cada sessão, para acompanhamento
 > e para que não haja perda de contexto entre sessões.
 
+## Sessão 2026-08-30 (Fase 4 — Dados V2.2)
+
+Concluído:
+
+- Adicionados botões de exportação em CSV e GeoJSON no dashboard, página inicial e página de ponto monitorado.
+- Exportações passaram a aceitar filtros por query string (tipo, nível, período, ponto_id, busca).
+- Atualizado painel de fases: Fase 4 marcada como concluída.
+
+Próximo passo: **Fase 5 — Qualidade e Segurança**.
+
 ## Sessão 2026-08-30 (fundamentos / MVP)
 
 Concluído:
@@ -318,5 +326,4 @@ Observação: o projeto já conta com integrações auxiliares implementadas
 Nominatim e gateway de sensores) e endpoint de exportação em CSV, que estão
 implementados mas ainda não constavam como itens do TODO original.
 
-Próximo passo: **FASE 2 — Monitoramento (V2)** (pontos monitorados, histórico,
-filtros e dashboard).
+Próximo passo: **FASE 5 — Qualidade e Segurança** (validações, testes, limites de arquivo).
