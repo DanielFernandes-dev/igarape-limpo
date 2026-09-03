@@ -48,8 +48,8 @@ def validar_dados(dados):
     if dados.get("ponto_id") not in (None, ""):
         ponto_id = _validar_ponto_id(dados.get("ponto_id"))
 
-    observacoes = dados.get("observacoes", "").strip()
-    local_nome = dados.get("local_nome", "").strip()
+    observacoes = (dados.get("observacoes") or "").strip()
+    local_nome = (dados.get("local_nome") or "").strip()
     if len(local_nome) > 160:
         raise ErroValidacao("Nome do local excede 160 caracteres.")
     if len(observacoes) > 2000:
@@ -162,7 +162,6 @@ def atualizar(ocorrencia_id, dados_form, arquivo_foto=None):
 
     dados = validar_dados(dados_mesclados)
     dados["fotografia"] = _fotografia_atualizada(registro, arquivo_foto)
-    dados["usuario_id"] = _usuario_autenticado()
     linha = ocorrencia_repository.atualizar(ocorrencia_id, dados)
     if linha == 0:
         raise ErroValidacao("Ocorrência não encontrada.", status=404)

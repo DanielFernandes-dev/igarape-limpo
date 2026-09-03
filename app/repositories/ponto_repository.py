@@ -5,7 +5,10 @@ def listar_todos():
     return database.query_all(
         """
         SELECT p.*,
-               (SELECT COUNT(*) FROM ocorrencias o WHERE o.ponto_id = p.id) AS total_ocorrencias,
+                             (SELECT COUNT(*) FROM ocorrencias o WHERE o.ponto_id = p.id) AS total_ocorrencias,
+                             (SELECT COUNT(*) FROM ocorrencias o
+                                WHERE o.ponto_id = p.id
+                                    AND o.data_hora >= datetime('now', '-90 days')) AS ocorrencias_recentes,
                (SELECT nivel_acumulo FROM ocorrencias o
                 WHERE o.ponto_id = p.id ORDER BY o.data_hora DESC LIMIT 1) AS ultimo_nivel
         FROM pontos_monitorados p

@@ -1,3 +1,5 @@
+import math
+
 from flask import Blueprint, current_app, jsonify, request, session, url_for
 
 import config
@@ -141,12 +143,22 @@ def atualizar_ocorrencia(ocorrencia_id):
     usuario = _requer_autenticacao()
     if isinstance(usuario, tuple):
         return usuario
+    registro = ocorrencia_repository.obter_por_id(ocorrencia_id)
+    if registro is None:
+        return jsonify({"erro": "Ocorrência não encontrada"}), 404
+    perfil_elevado = usuario.get("perfil") in ("moderador", "administrador")
+    if not perfil_elevado and registro["usuario_id"] != usuario["id"]:
+        return jsonify({"erro": "Sem permissão."}), 403
     if request.content_type and "application/json" in request.content_type:
         dados = request.get_json(silent=True) or {}
         arquivo = None
     else:
         dados = dict(request.form)
         arquivo = request.files.get("fotografia")
+    if not isinstance(dados, dict):
+        return jsonify({"erro": "Corpo JSON inválido."}), 400
+    if "status" in dados and not perfil_elevado and dados["status"] != registro["status"]:
+        return jsonify({"erro": "Sem permissão para alterar o status."}), 403
     try:
         ocorrencia_service.atualizar(ocorrencia_id, dados, arquivo)
     except ErroValidacao as e:
@@ -303,8 +315,11 @@ def meteo():
     if lat is None or lon is None:
         return jsonify({"erro": "Parâmetros lat e lon são obrigatórios."}), 400
     try:
-        resultado = openmeteo.buscar_clima(float(lat), float(lon))
+        latitude, longitude = _coordenadas_integracao(lat, lon)
+        resultado = openmeteo.buscar_clima(latitude, longitude)
         return jsonify(resultado)
+    except (ValueError, OverflowError):
+        return jsonify({"erro": "Coordenadas inválidas."}), 400
     except http.HttpError as e:
         return jsonify({"erro": e.message}), 502
 
@@ -316,8 +331,11 @@ def geocode():
     if lat is None or lon is None:
         return jsonify({"erro": "Parâmetros lat e lon são obrigatórios."}), 400
     try:
-        resultado = nominatim.buscar_local(float(lat), float(lon))
+        latitude, longitude = _coordenadas_integracao(lat, lon)
+        resultado = nominatim.buscar_local(latitude, longitude)
         return jsonify(resultado)
+    except (ValueError, OverflowError):
+        return jsonify({"erro": "Coordenadas inválidas."}), 400
     except http.HttpError as e:
         return jsonify({"erro": e.message}), 502
 
@@ -325,6 +343,8 @@ def geocode():
 @api.post("/integracao/sensores")
 def sensores():
     corpo = request.get_json(silent=True) or {}
+    if not isinstance(corpo, dict):
+        return jsonify({"erro": "Corpo JSON inválido."}), 400
     url = (corpo.get("url") or "").strip()
     token = (corpo.get("token") or "").strip() or None
     if not url:
@@ -344,6 +364,8 @@ def status_integracoes():
 @api.post("/export/sensores.csv")
 def exportar_sensores():
     corpo = request.get_json(silent=True) or {}
+    if not isinstance(corpo, dict):
+        return jsonify({"erro": "Corpo JSON inválido."}), 400
     url = (corpo.get("url") or "").strip()
     token = (corpo.get("token") or "").strip() or None
     if not url:
@@ -363,3 +385,13 @@ def _responder_csv(conteudo, nome_arquivo):
         mimetype="text/csv",
         headers={"Content-Disposition": f"attachment; filename={nome_arquivo}"},
     )
+
+
+def _coordenadas_integracao(latitude, longitude):
+    latitude = float(latitude)
+    longitude = float(longitude)
+    if not math.isfinite(latitude) or not math.isfinite(longitude):
+        raise ValueError
+    if not (-90 <= latitude <= 90 and -180 <= longitude <= 180):
+        raise ValueError
+    return latitude, longitude

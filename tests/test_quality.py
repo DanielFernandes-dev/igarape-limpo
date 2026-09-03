@@ -199,3 +199,88 @@ def test_cabecalhos_de_seguranca(client):
     resp = client.get("/")
     assert resp.headers["X-Content-Type-Options"] == "nosniff"
     assert resp.headers["X-Frame-Options"] == "SAMEORIGIN"
+
+
+def test_patch_parcial_de_ocorrencia_sem_campos_opcionais(client):
+    assert _login(client).status_code == 200
+    criada = client.post(
+        "/api/ocorrencias",
+        data={
+            "latitude": "-3.05",
+            "longitude": "-60.01",
+            "tipo_residuo": "Plastico",
+            "nivel_acumulo": "Alto",
+        },
+    )
+    assert criada.status_code == 201
+    assert client.patch(
+        f"/api/ocorrencias/{criada.get_json()['id']}",
+        json={"status": "Resolvida"},
+    ).status_code == 200
+
+
+def test_rejeita_payloads_json_que_nao_sejam_objetos(client):
+    assert _login(client).status_code == 200
+    assert client.patch("/api/ocorrencias/1", json=["status"]).status_code == 400
+    assert client.post("/api/integracao/sensores", json=["url"]).status_code == 400
+
+
+def test_rejeita_coordenadas_invalidas_nas_integracoes(client):
+    assert client.get("/api/integracao/meteo?lat=abc&lon=-60").status_code == 400
+    assert client.get("/api/integracao/geocode?lat=nan&lon=-60").status_code == 400
+    assert client.get("/api/integracao/meteo?lat=91&lon=-60").status_code == 400
+
+
+def test_csv_neutraliza_formulas_de_planilha(client):
+    assert _login(client).status_code == 200
+    criada = client.post(
+        "/api/ocorrencias",
+        data={
+            "latitude": "-3.05",
+            "longitude": "-60.01",
+            "tipo_residuo": "Plastico",
+            "nivel_acumulo": "Alto",
+            "observacoes": "=HYPERLINK(\"https://example.com\")",
+        },
+    )
+    assert criada.status_code == 201
+    csv = client.get("/api/export/ocorrencias.csv").get_data(as_text=True)
+    assert "'=HYPERLINK" in csv
+
+
+def test_usuario_nao_edita_ocorrencia_de_outro_usuario(client):
+    assert _login(client).status_code == 200
+    criada = client.post(
+        "/api/ocorrencias",
+        data={
+            "latitude": "-3.05",
+            "longitude": "-60.01",
+            "tipo_residuo": "Plastico",
+            "nivel_acumulo": "Alto",
+        },
+    )
+    assert criada.status_code == 201
+    criado_id = criada.get_json()["id"]
+    usuario = client.post(
+        "/api/auth/usuarios",
+        json={"nome": "Colaborador", "email": "colaborador@teste.local", "senha": "senha123"},
+    )
+    assert usuario.status_code == 201
+    client.post("/api/auth/logout")
+    assert client.post(
+        "/api/auth/login",
+        json={"email": "colaborador@teste.local", "senha": "senha123"},
+    ).status_code == 200
+    assert client.patch(
+        f"/api/ocorrencias/{criado_id}",
+        json={"status": "Resolvida"},
+    ).status_code == 403
+
+
+def test_gateway_nao_acessa_endereco_local(client):
+    assert _login(client).status_code == 200
+    resposta = client.post(
+        "/api/integracao/sensores",
+        json={"url": "http://localhost:8080/estacoes"},
+    )
+    assert resposta.status_code == 502

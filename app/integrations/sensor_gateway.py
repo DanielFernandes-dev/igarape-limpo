@@ -1,3 +1,7 @@
+import ipaddress
+import socket
+from urllib.parse import urlparse
+
 from app.utils import http
 
 CAMPOS_ESPERADOS = [
@@ -17,6 +21,7 @@ def conectar_gateway(url, token=None, timeout=15):
     (originada no navegador), mas quem realiza a chamada externa é o
     backend, evitando CORS e exposição da chamada no navegador.
     """
+    _validar_url_gateway(url)
     headers = {"Accept": "application/json"}
     if token:
         headers["Authorization"] = f"Bearer {token}"
@@ -38,6 +43,23 @@ def conectar_gateway(url, token=None, timeout=15):
         and _flutuante(s.get("lon"))
     ]
     return estacoes
+
+
+def _validar_url_gateway(url):
+    try:
+        parsed = urlparse(url)
+    except ValueError:
+        raise http.HttpError("URL do gateway inválida.")
+    if parsed.scheme not in ("http", "https") or not parsed.hostname:
+        raise http.HttpError("URL do gateway inválida.")
+    try:
+        enderecos = socket.getaddrinfo(parsed.hostname, parsed.port, type=socket.SOCK_STREAM)
+    except (OSError, ValueError):
+        raise http.HttpError("Não foi possível resolver o gateway.")
+    for endereco in {item[4][0] for item in enderecos}:
+        ip = ipaddress.ip_address(endereco)
+        if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_multicast or ip.is_unspecified:
+            raise http.HttpError("O gateway não pode apontar para uma rede privada.")
 
 
 def _normalizar(estacao):

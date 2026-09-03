@@ -66,13 +66,24 @@ def obter_resumo_por_id(ponto_id):
 
 
 def montar_resumo_ponto(ponto, ocorrencias):
+    from datetime import datetime, timedelta
+
+    limite = datetime.utcnow() - timedelta(days=JANELA_RECORRENCIA_DIAS)
+    ocorrencias_recorrencia = []
+    for ocorrencia in ocorrencias:
+        try:
+            data = datetime.fromisoformat(ocorrencia["data_hora"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if data >= limite:
+            ocorrencias_recorrencia.append(ocorrencia)
     total = len(ocorrencias)
     por_tipo = _contar(ocorrencias, "tipo_residuo")
     por_nivel = _contar(ocorrencias, "nivel_acumulo")
     por_status = _contar(ocorrencias, "status")
 
     ultima = ocorrencias[0] if ocorrencias else None
-    recorrente = total >= LIMIAR_RECORRENCIA
+    recorrente = len(ocorrencias_recorrencia) >= LIMIAR_RECORRENCIA
     foto_recente = next(
         (o for o in ocorrencias if o.get("fotografia")), None
     )
@@ -101,7 +112,7 @@ def montar_resumo_ponto(ponto, ocorrencias):
 def listar_pontos():
     pontos = [dict(p) for p in ponto_repository.listar_todos()]
     for p in pontos:
-        p["recorrente"] = (p.get("total_ocorrencias") or 0) >= LIMIAR_RECORRENCIA
+        p["recorrente"] = (p.get("ocorrencias_recentes") or 0) >= LIMIAR_RECORRENCIA
     return pontos
 
 

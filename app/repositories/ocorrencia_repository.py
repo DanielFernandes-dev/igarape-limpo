@@ -78,14 +78,13 @@ def atualizar(ocorrencia_id, dados):
     return database.query_update(
         """
         UPDATE ocorrencias
-        SET ponto_id = ?, usuario_id = ?, latitude = ?, longitude = ?, fotografia = ?, tipo_residuo = ?,
+        SET ponto_id = ?, latitude = ?, longitude = ?, fotografia = ?, tipo_residuo = ?,
             nivel_acumulo = ?, status = ?, observacoes = ?, local_nome = ?,
             data_atualizacao = datetime('now')
         WHERE id = ?
         """,
         (
             dados.get("ponto_id"),
-            dados.get("usuario_id"),
             dados["latitude"],
             dados["longitude"],
             dados.get("fotografia"),

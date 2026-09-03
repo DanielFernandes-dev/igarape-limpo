@@ -10,6 +10,7 @@ def get_db():
     if "db" not in g:
         g.db = sqlite3.connect(DATABASE_PATH)
         g.db.row_factory = sqlite3.Row
+        g.db.execute("PRAGMA foreign_keys = ON")
     return g.db
 
 
@@ -52,6 +53,32 @@ def migrar():
     """Aplica evoluções de schema em bancos já existentes (idempotente)."""
     db = sqlite3.connect(DATABASE_PATH)
     try:
+        db.execute("PRAGMA foreign_keys = ON")
+        db.executescript(
+            """
+            CREATE TABLE IF NOT EXISTS usuarios (
+                id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT NOT NULL,
+                email TEXT NOT NULL UNIQUE, senha_hash TEXT NOT NULL,
+                perfil TEXT NOT NULL DEFAULT 'usuario', ativo INTEGER NOT NULL DEFAULT 1,
+                data_criacao TEXT NOT NULL DEFAULT (datetime('now'))
+            );
+            CREATE TABLE IF NOT EXISTS pontos_monitorados (
+                id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT NOT NULL,
+                latitude REAL NOT NULL, longitude REAL NOT NULL, descricao TEXT,
+                status TEXT NOT NULL DEFAULT 'Ativo',
+                data_criacao TEXT NOT NULL DEFAULT (datetime('now'))
+            );
+            CREATE TABLE IF NOT EXISTS ocorrencias (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                ponto_id INTEGER REFERENCES pontos_monitorados (id),
+                usuario_id INTEGER REFERENCES usuarios (id), latitude REAL NOT NULL,
+                longitude REAL NOT NULL, data_hora TEXT NOT NULL DEFAULT (datetime('now')),
+                fotografia TEXT, tipo_residuo TEXT NOT NULL, nivel_acumulo TEXT NOT NULL,
+                status TEXT NOT NULL DEFAULT 'Nova', observacoes TEXT, local_nome TEXT,
+                data_atualizacao TEXT
+            );
+            """
+        )
         colunas = {r[1] for r in db.execute("PRAGMA table_info(ocorrencias)")}
         if "ponto_id" not in colunas:
             db.execute(

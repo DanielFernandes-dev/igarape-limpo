@@ -2,6 +2,13 @@ import csv
 import io
 
 
+def _valor_planilha(valor):
+    texto = "" if valor is None else str(valor)
+    if texto.startswith(("=", "+", "-", "@")):
+        return "'" + texto
+    return texto
+
+
 def to_csv(lines, separador=";"):
     saida = io.StringIO()
     if separador == ";":
@@ -70,8 +77,8 @@ def ocorrencias_para_linhas(ocorrencias):
                 o["tipo_residuo"],
                 o["nivel_acumulo"],
                 o["status"],
-                o["local_nome"] or "",
-                o["observacoes"] or "",
+                _valor_planilha(o["local_nome"]),
+                _valor_planilha(o["observacoes"]),
                 o.get("ponto_id") or "",
             ]
         )
