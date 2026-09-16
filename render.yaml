@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: igarape-limpo
+    runtime: docker
+    repo: https://github.com/DanielFernandes-dev/igarape-limpo.git
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /login
+    envVars:
+      - key: IGARAPE_SECRET_KEY
+        generateValue: true
+      - key: IGARAPE_HTTPS
+        value: "1"
+      - key: IGARAPE_DATA_DIR
+        value: /data
+    disk:
+      name: dados
+      mountPath: /data
+      sizeGB: 1
