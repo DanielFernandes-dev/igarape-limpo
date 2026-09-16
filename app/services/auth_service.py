@@ -19,7 +19,7 @@ class SemPermissao(Exception):
 
 
 def hash_senha(senha):
-    return generate_password_hash(senha)
+    return generate_password_hash(senha, method="pbkdf2:sha256")
 
 
 def verificar_senha(senha_hash, senha):

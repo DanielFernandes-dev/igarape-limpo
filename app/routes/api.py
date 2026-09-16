@@ -53,6 +53,25 @@ def login():
     return jsonify({"usuario": auth_service.serializar(usuario)})
 
 
+@api.post("/auth/cadastro")
+def cadastro():
+    dados = request.get_json(silent=True) or {}
+    if not isinstance(dados, dict):
+        return jsonify({"erro": "Corpo JSON inválido."}), 400
+    dados_publicos = {
+        "nome": dados.get("nome"),
+        "email": dados.get("email"),
+        "senha": dados.get("senha"),
+        "perfil": "usuario",
+    }
+    try:
+        novo_id = auth_service.criar_usuario(dados_publicos)
+    except auth_service.ErroValidacao as e:
+        return jsonify({"erro": e.mensagem}), e.status
+    current_app.logger.info("Novo cadastro de usuário %s", novo_id)
+    return jsonify({"id": novo_id}), 201
+
+
 @api.post("/auth/logout")
 def logout():
     usuario_id = session.get("usuario_id")

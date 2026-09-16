@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Painel de operador — Igarapé Vivo{% endblock %}
+
+{% block conteudo %}
+<header class="page-header operador-header">
+    <div class="page-header-copy">
+        <p class="eyebrow">Rotina de campo</p>
+        <h1>Painel de operador</h1>
+        <p class="page-intro">Acompanhe a fila de ocorrências e mantenha o status dos atendimentos atualizado.</p>
+    </div>
+    <div class="page-actions">
+        <a href="{{ url_for('pages.nova') }}" class="btn">Registrar ocorrência</a>
+        <button type="button" class="btn btn-exportar" id="operador-atualizar">Atualizar fila</button>
+    </div>
+</header>
+
+<section class="operador-resumo" aria-label="Resumo da operação">
+    <button type="button" class="operador-indicador operador-indicador-atencao" data-filtro-status="Nova" aria-label="Mostrar ocorrências novas"><span id="operador-novas">—</span><small>Novas</small><em>ver pendências</em></button>
+    <button type="button" class="operador-indicador" data-filtro-status="Em analise" aria-label="Mostrar ocorrências em análise"><span id="operador-analise">—</span><small>Em análise</small><em>em avaliação</em></button>
+    <button type="button" class="operador-indicador" data-filtro-status="Em atendimento" aria-label="Mostrar ocorrências em atendimento"><span id="operador-atendimento">—</span><small>Em atendimento</small><em>em andamento</em></button>
+    <button type="button" class="operador-indicador operador-indicador-ok" data-filtro-status="Resolvida" aria-label="Mostrar ocorrências resolvidas"><span id="operador-resolvidas">—</span><small>Resolvidas</small><em>concluídas</em></button>
+</section>
+
+<section class="filtros operador-filtros" aria-label="Filtros da fila">
+    <div class="operador-filtros-cabecalho">
+        <div class="filtros-titulo">Fila de ocorrências</div>
+        <span id="operador-contador" class="operador-contador" aria-live="polite">— registros</span>
+    </div>
+    <div class="operador-filtros-grid">
+        <label class="filtro-grupo">Mostrar por status
+            <select id="operador-filtro-status">
+                <option value="todos">Todos</option>
+                {% for status in status_ocorrencia %}<option value="{{ status }}">{{ status }}</option>{% endfor %}
+            </select>
+        </label>
+        <label class="filtro-grupo">Nível de acúmulo
+            <select id="operador-filtro-nivel">
+                <option value="todos">Todos</option>
+                {% for nivel in niveis_acumulo %}<option value="{{ nivel }}">{{ nivel }}</option>{% endfor %}
+            </select>
+        </label>
+        <label class="filtro-grupo operador-busca">Buscar local ou resíduo
+            <input id="operador-filtro-busca" type="search" placeholder="Ex.: ponte, plástico">
+        </label>
+        <label class="filtro-grupo">Ordenar por
+            <select id="operador-filtro-ordem">
+                <option value="prioridade">Prioridade</option>
+                <option value="recentes">Mais recentes</option>
+                <option value="antigos">Mais antigos</option>
+            </select>
+        </label>
+        <button type="button" class="btn btn-secundario operador-limpar" id="operador-limpar">Limpar filtros</button>
+    </div>
+</section>
+
+<div id="operador-status" class="msg" role="status" aria-live="polite"></div>
+<section id="operador-fila" class="operador-fila" aria-label="Ocorrências para atendimento"></section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/operador.js') }}"></script>
+{% endblock %}

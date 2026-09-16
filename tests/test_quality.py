@@ -109,10 +109,47 @@ def test_pagina_dashboard(client):
     assert b"Dashboard" in resp.data
 
 
+def test_painel_operador_exige_perfil_elevado(client):
+    assert client.get("/operador").status_code == 302
+    assert _login(client).status_code == 200
+    resp = client.get("/operador")
+    assert resp.status_code == 200
+    assert b"Painel de operador" in resp.data
+
+
 def test_pagina_login(client):
     resp = client.get("/login")
     assert resp.status_code == 200
     assert b"Login" in resp.data
+
+
+def test_cadastro_publico_cria_usuario_com_perfil_comum(client):
+    pagina = client.get("/cadastro")
+    assert pagina.status_code == 200
+    resp = client.post(
+        "/api/auth/cadastro",
+        json={
+            "nome": "Participante novo",
+            "email": "participante@example.com",
+            "senha": "senha123",
+            "perfil": "administrador",
+        },
+    )
+    assert resp.status_code == 201
+    login = client.post(
+        "/api/auth/login",
+        json={"email": "participante@example.com", "senha": "senha123"},
+    )
+    assert login.status_code == 200
+    assert login.get_json()["usuario"]["perfil"] == "usuario"
+
+
+def test_cadastro_rejeita_email_existente(client):
+    resp = client.post(
+        "/api/auth/cadastro",
+        json={"nome": "Admin duplicado", "email": "admin@igarape.local", "senha": "senha123"},
+    )
+    assert resp.status_code == 409
 
 
 def _login(client):

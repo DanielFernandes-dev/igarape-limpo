@@ -18,6 +18,7 @@
             <button type="submit" id="btn-login" class="btn btn-primario">Entrar</button>
             <p id="msg-login" class="msg" role="status" aria-live="polite"></p>
             <p class="auth-nota">O acesso é destinado a participantes autorizados do monitoramento.</p>
+            <p class="auth-link">Ainda não participa? <a href="{{ url_for('pages.cadastro') }}">Crie sua conta</a></p>
         </form>
     </div>
 </div>
@@ -28,6 +29,10 @@
 const form = document.getElementById("form-login");
 const msg = document.getElementById("msg-login");
 const botao = document.getElementById("btn-login");
+if (new URLSearchParams(window.location.search).get("cadastro") === "ok") {
+    msg.textContent = "Conta criada. Entre com seus dados.";
+    msg.className = "msg ok";
+}
 form.addEventListener("submit", async (e) => {
     e.preventDefault(); botao.disabled = true; botao.textContent = "Entrando...";
     msg.textContent = "Verificando credenciais..."; msg.className = "msg ok";

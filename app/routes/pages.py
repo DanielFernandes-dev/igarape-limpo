@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template
+from flask import Blueprint, abort, g, redirect, render_template
 
 from app.repositories import ocorrencia_repository, ponto_repository
 from app.services import ponto_service
@@ -39,6 +39,16 @@ def dashboard():
     return render_template("dashboard.html")
 
 
+@pages.get("/operador")
+def operador():
+    usuario = getattr(g, "current_user", None)
+    if usuario is None:
+        return redirect("/login")
+    if usuario.get("perfil") not in ("moderador", "administrador"):
+        abort(403)
+    return render_template("operador.html")
+
+
 @pages.get("/login")
 def login():
     from flask import session
@@ -46,6 +56,13 @@ def login():
     if session.get("usuario_id"):
         return redirect("/")
     return render_template("login.html")
+
+
+@pages.get("/cadastro")
+def cadastro():
+    if getattr(g, "current_user", None):
+        return redirect("/")
+    return render_template("cadastro.html")
 
 
 @pages.post("/logout")
