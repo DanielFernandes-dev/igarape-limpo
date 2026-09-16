@@ -139,6 +139,14 @@ function escapeHtml(valor) {
     return String(valor).replace(/[&<>'"]/g, (caractere) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[caractere]));
 }
 
-document.getElementById("form-filtros")?.addEventListener("submit", (e) => { e.preventDefault(); carregarOcorrencias(); });
-document.getElementById("btn-limpar-filtros")?.addEventListener("click", () => { document.getElementById("form-filtros").reset(); carregarOcorrencias(); });
+document.getElementById("form-filtros")?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    document.getElementById("filtros-navbar")?.removeAttribute("open");
+    carregarOcorrencias();
+});
+document.getElementById("btn-limpar-filtros")?.addEventListener("click", () => {
+    document.getElementById("form-filtros").reset();
+    document.getElementById("filtros-navbar")?.removeAttribute("open");
+    carregarOcorrencias();
+});
 carregarOcorrencias();

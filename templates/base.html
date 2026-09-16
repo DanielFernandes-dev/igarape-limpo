@@ -31,6 +31,7 @@
                 {% endif %}
                 <a href="{{ url_for('pages.nova') }}" class="nav-destaque {{ 'ativo' if request.endpoint == 'pages.nova' }}" {% if request.endpoint == 'pages.nova' %}aria-current="page"{% endif %}>Nova ocorrência</a>
             </nav>
+            {% block nav_tools %}{% endblock %}
             <div class="conta">
                 <span class="status-vivo"><i aria-hidden="true"></i>Ao vivo</span>
                 {% if current_user %}
@@ -59,7 +60,7 @@
     <nav class="bottom-navigation" aria-label="Navegação operacional">
         <div class="bottom-navigation-inner">
             <a class="ativo" href="#mapa" aria-current="page"><span class="material-symbols-outlined" aria-hidden="true">map</span><span>Mapa</span></a>
-            <a href="#form-filtros"><span class="material-symbols-outlined" aria-hidden="true">filter_alt</span><span>Filtros</span></a>
+            <a href="#indicadores"><span class="material-symbols-outlined" aria-hidden="true">monitoring</span><span>Indicadores</span></a>
             <a href="{{ url_for('pages.nova') }}"><span class="material-symbols-outlined" aria-hidden="true">add_circle</span><span>Registrar</span></a>
             <a href="#lista-recente"><span class="material-symbols-outlined" aria-hidden="true">warning</span><span>Ocorrências</span></a>
             <a href="{{ url_for('pages.dashboard') }}"><span class="material-symbols-outlined" aria-hidden="true">insights</span><span>Métricas</span></a>

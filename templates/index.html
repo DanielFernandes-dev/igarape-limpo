@@ -7,6 +7,63 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
 {% endblock %}
 
+{% block nav_tools %}
+<details class="nav-filter" id="filtros-navbar">
+    <summary><span class="material-symbols-outlined" aria-hidden="true">filter_alt</span><span>Filtros</span></summary>
+    <section class="nav-filter-panel" aria-labelledby="titulo-filtros">
+        <p class="panel-kicker">Refinar visualização</p>
+        <h2 class="filtros-titulo" id="titulo-filtros">Filtros operacionais</h2>
+        <form id="form-filtros" class="form-filtros">
+            <div class="filtro-grupo">
+                <label for="f-tipo">Tipo de resíduo</label>
+                <select id="f-tipo" name="tipo_residuo">
+                    <option value="">Todos</option>
+                    {% for t in tipos_residuo %}<option value="{{ t }}">{{ t }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="filtro-grupo">
+                <label for="f-nivel">Nível de acúmulo</label>
+                <select id="f-nivel" name="nivel_acumulo">
+                    <option value="">Todos</option>
+                    {% for n in niveis_acumulo %}<option value="{{ n }}">{{ n }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="filtro-grupo filtro-grupo-busca">
+                <label for="f-busca">Busca geográfica</label>
+                <input type="search" id="f-busca" name="busca" placeholder="Buscar por igarapé, bairro ou observação...">
+            </div>
+            <div class="filtro-grupo filtro-check">
+                <label><input type="checkbox" id="f-criticos" name="apenas_criticos"> Apenas nível alto</label>
+            </div>
+            <details class="filtros-avancados">
+                <summary>Filtros avançados</summary>
+                <div class="filtros-avancados-grid">
+                    <div class="filtro-grupo">
+                        <label for="f-ponto">Ponto monitorado</label>
+                        <select id="f-ponto" name="ponto_id">
+                            <option value="">Todos</option>
+                            {% for p in pontos %}<option value="{{ p.id }}">{{ p.nome }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="filtro-grupo">
+                        <label for="f-inicio">Data inicial</label>
+                        <input type="date" id="f-inicio" name="data_inicio">
+                    </div>
+                    <div class="filtro-grupo">
+                        <label for="f-fim">Data final</label>
+                        <input type="date" id="f-fim" name="data_fim">
+                    </div>
+                </div>
+            </details>
+            <div class="filtro-acoes">
+                <button type="submit" class="btn">Aplicar filtros</button>
+                <button type="button" id="btn-limpar-filtros" class="btn btn-secundario">Limpar</button>
+            </div>
+        </form>
+    </section>
+</details>
+{% endblock %}
+
 {% block conteudo %}
 <div class="operational-shell">
 <header class="operational-hero">
@@ -41,63 +98,11 @@
     </div>
 </section>
 
-<section class="cards" aria-label="Resumo das ocorrências">
+<section class="cards" id="indicadores" aria-label="Resumo das ocorrências">
     <div class="card"><span class="card-rotulo">OCORRÊNCIAS REGISTRADAS</span><span class="card-valor" id="contador-ocorrencias">—</span><span class="card-nota">no recorte atual</span></div>
     <div class="card"><span class="card-rotulo">PONTOS MONITORADOS</span><span class="card-valor" id="contador-pontos">—</span><span class="card-nota">localizações distintas</span></div>
     <div class="card"><span class="card-rotulo">RESÍDUO MAIS FREQUENTE</span><span class="card-valor" id="maior-ocorrencia">—</span><span class="card-nota">categoria predominante</span></div>
     <div class="card card-critico"><span class="card-rotulo">OCORRÊNCIAS CRÍTICAS</span><span class="card-valor" id="pontos-criticos">—</span><span class="card-nota">atenção prioritária</span></div>
-</section>
-
-<section class="filtros" aria-labelledby="titulo-filtros">
-    <p class="panel-kicker">Refinar visualização</p>
-    <h2 class="filtros-titulo" id="titulo-filtros">Filtros operacionais</h2>
-    <form id="form-filtros" class="form-filtros">
-        <div class="filtro-grupo">
-            <label for="f-tipo">Tipo de resíduo</label>
-            <select id="f-tipo" name="tipo_residuo">
-                <option value="">Todos</option>
-                {% for t in tipos_residuo %}<option value="{{ t }}">{{ t }}</option>{% endfor %}
-            </select>
-        </div>
-        <div class="filtro-grupo">
-            <label for="f-nivel">Nível de acúmulo</label>
-            <select id="f-nivel" name="nivel_acumulo">
-                <option value="">Todos</option>
-                {% for n in niveis_acumulo %}<option value="{{ n }}">{{ n }}</option>{% endfor %}
-            </select>
-        </div>
-        <div class="filtro-grupo filtro-grupo-busca">
-            <label for="f-busca">Busca geográfica</label>
-            <input type="search" id="f-busca" name="busca" placeholder="Buscar por igarapé, bairro ou observação...">
-        </div>
-        <div class="filtro-grupo filtro-check">
-            <label><input type="checkbox" id="f-criticos" name="apenas_criticos"> Apenas nível alto</label>
-        </div>
-        <details class="filtros-avancados">
-            <summary>Filtros avançados</summary>
-            <div class="filtros-avancados-grid">
-                <div class="filtro-grupo">
-                    <label for="f-ponto">Ponto monitorado</label>
-                    <select id="f-ponto" name="ponto_id">
-                        <option value="">Todos</option>
-                        {% for p in pontos %}<option value="{{ p.id }}">{{ p.nome }}</option>{% endfor %}
-                    </select>
-                </div>
-                <div class="filtro-grupo">
-                    <label for="f-inicio">Data inicial</label>
-                    <input type="date" id="f-inicio" name="data_inicio">
-                </div>
-                <div class="filtro-grupo">
-                    <label for="f-fim">Data final</label>
-                    <input type="date" id="f-fim" name="data_fim">
-                </div>
-            </div>
-        </details>
-        <div class="filtro-acoes">
-            <button type="submit" class="btn">Aplicar filtros</button>
-            <button type="button" id="btn-limpar-filtros" class="btn btn-secundario">Limpar</button>
-        </div>
-    </form>
 </section>
 
 <section id="lista-recente" class="lista-card" aria-labelledby="titulo-recentes">
