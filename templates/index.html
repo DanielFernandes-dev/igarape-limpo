@@ -8,19 +8,49 @@
 {% endblock %}
 
 {% block conteudo %}
-<header class="page-header">
+<div class="operational-shell">
+<header class="operational-hero">
+    <div class="hero-glow" aria-hidden="true"></div>
     <div class="page-header-copy">
-        <p class="eyebrow">Observação ambiental colaborativa</p>
-        <h1>O território em perspectiva</h1>
-        <p class="page-intro">Explore ocorrências, identifique recorrências e acompanhe como cada ponto muda ao longo do tempo.</p>
-    </div>
-    <div class="page-actions">
-        <a class="btn btn-claro" href="{{ url_for('pages.nova') }}">Registrar ocorrência</a>
+        <p class="eyebrow"><span class="material-symbols-outlined" aria-hidden="true">eco</span> Monitoramento ambiental · área operacional</p>
+        <h1>Dados ambientais com contexto geográfico.</h1>
+        <p class="page-intro">Acompanhamento de focos de resíduos, pontos críticos e mudanças nos igarapés urbanos de Manaus.</p>
+        <div class="hero-actions">
+            <a class="btn btn-claro" href="{{ url_for('pages.nova') }}"><span class="material-symbols-outlined" aria-hidden="true">add_circle</span> Registrar ocorrência</a>
+            <span class="hero-status"><i aria-hidden="true"></i><span id="hero-status">Carregando ocorrências mapeadas...</span></span>
+        </div>
     </div>
 </header>
 
+<div class="operational-content">
+<section class="mapa-card" aria-labelledby="titulo-mapa">
+    <div class="painel-cabecalho">
+        <div><p class="panel-kicker"><span class="material-symbols-outlined" aria-hidden="true">explore</span> Manaus GIS</p><h2 id="titulo-mapa">Mapa de ocorrências e pontos críticos</h2><p id="resultado-filtros" role="status" aria-live="polite">Carregando dados do território...</p></div>
+    </div>
+    <div id="mapa" role="region" aria-label="Mapa interativo das ocorrências"></div>
+    <div class="mapa-rodape">
+        <div class="legenda" aria-label="Legenda de níveis de acúmulo">
+            <span class="legenda-item"><span class="bolinha nivel-baixo"></span> Baixo</span>
+            <span class="legenda-item"><span class="bolinha nivel-medio"></span> Médio</span>
+            <span class="legenda-item"><span class="bolinha nivel-alto"></span> Alto / crítico</span>
+        </div>
+        <div class="exportacoes">
+            <a id="exportar-csv" href="/api/export/ocorrencias.csv" class="btn btn-exportar"><span class="material-symbols-outlined" aria-hidden="true">download</span> CSV</a>
+            <a id="exportar-geojson" href="/api/export/ocorrencias.geojson" class="btn btn-exportar"><span class="material-symbols-outlined" aria-hidden="true">public</span> GeoJSON</a>
+        </div>
+    </div>
+</section>
+
+<section class="cards" aria-label="Resumo das ocorrências">
+    <div class="card"><span class="card-rotulo">OCORRÊNCIAS REGISTRADAS</span><span class="card-valor" id="contador-ocorrencias">—</span><span class="card-nota">no recorte atual</span></div>
+    <div class="card"><span class="card-rotulo">PONTOS MONITORADOS</span><span class="card-valor" id="contador-pontos">—</span><span class="card-nota">localizações distintas</span></div>
+    <div class="card"><span class="card-rotulo">RESÍDUO MAIS FREQUENTE</span><span class="card-valor" id="maior-ocorrencia">—</span><span class="card-nota">categoria predominante</span></div>
+    <div class="card card-critico"><span class="card-rotulo">OCORRÊNCIAS CRÍTICAS</span><span class="card-valor" id="pontos-criticos">—</span><span class="card-nota">atenção prioritária</span></div>
+</section>
+
 <section class="filtros" aria-labelledby="titulo-filtros">
-    <h2 class="filtros-titulo" id="titulo-filtros">Refinar visualização</h2>
+    <p class="panel-kicker">Refinar visualização</p>
+    <h2 class="filtros-titulo" id="titulo-filtros">Filtros operacionais</h2>
     <form id="form-filtros" class="form-filtros">
         <div class="filtro-grupo">
             <label for="f-tipo">Tipo de resíduo</label>
@@ -36,28 +66,33 @@
                 {% for n in niveis_acumulo %}<option value="{{ n }}">{{ n }}</option>{% endfor %}
             </select>
         </div>
-        <div class="filtro-grupo">
-            <label for="f-ponto">Ponto monitorado</label>
-            <select id="f-ponto" name="ponto_id">
-                <option value="">Todos</option>
-                {% for p in pontos %}<option value="{{ p.id }}">{{ p.nome }}</option>{% endfor %}
-            </select>
-        </div>
-        <div class="filtro-grupo">
-            <label for="f-inicio">Data inicial</label>
-            <input type="date" id="f-inicio" name="data_inicio">
-        </div>
-        <div class="filtro-grupo">
-            <label for="f-fim">Data final</label>
-            <input type="date" id="f-fim" name="data_fim">
-        </div>
         <div class="filtro-grupo filtro-grupo-busca">
-            <label for="f-busca">Local ou observação</label>
-            <input type="search" id="f-busca" name="busca" placeholder="Ex.: Igarapé do Mindu">
+            <label for="f-busca">Busca geográfica</label>
+            <input type="search" id="f-busca" name="busca" placeholder="Buscar por igarapé, bairro ou observação...">
         </div>
         <div class="filtro-grupo filtro-check">
             <label><input type="checkbox" id="f-criticos" name="apenas_criticos"> Apenas nível alto</label>
         </div>
+        <details class="filtros-avancados">
+            <summary>Filtros avançados</summary>
+            <div class="filtros-avancados-grid">
+                <div class="filtro-grupo">
+                    <label for="f-ponto">Ponto monitorado</label>
+                    <select id="f-ponto" name="ponto_id">
+                        <option value="">Todos</option>
+                        {% for p in pontos %}<option value="{{ p.id }}">{{ p.nome }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="filtro-grupo">
+                    <label for="f-inicio">Data inicial</label>
+                    <input type="date" id="f-inicio" name="data_inicio">
+                </div>
+                <div class="filtro-grupo">
+                    <label for="f-fim">Data final</label>
+                    <input type="date" id="f-fim" name="data_fim">
+                </div>
+            </div>
+        </details>
         <div class="filtro-acoes">
             <button type="submit" class="btn">Aplicar filtros</button>
             <button type="button" id="btn-limpar-filtros" class="btn btn-secundario">Limpar</button>
@@ -65,35 +100,12 @@
     </form>
 </section>
 
-<section class="cards" aria-label="Resumo das ocorrências">
-    <div class="card"><span class="card-valor" id="contador-ocorrencias">—</span><span class="card-rotulo">OCORRÊNCIAS REGISTRADAS</span><span class="card-nota">no recorte atual</span></div>
-    <div class="card"><span class="card-valor" id="contador-pontos">—</span><span class="card-rotulo">PONTOS MONITORADOS</span><span class="card-nota">localizações distintas</span></div>
-    <div class="card"><span class="card-valor" id="maior-ocorrencia">—</span><span class="card-rotulo">RESÍDUO MAIS FREQUENTE</span><span class="card-nota">categoria predominante</span></div>
-    <div class="card"><span class="card-valor" id="pontos-criticos">—</span><span class="card-rotulo">OCORRÊNCIAS CRÍTICAS</span><span class="card-nota">classificadas como alto</span></div>
-</section>
-
-<section class="mapa-card" aria-labelledby="titulo-mapa">
-    <div class="painel-cabecalho">
-        <div><h2 id="titulo-mapa">Mapa de ocorrências</h2><p id="resultado-filtros" role="status" aria-live="polite">Carregando dados do território...</p></div>
-    </div>
-    <div id="mapa" role="region" aria-label="Mapa interativo das ocorrências"></div>
-    <div class="mapa-rodape">
-        <div class="legenda" aria-label="Legenda de níveis de acúmulo">
-            <span class="legenda-item"><span class="bolinha" style="background:#22c55e"></span> Baixo</span>
-            <span class="legenda-item"><span class="bolinha" style="background:#eab308"></span> Médio</span>
-            <span class="legenda-item"><span class="bolinha" style="background:#ef4444"></span> Alto</span>
-        </div>
-        <div class="exportacoes">
-            <a id="exportar-csv" href="/api/export/ocorrencias.csv" class="btn btn-exportar">Baixar CSV</a>
-            <a id="exportar-geojson" href="/api/export/ocorrencias.geojson" class="btn btn-exportar">Baixar GeoJSON</a>
-        </div>
-    </div>
-</section>
-
 <section id="lista-recente" class="lista-card" aria-labelledby="titulo-recentes">
-    <div class="painel-cabecalho"><div><h2 id="titulo-recentes">Ocorrências recentes</h2><p>Registros mais novos dentro dos filtros selecionados.</p></div></div>
+    <div class="painel-cabecalho"><div><p class="panel-kicker"><span class="material-symbols-outlined" aria-hidden="true">schedule</span> Manaus · últimas observações</p><h2 id="titulo-recentes">Ocorrências recentes</h2><p>Registros mais novos dentro dos filtros selecionados.</p></div></div>
     <ul id="lista"></ul>
 </section>
+</div>
+</div>
 {% endblock %}
 
 {% block scripts %}

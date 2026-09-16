@@ -1,11 +1,11 @@
 const CENTRO_INICIAL = [-3.059860, -60.040980];
-const NIVEIS = { Baixo: "#22c55e", Medio: "#eab308", Alto: "#ef4444" };
+const NIVEIS = { Baixo: "#6fdba8", Medio: "#f0bd8b", Alto: "#ffb4ab" };
 const mapa = L.map("mapa", { zoomControl: false }).setView(CENTRO_INICIAL, 13);
 
 L.control.zoom({ position: "bottomright" }).addTo(mapa);
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
     maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    attribution: '&copy; OpenStreetMap &copy; CARTO',
 }).addTo(mapa);
 
 const cluster = L.markerClusterGroup({ chunkedLoading: true, maxClusterRadius: 48, showCoverageOnHover: false });
@@ -31,6 +31,8 @@ async function carregarOcorrencias() {
         renderizarOcorrencias(ocorrencias);
         renderizarResumo(ocorrencias);
         renderizarLista(ocorrencias);
+        const heroStatus = document.getElementById("hero-status");
+        if (heroStatus) heroStatus.textContent = `${ocorrencias.length} ${ocorrencias.length === 1 ? "ocorrência mapeada" : "ocorrências mapeadas"} no recorte atual`;
         if (status) status.textContent = `${ocorrencias.length} ${ocorrencias.length === 1 ? "ocorrência encontrada" : "ocorrências encontradas"}.`;
     } catch (erro) {
         cluster.clearLayers();
@@ -104,12 +106,25 @@ function renderizarLista(ocorrencias) {
     }
     ocorrencias.forEach((o) => {
         const item = document.createElement("li");
+        item.className = `ocorrencia-item nivel-${String(o.nivel_acumulo || "baixo").toLowerCase()}`;
+        const cabecalho = document.createElement("div");
+        cabecalho.className = "ocorrencia-item-cabecalho";
         const link = document.createElement("a");
         link.href = `/ocorrencia/${Number(o.id)}`;
-        link.textContent = `Ocorrência #${String(o.id).padStart(3, "0")}`;
+        link.textContent = o.local_nome || `Ocorrência #${String(o.id).padStart(3, "0")}`;
+        const nivel = document.createElement("span");
+        nivel.className = "ocorrencia-nivel";
+        nivel.textContent = o.nivel_acumulo;
         const meta = document.createElement("span");
-        meta.textContent = `${o.tipo_residuo} · ${o.nivel_acumulo} · ${formatarData(o.data_hora)}`;
-        item.append(link, meta);
+        meta.className = "ocorrencia-meta";
+        meta.textContent = `Registro #${String(o.id).padStart(3, "0")} · ${formatarData(o.data_hora)}`;
+        const descricao = document.createElement("p");
+        descricao.textContent = o.observacoes || `${o.tipo_residuo} identificado neste ponto monitorado.`;
+        const rodape = document.createElement("div");
+        rodape.className = "ocorrencia-item-rodape";
+        rodape.textContent = `Resíduo: ${o.tipo_residuo}`;
+        cabecalho.append(link, nivel);
+        item.append(cabecalho, meta, descricao, rodape);
         lista.appendChild(item);
     });
 }

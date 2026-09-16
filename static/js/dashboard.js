@@ -1,5 +1,5 @@
-const COR_TIPOS = ["#195343", "#14747b", "#b85f3d", "#6f9271", "#4f7684", "#a47b58", "#71817c"];
-const CORES_NIVEL = ["#4aa86b", "#e1a93b", "#cf5d49"];
+const COR_TIPOS = ["#94d4b2", "#6fdba8", "#f0bd8b", "#5aa984", "#79bdb0", "#c99868", "#8aa99a"];
+const CORES_NIVEL = ["#6fdba8", "#f0bd8b", "#ffb4ab"];
 const status = document.getElementById("dashboard-status");
 
 async function carregarDashboard() {
@@ -25,11 +25,11 @@ async function carregarDashboard() {
 }
 
 function set(id, valor) { document.getElementById(id).textContent = valor; }
-const opcoesBase = { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: "#5f716c", font: { family: "Manrope" } } } }, scales: { x: { grid: { display: false }, ticks: { color: "#5f716c" } }, y: { beginAtZero: true, grid: { color: "rgba(23,50,45,.07)" }, ticks: { precision: 0, color: "#5f716c" } } } };
+const opcoesBase = { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: "#bfc9c1", font: { family: "Hanken Grotesk" } } } }, scales: { x: { grid: { display: false }, ticks: { color: "#bfc9c1" } }, y: { beginAtZero: true, grid: { color: "rgba(191,201,193,.1)" }, ticks: { precision: 0, color: "#bfc9c1" } } } };
 
 function graficoBarras(id, dados) { new Chart(document.getElementById(id), { type: "bar", data: { labels: Object.keys(dados), datasets: [{ data: Object.values(dados), backgroundColor: COR_TIPOS, borderRadius: 7 }] }, options: { ...opcoesBase, plugins: { legend: { display: false } } } }); }
 function graficoPizza(id, dados) { new Chart(document.getElementById(id), { type: "doughnut", data: { labels: Object.keys(dados), datasets: [{ data: Object.values(dados), backgroundColor: CORES_NIVEL, borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: "68%", plugins: opcoesBase.plugins } }); }
-function graficoLinha(id, labels, valores) { new Chart(document.getElementById(id), { type: "line", data: { labels, datasets: [{ data: valores, borderColor: "#14747b", backgroundColor: "rgba(46,156,160,.12)", fill: true, tension: .35, pointRadius: 2 }] }, options: { ...opcoesBase, plugins: { legend: { display: false } } } }); }
-function graficoRanking(id, labels, valores) { new Chart(document.getElementById(id), { type: "bar", data: { labels, datasets: [{ data: valores, backgroundColor: "#b85f3d", borderRadius: 7 }] }, options: { ...opcoesBase, indexAxis: "y", plugins: { legend: { display: false } } } }); }
+function graficoLinha(id, labels, valores) { new Chart(document.getElementById(id), { type: "line", data: { labels, datasets: [{ data: valores, borderColor: "#94d4b2", backgroundColor: "rgba(148,212,178,.12)", fill: true, tension: .35, pointRadius: 2 }] }, options: { ...opcoesBase, plugins: { legend: { display: false } } } }); }
+function graficoRanking(id, labels, valores) { new Chart(document.getElementById(id), { type: "bar", data: { labels, datasets: [{ data: valores, backgroundColor: "#f0bd8b", borderRadius: 7 }] }, options: { ...opcoesBase, indexAxis: "y", plugins: { legend: { display: false } } } }); }
 
 carregarDashboard();
