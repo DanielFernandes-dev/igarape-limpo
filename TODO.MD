@@ -225,8 +225,8 @@ Etapa posterior.
 - [ ] <FASE7> Testar diferentes dispositivos.
 - [ ] <FASE7> Testar conexão lenta.
 - [ ] <FASE7> Testar comportamento sem localização disponível.
-- [ ] <FASE7> Testar comportamento sem fotografia.
-- [ ] <FASE7> Revisar permissões de localização.
+- [x] <FASE7> Testar comportamento sem fotografia.
+- [x] <FASE7> Revisar permissões de localização.
 
 13. Documentação
 
@@ -238,6 +238,15 @@ Etapa posterior.
 - [x] <FASE6> Documentar critérios de classificação.
 - [x] <FASE6> Registrar decisões técnicas.
 - [x] <FASE6> Registrar limitações do protótipo.
+
+## Entregas técnicas posteriores
+
+- [x] Implementar comparação entre períodos no dashboard.
+- [x] Implementar alerta agregado para aumento de ocorrências.
+- [x] Cobrir ausência de fotografia e falha de geolocalização com feedback na interface.
+- [ ] Validar responsividade em dispositivos físicos.
+- [ ] Validar operação sob conexão lenta ou indisponível.
+- [ ] Criar classificação automática com conjunto de imagens rotuladas.
 - [x] <FASE6> Registrar resultados dos testes.
 - [x] <FASE6> Documentar possíveis trabalhos futuros.
 

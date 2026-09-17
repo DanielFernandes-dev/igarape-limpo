@@ -6,11 +6,11 @@ async function carregarDashboard() {
     status.textContent = "Atualizando indicadores...";
     status.className = "msg ok";
     try {
-        const [resumoResp, serieResp, rankingResp] = await Promise.all([
-            fetch("/api/dashboard/resumo"), fetch("/api/dashboard/series?dias=30"), fetch("/api/dashboard/ranking?limite=8")
+        const [resumoResp, serieResp, rankingResp, comparacaoResp] = await Promise.all([
+            fetch("/api/dashboard/resumo"), fetch("/api/dashboard/series?dias=30"), fetch("/api/dashboard/ranking?limite=8"), fetch("/api/dashboard/comparacao?dias=7")
         ]);
-        if (!resumoResp.ok || !serieResp.ok || !rankingResp.ok) throw new Error();
-        const [r, s, dados] = await Promise.all([resumoResp.json(), serieResp.json(), rankingResp.json()]);
+        if (!resumoResp.ok || !serieResp.ok || !rankingResp.ok || !comparacaoResp.ok) throw new Error();
+        const [r, s, dados, comparacao] = await Promise.all([resumoResp.json(), serieResp.json(), rankingResp.json(), comparacaoResp.json()]);
 
         set("d-total-ocorrencias", r.total_ocorrencias); set("d-7dias", r.ultimos_7_dias); set("d-30dias", r.ultimos_30_dias);
         set("d-pontos-ativos", r.pontos_ativos); set("d-pontos-criticos", r.pontos_criticos); set("d-residuo", r.residuo_mais_frequente || "—");
@@ -20,11 +20,21 @@ async function carregarDashboard() {
         graficoBarras("grafico-tipo", r.por_tipo); graficoPizza("grafico-nivel", r.por_nivel);
         graficoLinha("grafico-evolucao", s.pontos.map((p) => p.data.slice(5)), s.pontos.map((p) => p.quantidade));
         graficoRanking("grafico-ranking", dados.ranking.map((item) => item.nome).reverse(), dados.ranking.map((item) => item.quantidade).reverse());
+        renderizarComparacao(comparacao);
         status.textContent = "Indicadores atualizados com os dados mais recentes.";
     } catch (erro) { status.textContent = "Não foi possível carregar o dashboard. Tente atualizar a página."; status.className = "msg erro"; }
 }
 
 function set(id, valor) { document.getElementById(id).textContent = valor; }
+function renderizarComparacao(dados) {
+    set("comparacao-atual", dados.periodo_atual.total);
+    set("comparacao-anterior", dados.periodo_anterior.total);
+    const variacao = dados.variacao_percentual;
+    set("comparacao-variacao", `${variacao > 0 ? "+" : ""}${variacao}%`);
+    const alerta = document.getElementById("comparacao-alerta");
+    alerta.className = `comparacao-alerta ${dados.alerta ? "ativo" : ""}`;
+    alerta.innerHTML = dados.alerta ? "<strong>Aumento de atenção</strong><span>O ritmo de registros subiu.</span>" : "<strong>Sem alerta</strong><span>Acompanhamento normal.</span>";
+}
 const opcoesBase = { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: "#bfc9c1", font: { family: "Hanken Grotesk" } } } }, scales: { x: { grid: { display: false }, ticks: { color: "#bfc9c1" } }, y: { beginAtZero: true, grid: { color: "rgba(191,201,193,.1)" }, ticks: { precision: 0, color: "#bfc9c1" } } } };
 
 function graficoBarras(id, dados) { new Chart(document.getElementById(id), { type: "bar", data: { labels: Object.keys(dados), datasets: [{ data: Object.values(dados), backgroundColor: COR_TIPOS, borderRadius: 7 }] }, options: { ...opcoesBase, plugins: { legend: { display: false } } } }); }
