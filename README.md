@@ -136,6 +136,7 @@ igarape-limpo/
 │   └── obsidian/                 # documentação técnica navegável
 ├── ARQUITETURA.md
 ├── APRESENTACAO.md
+├── RELATORIO.md
 └── TODO.MD
 ```
 
@@ -207,3 +208,4 @@ Visão computacional e alertas permanecem como trabalhos futuros, posteriores à
 - `ARQUITETURA.md`: componentes, fluxos, segurança e implantação.
 - `APRESENTACAO.md`: roteiro de apresentação e demonstração.
 - `TODO.MD`: painel de fases e histórico de progresso.
+- [`RELATORIO.md`](RELATORIO.md): relatório técnico do projeto em norma ABNT, com o que já foi feito e as pendências (pesquisa de campo, coleta de fotografias e fundamentação com artigos científicos).

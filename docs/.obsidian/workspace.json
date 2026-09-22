@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "obsidian/05 - Operação/Segurança e Privacidade.md",
-                "mode": "preview",
+                "file": "obsidian/00 - Início.md",
+                "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Segurança e Privacidade"
+              "title": "00 - Início"
             }
           }
         ]
@@ -83,8 +83,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "right": {
     "id": "e74efd4cdc607c73",
@@ -191,10 +190,16 @@
   },
   "active": "5676a1e2d49f9862",
   "lastOpenFiles": [
+    "obsidian/06 - Evolução/Roadmap.md",
+    "obsidian/06 - Evolução/Metodologia de Campo.md",
+    "obsidian/06 - Evolução/Limitações e Dívida Técnica.md",
+    "obsidian/07 - Relatório/trello.jpeg",
+    "obsidian/07 - Relatório/Relatório - Igarapé Limpo.md",
+    "obsidian/00 - Início.md",
+    "obsidian/01 - Produto/Funcionalidades e Fluxos.md",
+    "obsidian/01 - Produto/Glossário.md",
     "obsidian/04 - Referência/Integrações Externas.md",
     "obsidian/04 - Referência/API HTTP.md",
-    "obsidian/01 - Produto/Funcionalidades e Fluxos.md",
-    "obsidian/01 - Produto/Visão Geral.md",
-    "obsidian/00 - Início.md"
+    "obsidian/01 - Produto/Visão Geral.md"
   ]
 }
