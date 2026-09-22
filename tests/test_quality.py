@@ -83,6 +83,15 @@ def test_dashboard_resumo(client):
     assert "pontos_monitorados" in data
 
 
+def test_dashboard_comparacao(client):
+    resp = client.get("/api/dashboard/comparacao?dias=7")
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert "periodo_atual" in data
+    assert "periodo_anterior" in data
+    assert "alerta" in data
+
+
 def test_exportar_csv(client):
     resp = client.get("/api/export/ocorrencias.csv")
     assert resp.status_code == 200

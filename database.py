@@ -1,3 +1,4 @@
+import fcntl
 import os
 import sqlite3
 
@@ -23,10 +24,17 @@ def close_db(e=None):
 def init_app(app):
     app.teardown_appcontext(close_db)
 
-    if not os.path.exists(DATABASE_PATH):
-        init_db()
-    else:
-        migrar()
+    os.makedirs(os.path.dirname(DATABASE_PATH), exist_ok=True)
+    lock_path = DATABASE_PATH + ".lock"
+    with open(lock_path, "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        try:
+            if not os.path.exists(DATABASE_PATH):
+                init_db()
+            else:
+                migrar()
+        finally:
+            fcntl.flock(lock, fcntl.LOCK_UN)
 
 
 def init_db():
@@ -144,7 +152,7 @@ def migrar():
             admin_hash = hash_senha("admin123")
             db.execute(
                 """
-                INSERT INTO usuarios (nome, email, senha_hash, perfil, ativo)
+                INSERT OR IGNORE INTO usuarios (nome, email, senha_hash, perfil, ativo)
                 VALUES ('Administrador', 'admin@igarape.local', ?, 'administrador', 1)
                 """,
                 (admin_hash,),

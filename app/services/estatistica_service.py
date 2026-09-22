@@ -100,6 +100,40 @@ def ranking(limite=10):
     return ranking
 
 
+def comparacao_periodos(dias=7):
+    """Compara a atividade recente com o período imediatamente anterior."""
+    agora = datetime.now()
+    inicio_atual = agora - timedelta(days=dias)
+    inicio_anterior = inicio_atual - timedelta(days=dias)
+    ocorrencias = [dict(o) for o in ocorrencia_repository.listar_todas()]
+    atual = [o for o in ocorrencias if _data_no_periodo(o, inicio_atual, agora)]
+    anterior = [o for o in ocorrencias if _data_no_periodo(o, inicio_anterior, inicio_atual)]
+    variacao = _variacao_percentual(len(atual), len(anterior))
+    return {
+        "dias": dias,
+        "periodo_atual": {"inicio": inicio_atual.isoformat(), "fim": agora.isoformat(), "total": len(atual)},
+        "periodo_anterior": {"inicio": inicio_anterior.isoformat(), "fim": inicio_atual.isoformat(), "total": len(anterior)},
+        "diferenca": len(atual) - len(anterior),
+        "variacao_percentual": variacao,
+        "alerta": len(atual) >= 3 and variacao >= 30,
+        "nivel_mais_frequente": _mais_frequente(_contar(atual, "nivel_acumulo")),
+    }
+
+
+def _data_no_periodo(ocorrencia, inicio, fim):
+    try:
+        data = datetime.fromisoformat(ocorrencia["data_hora"])
+    except (TypeError, ValueError, KeyError):
+        return False
+    return inicio <= data < fim
+
+
+def _variacao_percentual(atual, anterior):
+    if anterior == 0:
+        return 100.0 if atual else 0.0
+    return round(((atual - anterior) / anterior) * 100, 1)
+
+
 def _contar_apos(ocorrencias, momento):
     contagem = 0
     for o in ocorrencias:

@@ -5,10 +5,12 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 SECRET_KEY = os.environ.get("IGARAPE_SECRET_KEY", secrets.token_hex(16))
 
-DATABASE_PATH = os.path.join(BASE_DIR, "igarape_vivo.db")
+DATA_DIR = os.environ.get("IGARAPE_DATA_DIR", BASE_DIR)
+
+DATABASE_PATH = os.path.join(DATA_DIR, "igarape_vivo.db")
 SCHEMA_PATH = os.path.join(BASE_DIR, "schema.sql")
 
-UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
+UPLOAD_FOLDER = os.path.join(DATA_DIR, "uploads")
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
 MAX_CONTENT_LENGTH = 10 * 1024 * 1024
 

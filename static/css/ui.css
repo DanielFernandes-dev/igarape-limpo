@@ -184,6 +184,15 @@ input[type="checkbox"] { accent-color: var(--floresta-700); }
 .aviso { display: flex; gap: .75rem; padding: .9rem 1rem; border-radius: 12px; background: var(--argila-100); color: #70402f; margin-bottom: 1rem; font-size: .85rem; }
 
 .graficos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.comparacao { padding: 1.25rem; margin: 1.25rem 0; }
+.comparacao .painel-cabecalho { margin-bottom: 1rem; }
+.comparacao-variacao { color: var(--agua-700); font: 700 1.45rem "Lora", serif; }
+.comparacao-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; }
+.comparacao-grid > div { display: grid; gap: .2rem; padding: .8rem; background: var(--folha-100); border-radius: 12px; }
+.comparacao-grid strong { color: var(--floresta-900); font: 700 1.35rem "Lora", serif; }
+.comparacao-grid span { color: var(--tinta-suave); font-size: .72rem; }
+.comparacao-alerta.ativo { background: var(--argila-100); }
+.comparacao-alerta.ativo strong { color: var(--argila-600); }
 .grafico-box { padding: 1.25rem; min-height: 330px; }
 .grafico-box h3 { margin: 0 0 1rem; }
 .grafico-box-largo { grid-column: span 2; }
@@ -298,6 +307,12 @@ input[type="checkbox"] { accent-color: var(--floresta-700); }
     .coordenadas { grid-template-columns: 1fr; }
     .graficos { grid-template-columns: 1fr; }
     .grafico-box-largo { grid-column: auto; }
+    .comparacao-grid { grid-template-columns: 1fr; }
+    .operador-resumo { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .operador-filtros-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .operador-busca { grid-column: 1 / -1; }
+    .operador-item { align-items: stretch; flex-direction: column; }
+    .operador-item-meta { justify-content: space-between; }
     .detalhe-grid, .analise-grid { grid-template-columns: 1fr; }
     .info { grid-template-columns: 1fr; gap: .2rem; }
     .info dd { margin-bottom: .7rem; }
@@ -311,6 +326,9 @@ input[type="checkbox"] { accent-color: var(--floresta-700); }
     .marca small { display: none; }
     .nav a { padding: .52rem .7rem; font-size: .76rem; white-space: nowrap; }
     .cards { grid-template-columns: 1fr; }
+    .operador-resumo, .operador-filtros-grid { grid-template-columns: 1fr; }
+    .operador-busca { grid-column: auto; }
+    .operador-item-meta { align-items: stretch; flex-direction: column; }
     .form-filtros { grid-template-columns: 1fr; }
     .filtro-grupo-busca, .filtro-check, .filtro-acoes { grid-column: auto; }
     .filtro-acoes { flex-direction: column; }

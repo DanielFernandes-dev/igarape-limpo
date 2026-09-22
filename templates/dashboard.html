@@ -27,6 +27,10 @@
 </section>
 
 <div id="dashboard-status" class="msg" role="status" aria-live="polite"></div>
+<section class="comparacao painel" aria-labelledby="titulo-comparacao">
+    <div class="painel-cabecalho"><div><h2 id="titulo-comparacao">Ritmo das ocorrências</h2><p>Compare os últimos 7 dias com os 7 anteriores.</p></div><span id="comparacao-variacao" class="comparacao-variacao">—</span></div>
+    <div class="comparacao-grid"><div><strong id="comparacao-atual">—</strong><span>últimos 7 dias</span></div><div><strong id="comparacao-anterior">—</strong><span>período anterior</span></div><div id="comparacao-alerta" class="comparacao-alerta"><strong>Sem alerta</strong><span>Acompanhamento normal</span></div></div>
+</section>
 <section class="graficos" aria-label="Gráficos analíticos">
     <article class="grafico-box"><h3>Tipos de resíduo</h3><canvas id="grafico-tipo" role="img" aria-label="Gráfico de ocorrências por tipo de resíduo"></canvas></article>
     <article class="grafico-box"><h3>Níveis de acúmulo</h3><canvas id="grafico-nivel" role="img" aria-label="Gráfico de ocorrências por nível de acúmulo"></canvas></article>

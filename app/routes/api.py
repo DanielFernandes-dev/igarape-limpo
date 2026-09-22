@@ -289,6 +289,17 @@ def dashboard_ranking():
     return jsonify({"ranking": estatistica_service.ranking(min(limite, 50))})
 
 
+@api.get("/dashboard/comparacao")
+def dashboard_comparacao():
+    try:
+        dias = int(request.args.get("dias", 7))
+    except (TypeError, ValueError):
+        dias = 7
+    if not 1 <= dias <= 90:
+        dias = 7
+    return jsonify(estatistica_service.comparacao_periodos(dias))
+
+
 # ------------------ Exportação ------------------
 
 
