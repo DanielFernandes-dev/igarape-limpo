@@ -1,9 +1,9 @@
-const mapa = L.map("mapa-detalhe", { zoomControl: false }).setView([lat, lng], 16);
+const mapa = L.map("mapa-detalhe", { zoomControl: false, attributionControl: false }).setView([lat, lng], 16);
 L.control.zoom({ position: "bottomright" }).addTo(mapa);
 
-L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
-    attribution: '&copy; OpenStreetMap &copy; CARTO',
+    attribution: '&copy; OpenStreetMap contributors',
 }).addTo(mapa);
 
 L.circleMarker([lat, lng], {

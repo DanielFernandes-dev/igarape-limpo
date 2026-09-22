@@ -1,9 +1,9 @@
-const mapa = L.map("mapa-ponto", { zoomControl: false }).setView([ponto.lat, ponto.lng], 15);
+const mapa = L.map("mapa-ponto", { zoomControl: false, attributionControl: false }).setView([ponto.lat, ponto.lng], 15);
 L.control.zoom({ position: "bottomright" }).addTo(mapa);
 
-L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
-    attribution: '&copy; OpenStreetMap &copy; CARTO',
+    attribution: '&copy; OpenStreetMap contributors',
 }).addTo(mapa);
 
 L.circleMarker([ponto.lat, ponto.lng], {

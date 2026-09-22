@@ -1,11 +1,11 @@
 const CENTRO_INICIAL = [-3.059860, -60.040980];
 const NIVEIS = { Baixo: "#6fdba8", Medio: "#f0bd8b", Alto: "#ffb4ab" };
-const mapa = L.map("mapa", { zoomControl: false }).setView(CENTRO_INICIAL, 13);
+const mapa = L.map("mapa", { zoomControl: false, scrollWheelZoom: true, attributionControl: false }).setView(CENTRO_INICIAL, 13);
 
 L.control.zoom({ position: "bottomright" }).addTo(mapa);
-L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
-    attribution: '&copy; OpenStreetMap &copy; CARTO',
+    attribution: '&copy; OpenStreetMap contributors',
 }).addTo(mapa);
 
 const cluster = L.markerClusterGroup({ chunkedLoading: true, maxClusterRadius: 48, showCoverageOnHover: false });

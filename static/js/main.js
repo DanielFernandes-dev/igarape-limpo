@@ -1,6 +1,6 @@
-const mapa = L.map("mapa-form", { zoomControl: false }).setView([-3.059860, -60.040980], 15);
+const mapa = L.map("mapa-form", { zoomControl: false, attributionControl: false }).setView([-3.059860, -60.040980], 15);
 L.control.zoom({ position: "bottomright" }).addTo(mapa);
-L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", { maxZoom: 19, attribution: '&copy; OpenStreetMap &copy; CARTO' }).addTo(mapa);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' }).addTo(mapa);
 
 let marcadorSelecionado = null;
 function definirPonto(lat, lng) {
