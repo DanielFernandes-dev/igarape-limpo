@@ -10,7 +10,7 @@ status: atual
 
 ## Estilo
 
-O Igarapé Vivo é uma aplicação web monolítica Flask, renderizada no servidor e complementada por JavaScript sem framework no navegador.
+O Igarapé Limpo é uma aplicação web monolítica Flask, renderizada no servidor e complementada por JavaScript sem framework no navegador.
 
 ```mermaid
 flowchart TB

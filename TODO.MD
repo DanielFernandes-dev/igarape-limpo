@@ -1,4 +1,4 @@
-TODO — Igarapé Vivo
+TODO — Igarapé Limpo
 
 Lista de etapas para desenvolvimento do protótipo.
 
@@ -54,6 +54,7 @@ MVP definido (protótipo implementado):
 
 2. Pesquisa e validação
 
+- [x] Fundamentar a problemática com fontes sobre a situação dos igarapés urbanos de Manaus (relatório técnico, seção 3).
 - [ ] <FASE7> Pesquisar trabalhos existentes sobre monitoramento de resíduos em igarapés.
 - [ ] <FASE7> Pesquisar sistemas semelhantes.
 - [ ] <FASE7> Verificar quais dados ambientais já são disponibilizados publicamente.
@@ -323,6 +324,18 @@ Calibração dos critérios ambientais
 
 > Registro do que foi implementado em cada sessão, para acompanhamento
 > e para que não haja perda de contexto entre sessões.
+
+## Sessão 2026-09-23 (Relatório técnico e fundamentação)
+
+Concluído:
+
+- Adicionados os integrantes ao relatório técnico: Daniel Fernandes de Oliveira da Silva, Adriano Alves Barros, Carlos Johnatan Silva Souza Rodrigues e Julio Thiago Colares de Lima.
+- Criada a seção 3 (Fundamentação) do `RELATORIO.md`, com referências [1] a [7] sobre a situação dos igarapés urbanos de Manaus.
+- Armazenadas as fotografias do relatório no cofre do Obsidian (`docs/obsidian/07 - Relatório`), mantendo as Figuras 2 e 3.
+- Renomeada toda a documentação e o README da raiz para o nome do projeto (Igarapé Limpo), padronizando com o relatório.
+- Removidas as imagens jpeg da raiz do projeto (igarape1.jpeg e igarape2.jpeg).
+
+Pendente: pesquisa de campo, coleta de fotografias em igarapés, fundamentação com artigos científicos e testes em campo.
 
 ## Sessão 2026-08-30 (Reformulação UX/UI)
 

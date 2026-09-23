@@ -1,6 +1,13 @@
-# Igarapé Vivo
+# Igarapé Limpo
 
 Sistema colaborativo para registrar, localizar, acompanhar e analisar ocorrências de resíduos sólidos em corpos d'água urbanos.
+
+## Equipe
+
+- Daniel Fernandes de Oliveira da Silva
+- Adriano Alves Barros
+- Carlos Johnatan Silva Souza Rodrigues
+- Julio Thiago Colares de Lima
 
 ## Estado atual
 
@@ -20,7 +27,7 @@ A interface também recebeu uma reformulação UX/UI posterior à Fase 6, com id
 
 ## Problema e objetivo
 
-Fotografias, coordenadas e observações ambientais isoladas dificultam a comparação de um mesmo local ao longo do tempo. O Igarapé Vivo organiza essas observações como dados georreferenciados e históricos.
+Fotografias, coordenadas e observações ambientais isoladas dificultam a comparação de um mesmo local ao longo do tempo. O Igarapé Limpo organiza essas observações como dados georreferenciados e históricos.
 
 O projeto não substitui órgãos ambientais, equipes de limpeza ou sistemas oficiais. Seu objetivo é oferecer uma ferramenta de apoio para estudantes, pesquisadores, projetos de extensão, grupos ambientais e comunidades.
 
@@ -192,7 +199,7 @@ Esses adaptadores ainda não formam um painel visual completo. O gateway recebe 
 
 ## Próxima fase
 
-A Fase 7 depende de decisões e atividades fora do código:
+A Fase 7 depende de decisões e atividades fora do código. A primeira etapa da fundamentação documental (fontes jornalísticas e institucionais sobre a situação dos igarapés urbanos de Manaus) já foi incorporada à seção 3 do relatório técnico; a pesquisa de campo e a fundamentação com artigos científicos permanecem pendentes.
 
 1. definir a área inicial e fontes de dados;
 2. validar metodologia e critérios;
@@ -208,4 +215,4 @@ Visão computacional e alertas permanecem como trabalhos futuros, posteriores à
 - `ARQUITETURA.md`: componentes, fluxos, segurança e implantação.
 - `APRESENTACAO.md`: roteiro de apresentação e demonstração.
 - `TODO.MD`: painel de fases e histórico de progresso.
-- [`RELATORIO.md`](RELATORIO.md): relatório técnico do projeto em norma ABNT, com o que já foi feito e as pendências (pesquisa de campo, coleta de fotografias e fundamentação com artigos científicos).
+- [`RELATORIO.md`](RELATORIO.md): relatório técnico do projeto em norma ABNT, com integrantes, fundamentação da problemática a partir de fontes sobre a situação dos igarapés urbanos de Manaus (seção 3) e as pendências do backlog (pesquisa de campo, coleta de fotografias, fundamentação com artigos científicos e testes em campo).

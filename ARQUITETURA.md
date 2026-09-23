@@ -1,4 +1,4 @@
-# Arquitetura do Igarapé Vivo
+# Arquitetura do Igarapé Limpo
 
 ## 1. Estado do documento
 
@@ -13,7 +13,7 @@ Este documento descreve o sistema implementado. Itens explicitamente marcados co
 
 ## 2. Visão geral
 
-O Igarapé Vivo transforma observações ambientais em ocorrências georreferenciadas. Uma ocorrência pode ser associada a um ponto monitorado, formando um histórico que alimenta mapa, dashboard e exportações.
+O Igarapé Limpo transforma observações ambientais em ocorrências georreferenciadas. Uma ocorrência pode ser associada a um ponto monitorado, formando um histórico que alimenta mapa, dashboard e exportações.
 
 ```text
 Navegador

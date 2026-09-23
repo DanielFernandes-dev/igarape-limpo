@@ -107,7 +107,7 @@ Resultados de campo:
 
 ## Encerramento sugerido
 
-> O Igarapé Vivo não pretende resolver sozinho a poluição dos igarapés. O objetivo é transformar observações ambientais em dados georreferenciados que possam ser visualizados, comparados e acompanhados ao longo do tempo.
+> O Igarapé Limpo não pretende resolver sozinho a poluição dos igarapés. O objetivo é transformar observações ambientais em dados georreferenciados que possam ser visualizados, comparados e acompanhados ao longo do tempo.
 
 ## Checklist antes da apresentação
 

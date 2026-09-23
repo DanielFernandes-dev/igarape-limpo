@@ -68,7 +68,7 @@ Antes da apresentação:
 
 ## Encerramento sugerido
 
-> O Igarapé Vivo transforma observações ambientais em dados georreferenciados que podem ser visualizados, comparados e acompanhados ao longo do tempo, sem substituir os órgãos responsáveis.
+> O Igarapé Limpo transforma observações ambientais em dados georreferenciados que podem ser visualizados, comparados e acompanhados ao longo do tempo, sem substituir os órgãos responsáveis.
 
 ## Depois da apresentação
 

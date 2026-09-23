@@ -23,6 +23,7 @@ status: atual
 
 ## Fase 7
 
+- [x] Fundamentar a problemática com fontes sobre os igarapés urbanos de Manaus (relatório técnico, seção 3)
 - [ ] Definir área inicial de monitoramento
 - [ ] Pesquisar trabalhos e sistemas semelhantes
 - [ ] Identificar fontes públicas e geográficas

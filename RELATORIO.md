@@ -103,7 +103,7 @@ O quadro se agrava no período de estiagem. Com a descida do nível do Rio Negro
 
 Como resposta parcial a esse cenário, a prefeitura utiliza tecnologias como as ecobarreiras em pontos específicos, como no Passeio do Mindu, para reter parte dos resíduos sólidos antes que cheguem aos rios principais [5].
 
-![Figura 2 — Registro fotográfico de igarapé urbano de Manaus. Fonte: produção própria.](igarape1.jpeg)
+![Figura 2 — Registro fotográfico de igarapé urbano de Manaus. Fonte: produção própria.](docs/obsidian/07%20-%20Relatório/igarape1.jpeg)
 
 Figura 2 — Registro fotográfico de igarapé urbano de Manaus. Fonte: produção própria.
 
@@ -118,7 +118,7 @@ As informações apresentadas fundamentam diretamente as decisões de escopo e a
 - **Fotografia e observações**: a documentação visual das ocorrências apoia o registro de evidências da poluição por esgoto e microplásticos [3] e permite acompanhar a evolução de um mesmo trecho ao longo do tempo [1].
 - **Dashboard e exportação**: os indicadores e as exportações em CSV e GeoJSON fornecem subsídios para análises semelhantes às realizadas em pesquisas citadas sobre contaminação e saneamento [3][4].
 
-![Figura 3 — Registro fotográfico de acúmulo de resíduos em igarapé urbano. Fonte: produção própria.](igarape2.jpeg)
+![Figura 3 — Registro fotográfico de acúmulo de resíduos em igarapé urbano. Fonte: produção própria.](docs/obsidian/07%20-%20Relatório/igarape2.jpeg)
 
 Figura 3 — Registro fotográfico de acúmulo de resíduos em igarapé urbano. Fonte: produção própria.
 

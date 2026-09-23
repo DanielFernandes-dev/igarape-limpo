@@ -1,18 +1,25 @@
 ---
 aliases:
   - Início
-  - Igarapé Vivo
+  - Igarapé Limpo
 tags:
-  - igarape-vivo
+  - igarape-limpo
   - documentação
 tipo: índice
 status: atual
 ---
 
-# Igarapé Vivo
+# Igarapé Limpo
 
 > [!abstract] Sobre o projeto
 > Sistema colaborativo para registrar, localizar, acompanhar, analisar e exportar ocorrências georreferenciadas de resíduos sólidos em corpos d'água urbanos.
+
+## Equipe
+
+- Daniel Fernandes de Oliveira da Silva
+- Adriano Alves Barros
+- Carlos Johnatan Silva Souza Rodrigues
+- Julio Thiago Colares de Lima
 
 ## Navegação
 
@@ -65,6 +72,8 @@ status: atual
 ## Estado atual
 
 As fases de fundamentos, monitoramento, gestão, dados, qualidade e documentação estão implementadas. A próxima etapa é a pesquisa e validação em campo.
+
+A fundamentação da problemática a partir de fontes sobre a situação dos igarapés urbanos de Manaus foi iniciada no [[Relatório - Igarapé Limpo]] (seção 3); a fundamentação com artigos científicos, a pesquisa de campo e a coleta de fotografias permanecem pendentes.
 
 O sistema atual é um **protótipo funcional**. Os registros incluídos no banco são dados seed e de teste, não resultados de uma coleta ambiental formal.
 

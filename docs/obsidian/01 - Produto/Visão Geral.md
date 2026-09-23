@@ -14,7 +14,7 @@ Fotografias, coordenadas e observações ambientais isoladas dificultam a compar
 
 ## Proposta
 
-O Igarapé Vivo organiza observações de resíduos como ocorrências georreferenciadas. Cada ocorrência pode ser associada a um ponto monitorado e alimentar:
+O Igarapé Limpo organiza observações de resíduos como ocorrências georreferenciadas. Cada ocorrência pode ser associada a um ponto monitorado e alimentar:
 
 - mapa interativo;
 - histórico do local;
