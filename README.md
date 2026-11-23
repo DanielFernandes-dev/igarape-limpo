@@ -4,7 +4,6 @@ Sistema colaborativo para registrar, localizar, acompanhar e analisar ocorrênci
 
 ## Equipe
 
-- Daniel Fernandes de Oliveira da Silva
 - Adriano Alves Barros
 - Carlos Johnatan Silva Souza Rodrigues
 - Julio Thiago Colares de Lima
