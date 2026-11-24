@@ -308,7 +308,7 @@ Ambos aceitam os filtros da listagem. O frontend atualiza automaticamente os lin
 
 ## 12. Testes
 
-A suíte atual possui 36 testes e usa banco e uploads temporários.
+A suíte atual possui 38 testes e usa banco e uploads temporários.
 
 Cobertura existente:
 

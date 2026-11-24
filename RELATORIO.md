@@ -85,7 +85,7 @@ O descarte irregular de resíduos sólidos em igarapés urbanos é um problema a
 
 ### 1.1 OBJETO SOCIAL FOCO DA ATIVIDADE DE EXTENSÃO
 
-A atividade tem como foco o registro e o acompanhamento colaborativo do descarte irregular e do acúmulo de resíduos sólidos em igarapés urbanos de Manaus. O recorte inicial considera os igarapés do Mindu e do Educandos, presentes nos dados de demonstração do sistema; os trechos efetivos de atuação serão definidos na etapa de campo com a comunidade externa.
+A atividade tem como foco o registro e o acompanhamento colaborativo do descarte irregular e do acúmulo de resíduos sólidos em igarapés urbanos de Manaus. Os dados de demonstração incluem referências ao Mindu, Educandos, Quarenta e Tarumã-Açu; não representam coleta ambiental real. Os trechos efetivos de atuação serão definidos e validados na etapa de campo com a comunidade externa.
 
 ### 1.2 PROBLEMÁTICA SOCIAL
 
@@ -147,7 +147,7 @@ Fonte: produção própria (acervo do projeto).
 As informações apresentadas fundamentam diretamente as decisões de escopo e as funcionalidades já implementadas:
 
 - **Registro georreferenciado de ocorrências**: a necessidade de registrar o descarte irregular com tipo de resíduo, nível de acúmulo, data e coordenadas é coerente com o problema descrito. Os tipos adotados (`Plastico`, `Metal`, `Vidro`, `Organico`, `Papel`, `Misto` e `Outro`) abrangem os resíduos citados nas fontes, como garrafas plásticas e embalagens.
-- **Pontos monitorados**: o seed do banco cadastra o Igarapé do Mindu e o Igarapé do Educandos, que são, respectivamente, os principais contribuintes das bacias do São Raimundo e do Educandos. Isso confere coerência geográfica ao recorte inicial, ainda que a área de monitoramento oficial seja definida na pesquisa de campo.
+- **Pontos monitorados**: o seed do banco apresenta trechos demonstrativos do Mindu, Educandos, Quarenta e Tarumã-Açu, cursos d'água associados às bacias urbanas de Manaus. As coordenadas adicionadas para Quarenta e Tarumã-Açu são referências cartográficas do OpenStreetMap; a localização e os níveis de acúmulo devem ser validados em campo e não constituem classificação ambiental oficial.
 - **Níveis de acúmulo e criticidade**: a escala `Baixo`, `Medio` e `Alto` e o filtro de criticidade (nível `Alto`) permitem priorizar os trechos que se tornam canais de detritos ou que acumulam lixo exposto na estiagem, apoiando o direcionamento de ações de limpeza e dragagem.
 - **Recorrência e histórico**: o conceito de ponto recorrente (três ou mais ocorrências) e o histórico por ponto respondem à dinâmica real de reincidência do descarte, documentada pela necessidade de operações contínuas da Semulsp e da Seminf.
 - **Fotografia e observações**: a documentação visual das ocorrências apoia o registro de resíduos sólidos visíveis e permite acompanhar a evolução de um mesmo trecho ao longo do tempo.
@@ -223,7 +223,7 @@ Fonte: elaborado pelos autores.
 
 ### 3.2 ACOMPANHAMENTO E AVALIAÇÃO
 
-O desenvolvimento é acompanhado por um quadro no Trello, documentação técnica e histórico do projeto. A suíte atual possui 36 testes automatizados para páginas, autenticação, permissões, filtros, exportações, privacidade, segurança, acessibilidade, limpeza, protocolo e migração. Essa verificação técnica deverá ser complementada pela avaliação em campo.
+O desenvolvimento é acompanhado por um quadro no Trello, documentação técnica e histórico do projeto. A suíte atual possui 38 testes automatizados para páginas, autenticação, permissões, filtros, exportações, privacidade, segurança, acessibilidade, limpeza, protocolo e migração. Essa verificação técnica deverá ser complementada pela avaliação em campo.
 
 Figura 3 – Quadro de gestão do projeto no Trello
 
@@ -299,7 +299,7 @@ O protótipo funcional constitui o resultado técnico já obtido. Os resultados 
 - Limite de 10 MB por requisição.
 - Respostas públicas sem `senha_hash` ou `usuario_id`.
 - Logs de autenticação e operações sem dados sensíveis.
-- Suíte com 36 testes automatizados aprovados, com banco e uploads temporários, incluindo acessibilidade, limpeza, reincidência, protocolo, migração e privacidade.
+- Suíte com 38 testes automatizados aprovados, com banco e uploads temporários, incluindo acessibilidade, limpeza, reincidência, protocolo, migração e privacidade.
 
 #### 6.1.6 Interface e documentação
 

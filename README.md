@@ -83,7 +83,7 @@ Fluxo central:
 - Respostas públicas sem `senha_hash` ou `usuario_id`.
 - Logs de autenticação e operações sem dados sensíveis.
 - Resposta genérica para erros internos da API.
-- 36 testes automatizados com banco e uploads temporários.
+- 38 testes automatizados com banco e uploads temporários.
 
 ## Experiência e interface
 
@@ -114,6 +114,8 @@ Níveis de acúmulo:
 Esses níveis são estimativas visuais do protótipo e ainda precisam de validação na Fase 7.
 
 Um ponto é considerado recorrente quando possui ao menos três ocorrências no histórico total. No mapa, o filtro de criticidade representa ocorrências classificadas como nível `Alto`.
+
+Os registros iniciais são exemplos de demonstração, não medições ambientais reais. Eles variam entre Mindu, Quarenta e Tarumã-Açu; os níveis `Baixo`, `Medio` e `Alto` descrevem somente cada ocorrência. As coordenadas de referência dos trechos demonstrativos do Quarenta e do Tarumã-Açu vêm do OpenStreetMap e precisam ser validadas em campo.
 
 ## Tecnologias
 
@@ -182,7 +184,7 @@ Essa credencial deve ser substituída antes de qualquer exposição externa. Con
 .venv/bin/pytest -q
 ```
 
-Resultado validado nesta implementação: **36 testes aprovados**. A suíte cobre páginas, autenticação, proteção de rotas, filtros, dashboard, exportações, privacidade, imagens, limite de upload, acessibilidade, limpeza, reincidência, protocolo e preservação do banco legado.
+Resultado validado nesta implementação: **38 testes aprovados**. A suíte cobre páginas, autenticação, proteção de rotas, filtros, dashboard, exportações, privacidade, imagens, limite de upload, acessibilidade, limpeza, reincidência, protocolo e preservação do banco legado.
 
 ## Integrações externas
 

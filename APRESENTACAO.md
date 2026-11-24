@@ -66,7 +66,7 @@ Roteiro:
 8. **Dashboard:** mostrar totais, distribuições, evolução, limpeza e reincidência.
 9. **Exportação:** baixar CSV e GeoJSON, opcionalmente filtrados.
 10. **UX/UI:** reduzir a janela para demonstrar adaptação móvel, navegação, estados vazios e foco visível.
-11. **Qualidade:** citar Pillow, limite de 10 MB, cookies/headers protegidos, logs sem dados sensíveis e 36 testes.
+11. **Qualidade:** citar Pillow, limite de 10 MB, cookies/headers protegidos, logs sem dados sensíveis e 38 testes.
 
 Plano alternativo sem internet:
 
@@ -80,7 +80,7 @@ Resultados técnicos atuais:
 
 - Fases 1 a 6 concluídas; Fase 7 é a próxima.
 - CRUD, monitoramento, gestão, análise e exportação operacionais.
-- 36 testes automatizados aprovados, incluindo acessibilidade, limpeza, reincidência, protocolo e migração de dados existentes.
+- 38 testes automatizados aprovados, incluindo acessibilidade, limpeza, reincidência, protocolo e migração de dados existentes.
 - Upload falso rejeitado e limite de tamanho validado.
 - Interface reformulada em todas as páginas, com responsividade, acessibilidade, preview e feedback de carregamento.
 

@@ -109,7 +109,7 @@ function criarPopup(o) {
     const pontoId = o.ponto_id ? Number(o.ponto_id) : null;
     const foto = o.fotografia ? `<img src="${escapeHtml(o.fotografia)}" alt="Fotografia da ocorrência ${id}" style="width:100%;height:125px;object-fit:cover;border-radius:10px;margin-bottom:8px">` : "";
     const ponto = pontoId ? `<a href="/ponto/${pontoId}">Histórico do ponto</a>` : "";
-    return `<div class="popup-ocorrencia">${foto}<small>OCORRÊNCIA #${String(id).padStart(3, "0")}</small><strong style="display:block;margin:3px 0 7px">${escapeHtml(o.local_nome || o.tipo_residuo)}</strong><span>${escapeHtml(o.tipo_residuo)} · ${escapeHtml(o.nivel_acumulo)}</span><br><span>${escapeHtml(formatarData(o.data_hora))}</span><div style="display:flex;gap:10px;margin-top:9px"><a href="/ocorrencia/${id}">Ver detalhes</a>${ponto}</div></div>`;
+    return `<div class="popup-ocorrencia">${foto}<small>OCORRÊNCIA #${String(id).padStart(3, "0")}</small><strong style="display:block;margin:3px 0 7px">${escapeHtml(o.ponto_nome || o.local_nome || o.tipo_residuo)}</strong><span>${escapeHtml(o.tipo_residuo)} · ${escapeHtml(o.nivel_acumulo)}</span><br><span>${escapeHtml(formatarData(o.data_hora))}</span><div style="display:flex;gap:10px;margin-top:9px"><a href="/ocorrencia/${id}">Ver detalhes</a>${ponto}</div></div>`;
 }
 
 function renderizarResumo(ocorrencias) {
@@ -140,7 +140,7 @@ function renderizarLista(ocorrencias) {
         cabecalho.className = "ocorrencia-item-cabecalho";
         const link = document.createElement("a");
         link.href = `/ocorrencia/${Number(o.id)}`;
-        link.textContent = o.local_nome || `Ocorrência #${String(o.id).padStart(3, "0")}`;
+        link.textContent = o.ponto_nome || o.local_nome || `Ocorrência #${String(o.id).padStart(3, "0")}`;
         const nivel = document.createElement("span");
         nivel.className = "ocorrencia-nivel";
         nivel.textContent = o.nivel_acumulo;

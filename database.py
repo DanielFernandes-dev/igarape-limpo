@@ -206,10 +206,15 @@ def migrar():
                 VALUES
                     ('Igarapé do Mindu — Trecho 1', -3.059860, -60.040980, 'Margem próxima à passarela.', 'Ativo'),
                     ('Igarapé do Mindu — Trecho 2', -3.057500, -60.047000, 'Ponte central, ponto de descarte frequente.', 'Ativo'),
-                    ('Igarapé do Educandos — Foz', -3.140000, -60.008000, 'Desembocadura do igarapé.', 'Ativo');
+                    ('Igarapé do Educandos — Foz', -3.140000, -60.008000, 'Desembocadura do igarapé.', 'Ativo'),
+                    ('Igarapé do Quarenta — Trecho demonstrativo', -3.1307664, -59.9964426, 'Coordenada de referência do OpenStreetMap; validar em campo.', 'Ativo'),
+                    ('Igarapé Tarumã-Açu — Trecho demonstrativo', -2.9858251, -60.1261855, 'Coordenada de referência do OpenStreetMap; validar em campo.', 'Ativo');
                 """
             )
             db.commit()
+
+        _migrar_ocorrencias_demo_igarapes(db)
+        db.commit()
 
         usuario_vazio = db.execute("SELECT COUNT(*) FROM usuarios").fetchone()[0]
         if usuario_vazio == 0:
@@ -229,6 +234,130 @@ def migrar():
         raise
     finally:
         db.close()
+
+
+def _migrar_ocorrencias_demo_igarapes(db):
+    exemplos = (
+        (
+            "2026-08-25 14:30:00",
+            -3.058412,
+            -60.045120,
+            "Misto",
+            "Medio",
+            "Em analise",
+            "Garrafas pet e embalagens espalhadas.",
+            "Igarapé do Quarenta — Trecho demonstrativo",
+            "Igarapé do Quarenta",
+        ),
+        (
+            "2026-08-26 10:05:00",
+            -3.061230,
+            -60.038500,
+            "Metal",
+            "Baixo",
+            "Resolvida",
+            "Poucas latas e ferros velhos.",
+            "Igarapé Tarumã-Açu — Trecho demonstrativo",
+            "Igarapé Tarumã-Açu",
+        ),
+        (
+            "2026-08-28 16:20:00",
+            -3.057500,
+            -60.047000,
+            "Vidro",
+            "Medio",
+            "Nova",
+            "Garrafas de vidro quebradas.",
+            "Igarapé do Quarenta — Trecho demonstrativo",
+            "Igarapé do Quarenta",
+        ),
+    )
+    encontrados = []
+    for exemplo in exemplos:
+        (
+            data_hora,
+            latitude,
+            longitude,
+            tipo_residuo,
+            nivel_acumulo,
+            status,
+            observacoes,
+            nome_ponto,
+            local_nome,
+        ) = exemplo
+        registro = db.execute(
+            """
+            SELECT id FROM ocorrencias
+            WHERE usuario_id IS NULL AND ponto_id IN (1, 2)
+                AND data_hora = ? AND latitude = ? AND longitude = ?
+                AND tipo_residuo = ? AND nivel_acumulo = ? AND status = ?
+                AND observacoes = ? AND local_nome = 'Igarapé do Mindu'
+                AND fotografia IS NULL
+            """,
+            (
+                data_hora,
+                latitude,
+                longitude,
+                tipo_residuo,
+                nivel_acumulo,
+                status,
+                observacoes,
+            ),
+        ).fetchone()
+        if registro:
+            encontrados.append((registro["id"], nome_ponto, local_nome))
+
+    if not encontrados:
+        return
+
+    coordenadas = {
+        "Igarapé do Quarenta — Trecho demonstrativo": (
+            -3.1307664,
+            -59.9964426,
+        ),
+        "Igarapé Tarumã-Açu — Trecho demonstrativo": (
+            -2.9858251,
+            -60.1261855,
+        ),
+    }
+    pontos_destino = {}
+    for nome_ponto in {nome for _, nome, _ in encontrados}:
+        ponto = db.execute(
+            "SELECT id, latitude, longitude FROM pontos_monitorados WHERE nome = ?",
+            (nome_ponto,),
+        ).fetchone()
+        if ponto is None:
+            latitude, longitude = coordenadas[nome_ponto]
+            cursor = db.execute(
+                """
+                INSERT INTO pontos_monitorados
+                    (nome, latitude, longitude, descricao, status)
+                VALUES (?, ?, ?, ?, 'Ativo')
+                """,
+                (
+                    nome_ponto,
+                    latitude,
+                    longitude,
+                    "Coordenada de referência do OpenStreetMap; validar em campo.",
+                ),
+            )
+            ponto = {
+                "id": cursor.lastrowid,
+                "latitude": latitude,
+                "longitude": longitude,
+            }
+        pontos_destino[nome_ponto] = ponto
+
+    for ocorrencia_id, nome_ponto, local_nome in encontrados:
+        ponto = pontos_destino[nome_ponto]
+        db.execute(
+            """
+            UPDATE ocorrencias
+            SET ponto_id = ?, latitude = ?, longitude = ?, local_nome = ?
+            WHERE id = ?
+            """,
+            (ponto["id"], ponto["latitude"], ponto["longitude"], local_nome, ocorrencia_id),
+        )
 
 
 def query_all(sql, params=()):

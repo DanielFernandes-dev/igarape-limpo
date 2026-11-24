@@ -14,6 +14,22 @@ def test_listar_ocorrencias(client):
     assert "total" in data
 
 
+def test_ocorrencias_de_demonstracao_variam_por_igarape(client):
+    resposta = client.get("/api/ocorrencias")
+    ocorrencias = resposta.get_json()["ocorrencias"]
+    por_nivel = {}
+    for ocorrencia in ocorrencias:
+        por_nivel.setdefault(ocorrencia["nivel_acumulo"], set()).add(
+            ocorrencia["ponto_nome"]
+        )
+    assert resposta.status_code == 200
+    assert por_nivel == {
+        "Alto": {"Igarapé do Mindu — Trecho 1", "Igarapé do Mindu — Trecho 2"},
+        "Medio": {"Igarapé do Quarenta — Trecho demonstrativo"},
+        "Baixo": {"Igarapé Tarumã-Açu — Trecho demonstrativo"},
+    }
+
+
 def test_filtrar_ocorrencias_por_tipo(client):
     resp = client.get("/api/ocorrencias?tipo_residuo=Plastico")
     assert resp.status_code == 200
@@ -496,4 +512,64 @@ def test_migracao_preserva_dados_existentes(client, tmp_path, monkeypatch):
     protocolo = verificacao.execute("SELECT protocolo FROM ocorrencias WHERE id = 12").fetchone()[0]
     assert protocolo.startswith("IG-2026-")
     assert verificacao.execute("SELECT COUNT(*) FROM limpezas").fetchone()[0] == 0
+    verificacao.close()
+
+
+def test_migracao_atualiza_apenas_ocorrencias_de_demonstracao(tmp_path, monkeypatch):
+    banco = tmp_path / "demo_legado.db"
+    conexao = sqlite3.connect(banco)
+    conexao.executescript(
+        """
+        CREATE TABLE usuarios (
+            id INTEGER PRIMARY KEY, nome TEXT, email TEXT, senha_hash TEXT,
+            perfil TEXT, ativo INTEGER
+        );
+        CREATE TABLE pontos_monitorados (
+            id INTEGER PRIMARY KEY, nome TEXT, latitude REAL, longitude REAL,
+            descricao TEXT, status TEXT
+        );
+        CREATE TABLE ocorrencias (
+            id INTEGER PRIMARY KEY, ponto_id INTEGER, usuario_id INTEGER,
+            latitude REAL, longitude REAL, data_hora TEXT, fotografia TEXT,
+            tipo_residuo TEXT, nivel_acumulo TEXT, status TEXT, observacoes TEXT,
+            local_nome TEXT, data_atualizacao TEXT
+        );
+        INSERT INTO pontos_monitorados VALUES
+            (1, 'Igarapé do Mindu — Trecho 1', -3.059860, -60.040980, 'Margem próxima à passarela.', 'Ativo'),
+            (2, 'Igarapé do Mindu — Trecho 2', -3.057500, -60.047000, 'Ponte central, ponto de descarte frequente.', 'Ativo'),
+            (3, 'Igarapé do Educandos — Foz', -3.140000, -60.008000, 'Desembocadura do igarapé.', 'Ativo');
+        INSERT INTO usuarios VALUES
+            (7, 'Usuário preservado', 'preservado@teste.local', 'hash', 'usuario', 1);
+        INSERT INTO ocorrencias VALUES
+            (1, 1, NULL, -3.059860, -60.040980, '2026-08-24 09:15:00', NULL, 'Plastico', 'Alto', 'Nova', 'Acúmulo grande próximo às margens, muitos sacos plásticos.', 'Igarapé do Mindu', NULL),
+            (2, 1, NULL, -3.058412, -60.045120, '2026-08-25 14:30:00', NULL, 'Misto', 'Medio', 'Em analise', 'Garrafas pet e embalagens espalhadas.', 'Igarapé do Mindu', NULL),
+            (3, 1, NULL, -3.061230, -60.038500, '2026-08-26 10:05:00', NULL, 'Metal', 'Baixo', 'Resolvida', 'Poucas latas e ferros velhos.', 'Igarapé do Mindu', NULL),
+            (4, 2, NULL, -3.063900, -60.042300, '2026-08-27 11:45:00', NULL, 'Organico', 'Alto', 'Em atendimento', 'Resíduos orgânicos acumulados perto da ponte.', 'Igarapé do Mindu', NULL),
+            (5, 2, NULL, -3.057500, -60.047000, '2026-08-28 16:20:00', NULL, 'Vidro', 'Medio', 'Nova', 'Garrafas de vidro quebradas.', 'Igarapé do Mindu', NULL);
+        """
+    )
+    conexao.commit()
+    conexao.close()
+    monkeypatch.setattr(database, "DATABASE_PATH", str(banco))
+
+    database.migrar()
+    database.migrar()
+
+    verificacao = sqlite3.connect(banco)
+    assert verificacao.execute("SELECT COUNT(*) FROM ocorrencias").fetchone()[0] == 5
+    assert verificacao.execute(
+        "SELECT email FROM usuarios WHERE id = 7"
+    ).fetchone()[0] == "preservado@teste.local"
+    assert verificacao.execute(
+        "SELECT local_nome FROM ocorrencias WHERE id = 2"
+    ).fetchone()[0] == "Igarapé do Quarenta"
+    assert verificacao.execute(
+        "SELECT local_nome FROM ocorrencias WHERE id = 3"
+    ).fetchone()[0] == "Igarapé Tarumã-Açu"
+    assert verificacao.execute(
+        "SELECT COUNT(*) FROM pontos_monitorados WHERE nome = 'Igarapé do Quarenta — Trecho demonstrativo'"
+    ).fetchone()[0] == 1
+    assert verificacao.execute(
+        "SELECT COUNT(*) FROM pontos_monitorados WHERE nome = 'Igarapé Tarumã-Açu — Trecho demonstrativo'"
+    ).fetchone()[0] == 1
     verificacao.close()

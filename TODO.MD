@@ -16,7 +16,7 @@ Lista de etapas para desenvolvimento do protótipo.
 | 2 | Monitoramento (V2) | ✅ **Concluída** | Ponto monitorado, histórico, filtros, dashboard |
 | 3 | Gestão (V2.1) | ✅ **Concluída** | Autenticação, perfis, permissões e status |
 | 4 | Dados (V2.2) | ✅ **Concluída** | Exportação CSV/GeoJSON e análises |
-| 5 | Qualidade e Segurança | ✅ **Concluída** | Pillow, privacidade, cookies, headers, logs e 36 testes |
+| 5 | Qualidade e Segurança | ✅ **Concluída** | Pillow, privacidade, cookies, headers, logs e 38 testes |
 | 6 | Documentação e Apresentação | ✅ **Concluída** | README, API, arquitetura, demo |
 | Pós-Fase 6 | Reformulação UX/UI | ✅ **Concluída** | Identidade visual, responsividade, acessibilidade e feedbacks |
 | Pós-Fase 6 | Acessibilidade, limpezas e denúncias | ✅ **Implementada** | Avaliação humana, protocolo, histórico e reincidência |
