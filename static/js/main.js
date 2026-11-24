@@ -52,16 +52,16 @@ form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const msg = document.getElementById("msg-form");
     const botao = document.getElementById("btn-salvar");
-    botao.disabled = true; botao.textContent = "Salvando registro...";
+    botao.disabled = true; botao.textContent = "Enviando denúncia...";
     mensagem("Enviando dados e validando a fotografia...", "ok", msg);
     try {
         const resp = await fetch("/api/ocorrencias", { method: "POST", body: new FormData(form) });
         const resultado = await resp.json();
         if (!resp.ok) { mensagem(resultado.erro || "Erro ao salvar ocorrência.", "erro", msg); return; }
-        mensagem("Ocorrência salva. Abrindo o registro...", "ok", msg);
-        window.location.href = resultado.url;
+        mensagem(`Denúncia enviada. Protocolo: ${resultado.protocolo}`, "ok", msg);
+        botao.textContent = "Denúncia enviada";
     } catch (erro) { mensagem("Não foi possível conectar ao servidor. Seus dados não foram enviados.", "erro", msg); }
-    finally { botao.disabled = false; botao.textContent = "Salvar ocorrência"; }
+    finally { botao.disabled = false; botao.textContent = "Enviar denúncia"; }
 });
 
 function mensagem(texto, tipo, el) { el.textContent = texto; el.className = `msg ${tipo}`; }

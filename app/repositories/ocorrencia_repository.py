@@ -1,4 +1,5 @@
 import database
+from datetime import datetime
 
 
 def listar_todas(filtros=None):
@@ -51,13 +52,29 @@ def obter_por_id(ocorrencia_id):
     )
 
 
+def obter_por_protocolo(protocolo):
+    return database.query_one(
+        "SELECT * FROM ocorrencias WHERE protocolo = ?", (protocolo,)
+    )
+
+
+def contar_apos_limpeza(ponto_id, data_limpeza):
+    return database.query_one(
+        """
+        SELECT COUNT(*) FROM ocorrencias
+        WHERE ponto_id = ? AND data_hora > ?
+        """,
+        (ponto_id, data_limpeza),
+    )[0]
+
+
 def criar(dados):
-    return database.query_insert(
+    novo_id = database.query_insert(
         """
         INSERT INTO ocorrencias
             (ponto_id, usuario_id, latitude, longitude, fotografia, tipo_residuo, nivel_acumulo,
-             status, observacoes, local_nome)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             status, observacoes, local_nome, protocolo)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             dados.get("ponto_id"),
@@ -70,8 +87,15 @@ def criar(dados):
             dados.get("status", "Nova"),
             dados.get("observacoes"),
             dados.get("local_nome"),
+            None,
         ),
     )
+    protocolo = f"IG-{datetime.now().year}-{novo_id:06d}"
+    database.query_update(
+        "UPDATE ocorrencias SET protocolo = ? WHERE id = ?",
+        (protocolo, novo_id),
+    )
+    return novo_id
 
 
 def atualizar(ocorrencia_id, dados):

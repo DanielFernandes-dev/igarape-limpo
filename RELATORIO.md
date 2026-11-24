@@ -223,7 +223,7 @@ Fonte: elaborado pelos autores.
 
 ### 3.2 ACOMPANHAMENTO E AVALIAÇÃO
 
-O desenvolvimento é acompanhado por um quadro no Trello, documentação técnica e histórico do projeto. A documentação registra uma suíte de 20 testes automatizados para páginas, autenticação, permissões, filtros, exportações, privacidade e segurança. Essa verificação técnica deverá ser complementada pela avaliação em campo.
+O desenvolvimento é acompanhado por um quadro no Trello, documentação técnica e histórico do projeto. A suíte atual possui 36 testes automatizados para páginas, autenticação, permissões, filtros, exportações, privacidade, segurança, acessibilidade, limpeza, protocolo e migração. Essa verificação técnica deverá ser complementada pela avaliação em campo.
 
 Figura 3 – Quadro de gestão do projeto no Trello
 
@@ -279,10 +279,14 @@ O protótipo funcional constitui o resultado técnico já obtido. Os resultados 
 - Perfis de usuário: `usuario`, `moderador` e `administrador`.
 - Status de ocorrência: `Nova`, `Em analise`, `Em atendimento`, `Resolvida` e `Descartada`.
 - CRUD de ocorrências e gestão de pontos monitorados conforme permissão.
+- Denúncias com protocolo único `IG-AAAA-NNNNNN` e consulta pública de acompanhamento sem identificação do denunciante.
+- Avaliação humana da acessibilidade dos trechos, com nível, observações, data e responsável, alterável por moderadores e administradores.
+- Histórico próprio de limpezas por ponto, independente do status de ocorrência; a reincidência conta ocorrências posteriores à última operação registrada.
 
 #### 6.1.4 Dados e exportação
 
 - Dashboard com totais gerais, ocorrências nos últimos 7 e 30 dias, pontos ativos e recorrentes.
+- Indicadores reais de denúncias pendentes, limpezas registradas, reincidência após a última limpeza e pontos classificados como dificultosos.
 - Gráficos por tipo, nível, evolução temporal e ranking de pontos.
 - Exportação em CSV e GeoJSON, inclusive com os filtros aplicados.
 
@@ -295,7 +299,7 @@ O protótipo funcional constitui o resultado técnico já obtido. Os resultados 
 - Limite de 10 MB por requisição.
 - Respostas públicas sem `senha_hash` ou `usuario_id`.
 - Logs de autenticação e operações sem dados sensíveis.
-- Suíte com 20 testes automatizados aprovados, com banco e uploads temporários.
+- Suíte com 36 testes automatizados aprovados, com banco e uploads temporários, incluindo acessibilidade, limpeza, reincidência, protocolo, migração e privacidade.
 
 #### 6.1.6 Interface e documentação
 
@@ -316,7 +320,7 @@ A pesquisa de campo, a validação dos critérios de classificação e os testes
 
 A participação depende da articulação com a comunidade, da disponibilidade dos envolvidos e das condições de acesso aos trechos. Conectividade, precisão da localização em dispositivos móveis, qualidade das imagens e diferenças de interpretação dos níveis de acúmulo poderão afetar os registros. Observações limitadas a determinados trechos e períodos não permitem generalização para todos os igarapés de Manaus. Fotografias de resíduos visíveis não comprovam contaminação microbiológica ou por microplásticos.
 
-Como limitações técnicas, destacam-se o uso de SQLite e armazenamento local de imagens para cenários de alta concorrência; a ausência de migrações versionadas, recuperação de senha e proteção CSRF dedicada; e a possibilidade de um usuário autenticado atualizar ocorrências que não criou. A implantação em produção ainda não foi realizada. O encerramento do projeto depende da coleta, avaliação, aprofundamento científico e complementação do relatório.
+Como limitações técnicas, destacam-se o uso de SQLite e armazenamento local de imagens para cenários de alta concorrência; a ausência de migrações versionadas, recuperação de senha e proteção CSRF dedicada; e a possibilidade de um usuário autenticado atualizar ocorrências que não criou. O acompanhamento por protocolo não autentica o cidadão e, por isso, as respostas não incluem dados pessoais. A classificação de acessibilidade é humana, ainda sem protocolo de avaliação de campo; as operações e quantidades de limpeza são registros inseridos por operadores, não comprovação independente. A implantação em produção ainda não foi realizada. O encerramento do projeto depende da coleta, avaliação, aprofundamento científico e complementação do relatório.
 
 ## 8 RECURSOS
 

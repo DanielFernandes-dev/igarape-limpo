@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Acompanhar denúncia — Igarapé Limpo{% endblock %}
+
+{% block conteudo %}
+<header class="page-header">
+    <div class="page-header-copy">
+        <p class="eyebrow">Consulta pública</p>
+        <h1>Acompanhar denúncia</h1>
+        <p class="page-intro">Informe o protocolo recebido após o envio para consultar a situação atual.</p>
+    </div>
+</header>
+<section class="form" aria-label="Consulta de protocolo">
+    <div class="campo">
+        <label for="protocolo">Número do protocolo</label>
+        <input type="text" id="protocolo" placeholder="IG-2026-000001" autocomplete="off">
+    </div>
+    <button type="button" id="buscar-protocolo" class="btn btn-primario">Consultar</button>
+    <p id="mensagem-acompanhamento" class="msg" role="status" aria-live="polite"></p>
+    <div id="resultado-acompanhamento"></div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function consultar() {
+    const protocolo = document.getElementById("protocolo").value.trim().toUpperCase();
+    const mensagem = document.getElementById("mensagem-acompanhamento");
+    const resultado = document.getElementById("resultado-acompanhamento");
+    resultado.replaceChildren();
+    if (!protocolo) {
+        mensagem.textContent = "Informe o número do protocolo.";
+        mensagem.className = "msg erro";
+        return;
+    }
+    try {
+        const resposta = await fetch(`/api/denuncias/${encodeURIComponent(protocolo)}`);
+        const dados = await resposta.json();
+        if (!resposta.ok) throw new Error(dados.erro || "Denúncia não encontrada.");
+        const d = dados.denuncia;
+        const artigo = document.createElement("article");
+        artigo.className = "detalhe";
+        const lista = document.createElement("dl");
+        lista.className = "info";
+        [["Protocolo", d.protocolo], ["Envio", d.data_hora], ["Local", d.local_nome || d.ponto_nome || "Não informado"], ["Situação", d.status], ["Descrição", d.observacoes || "Sem descrição."]].forEach(([rotulo, valor]) => {
+            const dt = document.createElement("dt");
+            const dd = document.createElement("dd");
+            dt.textContent = rotulo;
+            dd.textContent = valor;
+            lista.append(dt, dd);
+        });
+        artigo.appendChild(lista);
+        if (d.fotografia) {
+            const foto = document.createElement("img");
+            foto.className = "foto";
+            foto.src = d.fotografia;
+            foto.alt = `Fotografia da denúncia ${d.protocolo}`;
+            artigo.appendChild(foto);
+        }
+        resultado.appendChild(artigo);
+        mensagem.textContent = "Consulta realizada.";
+        mensagem.className = "msg ok";
+    } catch (erro) {
+        mensagem.textContent = erro.message;
+        mensagem.className = "msg erro";
+    }
+}
+document.getElementById("buscar-protocolo").addEventListener("click", consultar);
+document.getElementById("protocolo").addEventListener("keydown", (e) => { if (e.key === "Enter") consultar(); });
+</script>
+{% endblock %}

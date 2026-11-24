@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Ponto — {{ p.nome }} — Igarapé Vivo{% endblock %}
+{% block title %}Ponto — {{ p.nome }} — Igarapé Limpo{% endblock %}
 
 {% block conteudo %}
 <a class="voltar" href="{{ url_for('pages.index') }}">← Voltar ao mapa</a>
@@ -28,6 +28,9 @@
         <div class="card"><span class="card-valor">{{ p.total_ocorrencias }}</span><span class="card-rotulo">OCORRÊNCIAS</span><span class="card-nota">histórico completo</span></div>
         <div class="card"><span class="card-valor">{{ p.ultimo_nivel or "—" }}</span><span class="card-rotulo">ÚLTIMO NÍVEL</span><span class="card-nota">observação mais recente</span></div>
         <div class="card"><span class="card-valor">{{ p.ultima_ocorrencia or "—" }}</span><span class="card-rotulo">ÚLTIMA OCORRÊNCIA</span><span class="card-nota">data do registro</span></div>
+        <div class="card"><span class="card-valor">{{ p.total_limpezas }}</span><span class="card-rotulo">LIMPEZAS</span><span class="card-nota">operações registradas</span></div>
+        <div class="card"><span class="card-valor">{{ p.ultima_limpeza or "—" }}</span><span class="card-rotulo">ÚLTIMA LIMPEZA</span><span class="card-nota">operação mais recente</span></div>
+        <div class="card"><span class="card-valor">{{ p.novas_ocorrencias_apos_limpeza }}</span><span class="card-rotulo">NOVA REINCIDÊNCIA</span><span class="card-nota">{{ "Houve reincidência" if p.houve_reincidencia else "Sem reincidência após limpeza" }}</span></div>
     </section>
 
     <section class="detalhe-mapa" aria-labelledby="titulo-mapa-ponto">
@@ -42,6 +45,51 @@
 
     {% if p.recorrente %}<p class="chamada">Este ponto apresentou <strong>{{ p.total_ocorrencias }}</strong> ocorrências, atingindo o limiar de recorrência de {{ p.limiar_recorrencia }} registros.</p>{% endif %}
 
+    <section class="lista-card" aria-labelledby="titulo-acessibilidade">
+        <div class="painel-cabecalho"><div><h2 id="titulo-acessibilidade">Acessibilidade do trecho</h2><p>Classificação registrada por avaliação humana.</p></div></div>
+        <dl class="info">
+            <dt>Nível</dt><dd>{{ p.nivel_acessibilidade or "Não avaliado" }}</dd>
+            <dt>Condições de acesso</dt><dd>{{ p.observacoes_acesso or "Nenhuma observação registrada." }}</dd>
+            <dt>Última avaliação</dt><dd>{{ p.data_avaliacao_acesso or "Não informada" }}</dd>
+            <dt>Responsável</dt><dd>{{ p.responsavel_avaliacao_nome or "Não informado" }}</dd>
+        </dl>
+        {% if current_user and current_user.perfil in ('moderador', 'administrador') %}
+        <form id="form-acessibilidade" class="form">
+            <div class="campo"><label for="ponto_nome">Nome do trecho</label><input id="ponto_nome" name="nome" value="{{ p.nome }}" maxlength="120" required></div>
+            <div class="coordenadas">
+                <div class="campo"><label for="ponto_latitude">Latitude</label><input type="number" step="any" id="ponto_latitude" name="latitude" value="{{ p.latitude }}" min="-90" max="90" required></div>
+                <div class="campo"><label for="ponto_longitude">Longitude</label><input type="number" step="any" id="ponto_longitude" name="longitude" value="{{ p.longitude }}" min="-180" max="180" required></div>
+            </div>
+            <div class="campo"><label for="ponto_descricao">Descrição</label><textarea id="ponto_descricao" name="descricao" maxlength="1000">{{ p.descricao or "" }}</textarea></div>
+            <div class="campo"><label for="ponto_status">Situação do ponto</label><select id="ponto_status" name="status"><option value="Ativo" {{ 'selected' if p.status == 'Ativo' }}>Ativo</option><option value="Inativo" {{ 'selected' if p.status == 'Inativo' }}>Inativo</option></select></div>
+            <div class="campo"><label for="nivel_acessibilidade">Nível de acessibilidade</label><select id="nivel_acessibilidade" name="nivel_acessibilidade"><option value="">Não avaliado</option>{% for nivel in ('Acessível','Moderado','Dificultoso') %}<option value="{{ nivel }}" {{ 'selected' if p.nivel_acessibilidade == nivel }}>{{ nivel }}</option>{% endfor %}</select></div>
+            <div class="campo"><label for="observacoes_acesso">Observações</label><textarea id="observacoes_acesso" name="observacoes_acesso" maxlength="1000">{{ p.observacoes_acesso or "" }}</textarea></div>
+            <div class="campo"><label for="data_avaliacao_acesso">Data da avaliação</label><input type="datetime-local" id="data_avaliacao_acesso" name="data_avaliacao_acesso" value="{{ p.data_avaliacao_acesso or '' }}"></div>
+            <button type="submit" class="btn btn-primario">Salvar acessibilidade</button>
+            <p id="msg-acessibilidade" class="msg" role="status" aria-live="polite"></p>
+        </form>
+        {% endif %}
+    </section>
+
+    <section class="lista-card" aria-labelledby="titulo-limpezas">
+        <div class="painel-cabecalho"><div><h2 id="titulo-limpezas">Histórico de limpezas</h2><p>Operações independentes das mudanças de status das ocorrências.</p></div></div>
+        {% if p.limpezas %}
+        <ul>{% for l in p.limpezas %}<li><strong>{{ l.data_hora }}</strong> · {{ l.equipe or "Equipe não informada" }}{% if l.quantidade is not none %} · {{ l.quantidade }} {{ l.unidade }}{% endif %}<span>{{ l.observacoes or "Sem observações." }}</span>{% if l.fotografia %}<a href="{{ l.fotografia }}">Ver fotografia</a>{% endif %}</li>{% endfor %}</ul>
+        {% else %}<p class="estado-vazio">Nenhuma operação de limpeza registrada.</p>{% endif %}
+        {% if current_user and current_user.perfil in ('moderador', 'administrador') %}
+        <form id="form-limpeza" class="form" enctype="multipart/form-data">
+            <div class="campo"><label for="limpeza_data">Data e horário</label><input type="datetime-local" id="limpeza_data" name="data_hora" required></div>
+            <div class="campo"><label for="limpeza_equipe">Equipe ou responsável</label><input type="text" id="limpeza_equipe" name="equipe" maxlength="160"></div>
+            <div class="campo"><label for="limpeza_quantidade">Quantidade retirada</label><input type="number" id="limpeza_quantidade" name="quantidade" min="0" step="0.01"></div>
+            <div class="campo"><label for="limpeza_unidade">Unidade</label><input type="text" id="limpeza_unidade" name="unidade" maxlength="30" placeholder="kg, sacos, litros"></div>
+            <div class="campo"><label for="limpeza_foto">Fotografia</label><input type="file" id="limpeza_foto" name="fotografia" accept="image/png,image/jpeg,image/gif,image/webp"></div>
+            <div class="campo"><label for="limpeza_observacoes">Observações</label><textarea id="limpeza_observacoes" name="observacoes" maxlength="2000"></textarea></div>
+            <button type="submit" class="btn btn-primario">Registrar limpeza</button>
+            <p id="msg-limpeza" class="msg" role="status" aria-live="polite"></p>
+        </form>
+        {% endif %}
+    </section>
+
     <section class="lista-card" aria-labelledby="titulo-historico">
         <div class="painel-cabecalho"><div><h2 id="titulo-historico">Histórico de ocorrências</h2><p>Registros associados a esta localização.</p></div></div>
         {% if p.ocorrencias %}<ul id="lista">{% for o in p.ocorrencias %}<li><a href="{{ url_for('pages.detalhe', ocorrencia_id=o.id) }}">Ocorrência #{{ "%03d" % o.id }}</a><span>{{ o.tipo_residuo }} · {{ o.nivel_acumulo }} · {{ o.status }} · {{ o.data_hora }}</span></li>{% endfor %}</ul>{% else %}<p class="estado-vazio">Nenhuma ocorrência registrada neste ponto.</p>{% endif %}
@@ -53,4 +101,27 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>var ponto = { lat: {{ p.latitude }}, lng: {{ p.longitude }} };</script>
 <script src="{{ url_for('static', filename='js/ponto.js') }}"></script>
+<script>
+document.getElementById("form-acessibilidade")?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const msg = document.getElementById("msg-acessibilidade");
+    const dados = Object.fromEntries(new FormData(form).entries());
+    const resposta = await fetch("/api/pontos/{{ p.id }}", { method:"PATCH", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(dados) });
+    const resultado = await resposta.json();
+    msg.textContent = resposta.ok ? "Acessibilidade atualizada." : (resultado.erro || "Erro ao atualizar.");
+    msg.className = `msg ${resposta.ok ? "ok" : "erro"}`;
+    if (resposta.ok) setTimeout(() => window.location.reload(), 500);
+});
+document.getElementById("form-limpeza")?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const msg = document.getElementById("msg-limpeza");
+    const resposta = await fetch("/api/pontos/{{ p.id }}/limpezas", { method:"POST", body:new FormData(form) });
+    const resultado = await resposta.json();
+    msg.textContent = resposta.ok ? "Limpeza registrada." : (resultado.erro || "Erro ao registrar limpeza.");
+    msg.className = `msg ${resposta.ok ? "ok" : "erro"}`;
+    if (resposta.ok) setTimeout(() => window.location.reload(), 500);
+});
+</script>
 {% endblock %}

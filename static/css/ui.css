@@ -354,18 +354,18 @@ input[type="checkbox"] { accent-color: var(--floresta-700); }
 
 /* EcoVigia-inspired operational theme */
 :root {
-    --surface: #02170f;
-    --surface-lowest: #00120a;
-    --surface-low: #082017;
-    --surface-container: #0d241b;
-    --surface-high: #182e25;
-    --surface-highest: #23392f;
-    --on-surface: #cee9da;
-    --on-surface-muted: #bfc9c1;
-    --primary: #94d4b2;
-    --primary-strong: #1e5e43;
-    --secondary: #6fdba8;
-    --tertiary: #f0bd8b;
+    --surface: #061b11;
+    --surface-lowest: #021109;
+    --surface-low: #0a2417;
+    --surface-container: #102b1c;
+    --surface-high: #1b3825;
+    --surface-highest: #294832;
+    --on-surface: #e0eddc;
+    --on-surface-muted: #b9cbb8;
+    --primary: #a7d85a;
+    --primary-strong: #347b37;
+    --secondary: #75c94a;
+    --tertiary: #c4df78;
     --danger: #ffb4ab;
     --light-surface: #f8fafc;
     --light-ink: #0c231a;
@@ -410,6 +410,14 @@ h2 { font-size: clamp(1.35rem, 3vw, 1.8rem); }
 }
 .topo-inner { max-width: 1120px; min-height: 64px; gap: 1.25rem; }
 .marca { gap: .65rem; }
+.marca-logo {
+    display: block;
+    width: 126px;
+    height: auto;
+    border: 1px solid rgba(167, 216, 90, .28);
+    border-radius: 9px;
+    box-shadow: 0 5px 16px rgba(0, 0, 0, .24);
+}
 .marca-simbolo {
     width: 36px;
     height: 36px;
@@ -473,7 +481,9 @@ h2 { font-size: clamp(1.35rem, 3vw, 1.8rem); }
     position: relative;
     overflow: hidden;
     padding: clamp(1.5rem, 4vw, 2.25rem);
-    background: linear-gradient(135deg, #092318, var(--surface-container) 58%, var(--surface-low));
+    background:
+        radial-gradient(ellipse at 92% 18%, rgba(119, 190, 53, .2), transparent 18rem),
+        linear-gradient(135deg, #0b2d1c, var(--surface-container) 58%, var(--surface-low));
     border-bottom: 1px solid rgba(24, 46, 37, .8);
 }
 .hero-glow {
@@ -483,8 +493,20 @@ h2 { font-size: clamp(1.35rem, 3vw, 1.8rem); }
     right: -70px;
     top: -120px;
     border-radius: 50%;
-    background: rgba(148, 212, 178, .08);
+    background: rgba(167, 216, 90, .13);
     filter: blur(28px);
+}
+.hero-logo {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    right: clamp(1.5rem, 5vw, 4rem);
+    width: clamp(150px, 18vw, 205px);
+    height: auto;
+    transform: translateY(-50%);
+    border: 1px solid rgba(167, 216, 90, .3);
+    border-radius: 18px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, .3);
 }
 .operational-hero .page-header-copy { position: relative; z-index: 1; max-width: 760px; }
 .operational-hero .eyebrow { display: flex; align-items: center; gap: .4rem; color: #a3cbbd; }
@@ -664,6 +686,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary-strong);
 }
 
 @media (max-width: 420px) {
+    .marca-logo { width: 108px; }
     .marca-copy small { display: none; }
     .nav { gap: 0; }
     .nav a { padding: .5rem .6rem; }
@@ -683,7 +706,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary-strong);
 .pagina-pages-index .topo-inner { grid-template-columns: 1fr auto auto; }
 .pagina-pages-index .conteudo {
     max-width: 896px;
-    padding-top: 5.15rem;
+    padding-top: 7rem;
     padding-bottom: 6.5rem;
 }
 .pagina-pages-index .rodape { display: none; }
@@ -691,10 +714,15 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary-strong);
 .pagina-pages-index .operational-hero { padding: 1.5rem; }
 .pagina-pages-index .operational-hero h1 { font-size: clamp(1.5rem, 4vw, 2rem); line-height: 1.2; }
 .pagina-pages-index .operational-hero .page-intro { max-width: 680px; font-size: .875rem; }
+.pagina-pages-index .operational-hero .page-header-copy { max-width: min(560px, 100%); }
+.pagina-pages-index .operational-hero h1 { max-width: 520px; }
 .pagina-pages-index .operational-content { padding: 1.25rem; gap: 1.5rem; }
 .pagina-pages-index #mapa { height: 360px; }
 .pagina-pages-index .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
 .pagina-pages-index .card { min-height: 112px; }
+@media (max-width: 860px) {
+    .hero-logo { display: none; }
+}
 .nav-filter { position: relative; }
 .nav-filter > summary {
     min-height: 38px;

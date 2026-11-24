@@ -39,6 +39,11 @@ def dashboard():
     return render_template("dashboard.html")
 
 
+@pages.get("/acompanhamento")
+def acompanhamento():
+    return render_template("acompanhamento.html")
+
+
 @pages.get("/operador")
 def operador():
     usuario = getattr(g, "current_user", None)

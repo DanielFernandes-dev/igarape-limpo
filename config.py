@@ -26,6 +26,8 @@ STATUS_OCORRENCIA = [
 ]
 STATUS_PONTO = ["Ativo", "Inativo"]
 
+NIVEIS_ACESSIBILIDADE = ["Acessível", "Moderado", "Dificultoso"]
+
 COR_NIVEIS = {
     "Baixo": "#22c55e",
     "Medio": "#eab308",

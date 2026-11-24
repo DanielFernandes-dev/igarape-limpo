@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard — Igarapé Vivo{% endblock %}
+{% block title %}Dashboard — Igarapé Limpo{% endblock %}
 
 {% block conteudo %}
 <header class="page-header">
@@ -16,7 +16,7 @@
 </header>
 
 <section class="cards" aria-label="Indicadores gerais">
-    <div class="card"><span class="card-valor" id="d-total-ocorrencias">—</span><span class="card-rotulo">TOTAL DE OCORRÊNCIAS</span><span class="card-nota">base completa</span></div>
+    <div class="card"><span class="card-valor" id="d-total-ocorrencias">—</span><span class="card-rotulo">TOTAL DE DENÚNCIAS</span><span class="card-nota">base completa de ocorrências</span></div>
     <div class="card"><span class="card-valor" id="d-7dias">—</span><span class="card-rotulo">ÚLTIMOS 7 DIAS</span><span class="card-nota">atividade recente</span></div>
     <div class="card"><span class="card-valor" id="d-30dias">—</span><span class="card-rotulo">ÚLTIMOS 30 DIAS</span><span class="card-nota">janela mensal</span></div>
     <div class="card"><span class="card-valor" id="d-pontos-ativos">—</span><span class="card-rotulo">PONTOS ATIVOS</span><span class="card-nota">em monitoramento</span></div>
@@ -24,6 +24,9 @@
     <div class="card"><span class="card-valor" id="d-residuo">—</span><span class="card-rotulo">RESÍDUO MAIS FREQUENTE</span><span class="card-nota">categoria predominante</span></div>
     <div class="card"><span class="card-valor" id="d-local">—</span><span class="card-rotulo">LOCAL COM MAIS REGISTROS</span><span class="card-nota">concentração observada</span></div>
     <div class="card"><span class="card-valor" id="d-recorrentes">—</span><span class="card-rotulo">OCORRÊNCIAS RECORRENTES</span><span class="card-nota">pontos no limiar</span></div>
+    <div class="card"><span class="card-valor" id="d-denuncias-pendentes">—</span><span class="card-rotulo">DENÚNCIAS PENDENTES</span><span class="card-nota">nova, análise ou atendimento</span></div>
+    <div class="card"><span class="card-valor" id="d-total-limpezas">—</span><span class="card-rotulo">LIMPEZAS REGISTRADAS</span><span class="card-nota">operações cadastradas</span></div>
+    <div class="card"><span class="card-valor" id="d-apos-limpeza">—</span><span class="card-rotulo">OCORRÊNCIAS PÓS-LIMPEZA</span><span class="card-nota">nos trechos com limpeza registrada</span></div>
 </section>
 
 <div id="dashboard-status" class="msg" role="status" aria-live="polite"></div>
@@ -36,6 +39,10 @@
     <article class="grafico-box"><h3>Níveis de acúmulo</h3><canvas id="grafico-nivel" role="img" aria-label="Gráfico de ocorrências por nível de acúmulo"></canvas></article>
     <article class="grafico-box grafico-box-largo"><h3>Evolução nos últimos 30 dias</h3><canvas id="grafico-evolucao" role="img" aria-label="Gráfico da evolução diária de ocorrências"></canvas></article>
     <article class="grafico-box grafico-box-largo"><h3>Ranking de pontos monitorados</h3><canvas id="grafico-ranking" role="img" aria-label="Gráfico do ranking de pontos por ocorrências"></canvas></article>
+</section>
+<section class="analise-grid" aria-label="Prioridades operacionais">
+    <article class="mini-painel"><h3>Trechos com reincidência</h3><ul id="d-ranking-reincidencia" class="distribuicao"></ul></article>
+    <article class="mini-painel"><h3>Trechos de acesso dificultoso</h3><ul id="d-ranking-acesso" class="distribuicao"></ul></article>
 </section>
 {% endblock %}
 

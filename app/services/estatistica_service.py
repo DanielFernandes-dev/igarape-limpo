@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 import database
 from app.repositories import ocorrencia_repository, ponto_repository
+from app.repositories import limpeza_repository
 from app.services.ponto_service import LIMIAR_RECORRENCIA
 
 
@@ -37,9 +38,39 @@ def resumo():
         1 for p in pontos if (p.get("total_ocorrencias") or 0) >= LIMIAR_RECORRENCIA
     )
     ocorrencias_recorrentes = _contar_recorrentes(pontos)
+    pendentes = sum(
+        1 for o in ocorrencias if o.get("status") in ("Nova", "Em analise", "Em atendimento")
+    )
+    reincidencia = []
+    maior_dificuldade = [
+        {
+            "id": p["id"], "nome": p["nome"],
+            "nivel": p.get("nivel_acessibilidade"),
+        }
+        for p in pontos
+        if p.get("nivel_acessibilidade") == "Dificultoso"
+    ]
+    for p in pontos:
+        if not p.get("id"):
+            continue
+        ultima_limpeza = limpeza_repository.ultima_por_ponto(p["id"])
+        if ultima_limpeza:
+            qtd = ocorrencia_repository.contar_apos_limpeza(p["id"], ultima_limpeza["data_hora"])
+        else:
+            qtd = 0
+        if qtd:
+            reincidencia.append({"id": p["id"], "nome": p["nome"], "quantidade": qtd})
+    reincidencia.sort(key=lambda item: item["quantidade"], reverse=True)
 
     return {
         "total_ocorrencias": total,
+        "denuncias_pendentes": pendentes,
+        "total_limpezas": limpeza_repository.contar_todas(),
+        "total_ocorrencias_apos_limpeza": sum(
+            item["quantidade"] for item in reincidencia
+        ),
+        "trechos_reincidencia": reincidencia[:10],
+        "trechos_maior_dificuldade": maior_dificuldade,
         "ultimos_7_dias": ultimos_7,
         "ultimos_30_dias": ultimos_30,
         "pontos_monitorados": len(pontos),

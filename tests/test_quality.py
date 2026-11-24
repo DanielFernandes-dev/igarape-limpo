@@ -1,6 +1,9 @@
 import base64
 import io
 import json
+import sqlite3
+
+import database
 
 
 def test_listar_ocorrencias(client):
@@ -330,3 +333,167 @@ def test_gateway_nao_acessa_endereco_local(client):
         json={"url": "http://localhost:8080/estacoes"},
     )
     assert resposta.status_code == 502
+
+
+def test_acessibilidade_ponto_e_filtro(client):
+    assert _login(client).status_code == 200
+    resposta = client.patch(
+        "/api/pontos/1",
+        json={
+            "nome": "Igarapé do Mindu — Trecho 1",
+            "latitude": -3.059860,
+            "longitude": -60.040980,
+            "descricao": "Margem próxima à passarela.",
+            "status": "Ativo",
+            "nivel_acessibilidade": "Dificultoso",
+            "observacoes_acesso": "Acesso depende de equipamento.",
+            "data_avaliacao_acesso": "2026-11-24T10:00",
+        },
+    )
+    assert resposta.status_code == 200
+    ponto = client.get("/api/pontos/1").get_json()
+    assert ponto["nivel_acessibilidade"] == "Dificultoso"
+    assert ponto["observacoes_acesso"] == "Acesso depende de equipamento."
+    assert client.get("/api/pontos?acessibilidade=Dificultoso").status_code == 200
+
+
+def test_acessibilidade_rejeita_nivel_invalido(client):
+    assert _login(client).status_code == 200
+    resposta = client.patch(
+        "/api/pontos/1",
+        json={"nivel_acessibilidade": "Impossivel"},
+    )
+    assert resposta.status_code == 400
+
+
+def test_usuario_comum_nao_altera_acessibilidade(client):
+    assert _login(client).status_code == 200
+    assert client.post(
+        "/api/auth/usuarios",
+        json={"nome": "Morador", "email": "morador@teste.local", "senha": "senha123"},
+    ).status_code == 201
+    client.post("/api/auth/logout")
+    assert client.post(
+        "/api/auth/login",
+        json={"email": "morador@teste.local", "senha": "senha123"},
+    ).status_code == 200
+    assert client.patch(
+        "/api/pontos/1",
+        json={"nivel_acessibilidade": "Dificultoso"},
+    ).status_code == 403
+
+
+def test_limpeza_reincidencia_e_permissao(client):
+    assert client.post(
+        "/api/pontos/1/limpezas",
+        data={"data_hora": "2026-11-10T12:00", "equipe": "Equipe A"},
+    ).status_code == 401
+    assert _login(client).status_code == 200
+    limpeza = client.post(
+        "/api/pontos/1/limpezas",
+        data={
+            "data_hora": "2026-11-10T12:00",
+            "equipe": "Equipe A",
+            "quantidade": "25",
+            "unidade": "kg",
+        },
+    )
+    assert limpeza.status_code == 201
+    nova = client.post(
+        "/api/ocorrencias",
+        data={
+            "ponto_id": "1",
+            "latitude": "-3.059860",
+            "longitude": "-60.040980",
+            "tipo_residuo": "Plastico",
+            "nivel_acumulo": "Alto",
+        },
+    )
+    assert nova.status_code == 201
+    with client.application.app_context():
+        database.query_update(
+            "UPDATE ocorrencias SET data_hora = ? WHERE id = ?",
+            ("2026-11-10 13:00:00", nova.get_json()["id"]),
+        )
+    resumo = client.get("/api/pontos/1").get_json()
+    assert resumo["total_limpezas"] >= 1
+    assert resumo["novas_ocorrencias_apos_limpeza"] >= 1
+    assert resumo["houve_reincidencia"] is True
+    assert client.patch(
+        f"/api/ocorrencias/{nova.get_json()['id']}",
+        json={"status": "Resolvida"},
+    ).status_code == 200
+    assert client.get("/api/pontos/1").get_json()["novas_ocorrencias_apos_limpeza"] >= 1
+
+
+def test_protocolo_unico_e_acompanhamento_publico(client):
+    assert _login(client).status_code == 200
+    primeira = client.post(
+        "/api/ocorrencias",
+        data={
+            "ponto_id": "1",
+            "latitude": "-3.059860",
+            "longitude": "-60.040980",
+            "tipo_residuo": "Plastico",
+            "nivel_acumulo": "Medio",
+        },
+    )
+    segunda = client.post(
+        "/api/ocorrencias",
+        data={
+            "ponto_id": "1",
+            "latitude": "-3.059860",
+            "longitude": "-60.040980",
+            "tipo_residuo": "Vidro",
+            "nivel_acumulo": "Baixo",
+        },
+    )
+    assert primeira.status_code == 201
+    assert segunda.status_code == 201
+    protocolo1 = primeira.get_json()["protocolo"]
+    protocolo2 = segunda.get_json()["protocolo"]
+    assert protocolo1.startswith("IG-")
+    assert protocolo2.startswith("IG-")
+    assert protocolo1 != protocolo2
+    client.post("/api/auth/logout")
+    consulta = client.get(f"/api/denuncias/{protocolo1}")
+    assert consulta.status_code == 200
+    assert "usuario_id" not in consulta.get_json()["denuncia"]
+
+
+def test_migracao_preserva_dados_existentes(client, tmp_path, monkeypatch):
+    banco = tmp_path / "legado.db"
+    conexao = sqlite3.connect(banco)
+    conexao.executescript(
+        """
+        CREATE TABLE usuarios (
+            id INTEGER PRIMARY KEY, nome TEXT, email TEXT, senha_hash TEXT,
+            perfil TEXT, ativo INTEGER
+        );
+        CREATE TABLE pontos_monitorados (
+            id INTEGER PRIMARY KEY, nome TEXT, latitude REAL, longitude REAL,
+            descricao TEXT, status TEXT
+        );
+        CREATE TABLE ocorrencias (
+            id INTEGER PRIMARY KEY, ponto_id INTEGER, usuario_id INTEGER,
+            latitude REAL, longitude REAL, data_hora TEXT, fotografia TEXT,
+            tipo_residuo TEXT, nivel_acumulo TEXT, status TEXT, observacoes TEXT,
+            local_nome TEXT, data_atualizacao TEXT
+        );
+        INSERT INTO usuarios VALUES (7, 'Legado', 'legado@teste.local', 'hash', 'usuario', 1);
+        INSERT INTO pontos_monitorados VALUES (9, 'Trecho legado', -3.1, -60.1, NULL, 'Ativo');
+        INSERT INTO ocorrencias VALUES
+            (12, 9, 7, -3.1, -60.1, '2026-11-01 10:00:00', NULL, 'Plastico', 'Alto', 'Nova', NULL, 'Mindu', NULL);
+        """
+    )
+    conexao.commit()
+    conexao.close()
+    monkeypatch.setattr(database, "DATABASE_PATH", str(banco))
+    database.migrar()
+    verificacao = sqlite3.connect(banco)
+    assert verificacao.execute("SELECT id, email FROM usuarios").fetchone() == (7, "legado@teste.local")
+    assert verificacao.execute("SELECT id, nome FROM pontos_monitorados").fetchone() == (9, "Trecho legado")
+    protocolo = verificacao.execute("SELECT protocolo FROM ocorrencias WHERE id = 12").fetchone()[0]
+    assert protocolo.startswith("IG-2026-")
+    assert verificacao.execute("SELECT COUNT(*) FROM limpezas").fetchone()[0] == 0
+    verificacao.close()

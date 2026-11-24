@@ -28,6 +28,8 @@ Destacar:
 
 - mapa interativo;
 - pontos monitorados e histórico;
+- acessibilidade avaliada por equipe, operações independentes de limpeza e reincidência pós-limpeza;
+- protocolo individual para acompanhamento de denúncias;
 - filtros e dashboard;
 - autenticação e perfis;
 - exportação CSV/GeoJSON;
@@ -58,11 +60,13 @@ Roteiro:
 2. **Registro:** mostrar formulário por etapas, feedback de localização, preview da fotografia e estado de envio.
 3. **Mapa:** aplicar filtros combinados, mostrar total, clusterização, popup e exportações filtradas.
 4. **Detalhe:** abrir ocorrência e mostrar status; administrador/moderador pode alterá-lo.
-5. **Histórico:** abrir o ponto monitorado e comparar ocorrências relacionadas.
-6. **Dashboard:** mostrar totais, distribuições, evolução e ranking.
-7. **Exportação:** baixar CSV e GeoJSON, opcionalmente filtrados.
-8. **UX/UI:** reduzir a janela para demonstrar adaptação móvel, navegação, estados vazios e foco visível.
-9. **Qualidade:** citar Pillow, limite de 10 MB, cookies/headers protegidos, logs sem dados sensíveis e 20 testes.
+5. **Histórico:** abrir um ponto, consultar acessibilidade e comparar o histórico de ocorrências e limpezas.
+6. **Operação:** com perfil moderador/admin, registrar limpeza e observar a contagem de novas ocorrências após essa data.
+7. **Acompanhamento:** enviar uma ocorrência e consultar a situação pelo protocolo, sem expor dados do denunciante.
+8. **Dashboard:** mostrar totais, distribuições, evolução, limpeza e reincidência.
+9. **Exportação:** baixar CSV e GeoJSON, opcionalmente filtrados.
+10. **UX/UI:** reduzir a janela para demonstrar adaptação móvel, navegação, estados vazios e foco visível.
+11. **Qualidade:** citar Pillow, limite de 10 MB, cookies/headers protegidos, logs sem dados sensíveis e 36 testes.
 
 Plano alternativo sem internet:
 
@@ -76,7 +80,7 @@ Resultados técnicos atuais:
 
 - Fases 1 a 6 concluídas; Fase 7 é a próxima.
 - CRUD, monitoramento, gestão, análise e exportação operacionais.
-- 20 testes automatizados aprovados em banco temporário.
+- 36 testes automatizados aprovados, incluindo acessibilidade, limpeza, reincidência, protocolo e migração de dados existentes.
 - Upload falso rejeitado e limite de tamanho validado.
 - Interface reformulada em todas as páginas, com responsividade, acessibilidade, preview e feedback de carregamento.
 

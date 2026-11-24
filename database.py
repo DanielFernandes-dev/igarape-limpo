@@ -41,6 +41,15 @@ def init_db():
     db = sqlite3.connect(DATABASE_PATH)
     with open(SCHEMA_PATH, "r", encoding="utf-8") as f:
         db.executescript(f.read())
+    registros = db.execute(
+        "SELECT id, data_hora FROM ocorrencias WHERE protocolo IS NULL OR protocolo = ''"
+    ).fetchall()
+    for numero, registro in enumerate(registros, start=1):
+        ano = str(registro[1] or "2026")[:4]
+        db.execute(
+            "UPDATE ocorrencias SET protocolo = ? WHERE id = ?",
+            (f"IG-{ano}-{numero:06d}", registro[0]),
+        )
     db.commit()
 
     from app.services.auth_service import hash_senha
@@ -60,6 +69,7 @@ def init_db():
 def migrar():
     """Aplica evoluções de schema em bancos já existentes (idempotente)."""
     db = sqlite3.connect(DATABASE_PATH)
+    db.row_factory = sqlite3.Row
     try:
         db.execute("PRAGMA foreign_keys = ON")
         db.executescript(
@@ -101,6 +111,62 @@ def migrar():
         if "usuario_id" not in colunas:
             db.execute(
                 "ALTER TABLE ocorrencias ADD COLUMN usuario_id INTEGER REFERENCES usuarios (id)"
+            )
+        if "protocolo" not in colunas:
+            db.execute("ALTER TABLE ocorrencias ADD COLUMN protocolo TEXT")
+        colunas_pontos = {r[1] for r in db.execute("PRAGMA table_info(pontos_monitorados)")}
+        if "nivel_acessibilidade" not in colunas_pontos:
+            db.execute("ALTER TABLE pontos_monitorados ADD COLUMN nivel_acessibilidade TEXT")
+        if "observacoes_acesso" not in colunas_pontos:
+            db.execute("ALTER TABLE pontos_monitorados ADD COLUMN observacoes_acesso TEXT")
+        if "data_avaliacao_acesso" not in colunas_pontos:
+            db.execute("ALTER TABLE pontos_monitorados ADD COLUMN data_avaliacao_acesso TEXT")
+        if "responsavel_avaliacao_id" not in colunas_pontos:
+            db.execute(
+                "ALTER TABLE pontos_monitorados ADD COLUMN responsavel_avaliacao_id INTEGER "
+                "REFERENCES usuarios (id)"
+            )
+
+        db.executescript(
+            """
+            CREATE TABLE IF NOT EXISTS limpezas (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                ponto_id INTEGER NOT NULL REFERENCES pontos_monitorados (id) ON DELETE CASCADE,
+                data_hora TEXT NOT NULL,
+                equipe TEXT,
+                quantidade REAL,
+                unidade TEXT,
+                fotografia TEXT,
+                observacoes TEXT,
+                usuario_id INTEGER REFERENCES usuarios (id),
+                data_cadastro TEXT NOT NULL DEFAULT (datetime('now'))
+            );
+            CREATE INDEX IF NOT EXISTS idx_limpezas_ponto_data
+            ON limpezas (ponto_id, data_hora DESC);
+            CREATE INDEX IF NOT EXISTS idx_ocorrencias_ponto_data
+            ON ocorrencias (ponto_id, data_hora DESC);
+            CREATE INDEX IF NOT EXISTS idx_ocorrencias_protocolo
+            ON ocorrencias (protocolo);
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_ocorrencias_protocolo_unico
+            ON ocorrencias (protocolo) WHERE protocolo IS NOT NULL;
+            """
+        )
+
+        sem_protocolo = db.execute(
+            "SELECT id, data_hora FROM ocorrencias WHERE protocolo IS NULL OR protocolo = ''"
+        ).fetchall()
+        for registro in sem_protocolo:
+            ano = str(registro["data_hora"] or "2026")[:4]
+            candidato = f"IG-{ano}-{registro['id']:06d}"
+            contador = registro["id"]
+            while db.execute(
+                "SELECT 1 FROM ocorrencias WHERE protocolo = ?", (candidato,)
+            ).fetchone():
+                contador += 1
+                candidato = f"IG-{ano}-{contador:06d}"
+            db.execute(
+                "UPDATE ocorrencias SET protocolo = ? WHERE id = ?",
+                (candidato, registro["id"]),
             )
 
         db.execute(

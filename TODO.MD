@@ -16,9 +16,10 @@ Lista de etapas para desenvolvimento do protótipo.
 | 2 | Monitoramento (V2) | ✅ **Concluída** | Ponto monitorado, histórico, filtros, dashboard |
 | 3 | Gestão (V2.1) | ✅ **Concluída** | Autenticação, perfis, permissões e status |
 | 4 | Dados (V2.2) | ✅ **Concluída** | Exportação CSV/GeoJSON e análises |
-| 5 | Qualidade e Segurança | ✅ **Concluída** | Pillow, privacidade, cookies, headers, logs e 20 testes |
+| 5 | Qualidade e Segurança | ✅ **Concluída** | Pillow, privacidade, cookies, headers, logs e 36 testes |
 | 6 | Documentação e Apresentação | ✅ **Concluída** | README, API, arquitetura, demo |
 | Pós-Fase 6 | Reformulação UX/UI | ✅ **Concluída** | Identidade visual, responsividade, acessibilidade e feedbacks |
+| Pós-Fase 6 | Acessibilidade, limpezas e denúncias | ✅ **Implementada** | Avaliação humana, protocolo, histórico e reincidência |
 | 7 | Pesquisa e Teste de campo | ⏳ **Próxima** | Fontes de dados, metodologia, coleta |
 | Futuro | Visão computacional | 🔮 Futuro | Classificação automática por imagem |
 | Futuro | Alertas | 🔮 Futuro | Detecção de tendências e notificações |
@@ -163,6 +164,7 @@ Mapa — evolução V2:
 - [x] <FASE2> Centralizar no ponto selecionado.
 - [x] <FASE2> Agrupar (clusterizar) marcadores com plugin do Leaflet.
 - [x] <FASE2> Exibir histórico do ponto no popup/página.
+- [x] Adicionar filtro e indicadores visuais de acessibilidade no mapa.
 
 8. Histórico e análise
 
@@ -174,6 +176,10 @@ Mapa — evolução V2:
 - [x] <FASE2> Criar estatísticas por região.
 - [x] <FASE2> Criar evolução temporal.
 - [x] <FASE2> Criar dashboard básico.
+- [x] Exibir contagem de denúncias pendentes, limpezas e trechos em reincidência/acesso dificultoso.
+- [x] Criar histórico independente de operações de limpeza por trecho.
+- [x] Gerar protocolos únicos e consulta de acompanhamento sem identificação do denunciante.
+- [x] Criar migração aditiva para acessibilidade, protocolo e tabela de limpezas, preservando registros existentes.
 
 9. Teste de campo
 

@@ -45,7 +45,16 @@ Fluxo central:
 - Localização pelo navegador, seleção no mapa ou ponto monitorado.
 - Associação opcional da ocorrência a um ponto monitorado.
 - Status: `Nova`, `Em analise`, `Em atendimento`, `Resolvida` e `Descartada`.
+- Protocolo único `IG-AAAA-NNNNNN` em cada denúncia e consulta pública de acompanhamento sem dados pessoais.
 - CRUD de ocorrências e gestão de pontos conforme permissão.
+
+### Acessibilidade e limpeza
+
+- Moderadores e administradores registram avaliação humana de acessibilidade (`Acessível`, `Moderado` ou `Dificultoso`), observações, data e responsável.
+- Cada ponto mantém tabela própria de operações de limpeza, com equipe, data, quantidade/unidade, fotografia e observações.
+- A página do ponto mostra totais, última ocorrência/limpeza, reincidência posterior à última operação e históricos.
+- O status `Resolvida` não é contado como limpeza: somente uma linha em `limpezas` é contabilizada.
+- Mapa e dashboard apresentam acessibilidade e indicadores operacionais. Pontos sem avaliação permanecem sem classificação.
 
 ### Mapa e monitoramento
 
@@ -75,7 +84,7 @@ Fluxo central:
 - Respostas públicas sem `senha_hash` ou `usuario_id`.
 - Logs de autenticação e operações sem dados sensíveis.
 - Resposta genérica para erros internos da API.
-- 20 testes automatizados com banco e uploads temporários.
+- 36 testes automatizados com banco e uploads temporários.
 
 ## Experiência e interface
 
@@ -174,7 +183,7 @@ Essa credencial deve ser substituída antes de qualquer exposição externa. Con
 .venv/bin/pytest -q
 ```
 
-Resultado consolidado atual: **20 testes aprovados**. A suíte cobre páginas, autenticação, proteção de rotas, filtros, dashboard, exportações, privacidade, imagens, limite de upload e headers de segurança.
+Resultado validado nesta implementação: **36 testes aprovados**. A suíte cobre páginas, autenticação, proteção de rotas, filtros, dashboard, exportações, privacidade, imagens, limite de upload, acessibilidade, limpeza, reincidência, protocolo e preservação do banco legado.
 
 ## Integrações externas
 

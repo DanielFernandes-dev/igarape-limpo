@@ -17,7 +17,11 @@ CREATE TABLE IF NOT EXISTS pontos_monitorados (
     longitude REAL NOT NULL,
     descricao TEXT,
     status TEXT NOT NULL DEFAULT 'Ativo',
-    data_criacao TEXT NOT NULL DEFAULT (datetime('now'))
+    data_criacao TEXT NOT NULL DEFAULT (datetime('now')),
+    nivel_acessibilidade TEXT,
+    observacoes_acesso TEXT,
+    data_avaliacao_acesso TEXT,
+    responsavel_avaliacao_id INTEGER REFERENCES usuarios (id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_pontos_coord
@@ -36,8 +40,31 @@ CREATE TABLE IF NOT EXISTS ocorrencias (
     status TEXT NOT NULL DEFAULT 'Nova',
     observacoes TEXT,
     local_nome TEXT,
-    data_atualizacao TEXT
+    data_atualizacao TEXT,
+    protocolo TEXT
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_ocorrencias_protocolo_unico
+ON ocorrencias (protocolo) WHERE protocolo IS NOT NULL;
+
+CREATE INDEX IF NOT EXISTS idx_ocorrencias_ponto_data
+ON ocorrencias (ponto_id, data_hora DESC);
+
+CREATE TABLE IF NOT EXISTS limpezas (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ponto_id INTEGER NOT NULL REFERENCES pontos_monitorados (id) ON DELETE CASCADE,
+    data_hora TEXT NOT NULL,
+    equipe TEXT,
+    quantidade REAL,
+    unidade TEXT,
+    fotografia TEXT,
+    observacoes TEXT,
+    usuario_id INTEGER REFERENCES usuarios (id),
+    data_cadastro TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_limpezas_ponto_data
+ON limpezas (ponto_id, data_hora DESC);
 
 CREATE INDEX IF NOT EXISTS idx_ocorrencias_coord
 ON ocorrencias (latitude, longitude);

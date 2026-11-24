@@ -11,6 +11,7 @@ from app.services import (
     integracao_service,
     ocorrencia_service,
     ponto_service,
+    limpeza_service,
 )
 from app.services.ocorrencia_service import ErroValidacao
 from app.utils import http
@@ -138,6 +139,23 @@ def obter_ocorrencia(ocorrencia_id):
     return jsonify(ocorrencia_service.serializar(r))
 
 
+@api.get("/denuncias/<string:protocolo>")
+def acompanhar_denuncia(protocolo):
+    r = ocorrencia_repository.obter_por_protocolo(protocolo)
+    if r is None:
+        return jsonify({"erro": "Denúncia não encontrada"}), 404
+    item = {
+        "protocolo": r["protocolo"],
+        "data_hora": r["data_hora"],
+        "ponto_nome": ocorrencia_service._nome_ponto(r["ponto_id"], None),
+        "local_nome": r["local_nome"],
+        "observacoes": r["observacoes"],
+        "status": r["status"],
+        "fotografia": (url_for("static", filename="uploads/" + r["fotografia"]) if r["fotografia"] else None),
+    }
+    return jsonify({"denuncia": item})
+
+
 @api.post("/ocorrencias")
 def criar_ocorrencia():
     usuario = _requer_autenticacao()
@@ -151,7 +169,11 @@ def criar_ocorrencia():
         return jsonify({"erro": e.mensagem}), e.status
     current_app.logger.info("Ocorrência %s criada pelo usuário %s", novo_id, usuario["id"])
     return (
-        jsonify({"id": novo_id, "url": url_for("pages.detalhe", ocorrencia_id=novo_id)}),
+        jsonify({
+            "id": novo_id,
+            "protocolo": ocorrencia_repository.obter_por_id(novo_id)["protocolo"],
+            "url": url_for("pages.detalhe", ocorrencia_id=novo_id),
+        }),
         201,
     )
 
@@ -211,7 +233,13 @@ def arquivo_grande(e):
 
 @api.get("/pontos")
 def listar_pontos():
-    return jsonify(ponto_service.listar_pontos())
+    pontos = ponto_service.listar_pontos()
+    nivel = (request.args.get("acessibilidade") or "").strip()
+    if nivel:
+        if nivel not in config.NIVEIS_ACESSIBILIDADE:
+            return jsonify({"erro": "Filtro de acessibilidade inválido."}), 400
+        pontos = [p for p in pontos if p.get("nivel_acessibilidade") == nivel]
+    return jsonify(pontos)
 
 
 @api.get("/pontos/<int:ponto_id>")
@@ -244,8 +272,11 @@ def atualizar_ponto(ponto_id):
         return usuario
     if usuario.get("perfil") not in ("moderador", "administrador"):
         return jsonify({"erro": "Sem permissão."}), 403
+    dados = request.get_json(silent=True) if request.is_json else dict(request.form)
+    if not isinstance(dados, dict):
+        return jsonify({"erro": "Corpo JSON inválido."}), 400
     try:
-        ponto_service.atualizar(ponto_id, request.form)
+        ponto_service.atualizar(ponto_id, dados)
     except ponto_service.PontoNaoEncontrado:
         return jsonify({"erro": "Ponto monitorado não encontrado"}), 404
     except ErroValidacao as e:
@@ -259,6 +290,30 @@ def historico_ponto(ponto_id):
     if resumo is None:
         return jsonify({"erro": "Ponto monitorado não encontrado"}), 404
     return jsonify({"ocorrencias": resumo["ocorrencias"]})
+
+
+@api.get("/pontos/<int:ponto_id>/limpezas")
+def listar_limpezas(ponto_id):
+    if ponto_repository.obter_por_id(ponto_id) is None:
+        return jsonify({"erro": "Ponto monitorado não encontrado"}), 404
+    return jsonify({"limpezas": limpeza_service.listar_por_ponto(ponto_id)})
+
+
+@api.post("/pontos/<int:ponto_id>/limpezas")
+def criar_limpeza(ponto_id):
+    usuario = _requer_autenticacao()
+    if isinstance(usuario, tuple):
+        return usuario
+    if usuario.get("perfil") not in ("moderador", "administrador"):
+        return jsonify({"erro": "Sem permissão."}), 403
+    dados = dict(request.form)
+    dados["ponto_id"] = ponto_id
+    try:
+        novo_id = limpeza_service.criar(dados, request.files.get("fotografia"))
+    except ErroValidacao as e:
+        return jsonify({"erro": e.mensagem}), e.status
+    current_app.logger.info("Limpeza %s registrada pelo usuário %s", novo_id, usuario["id"])
+    return jsonify({"id": novo_id}), 201
 
 
 # ------------------ Dashboard ------------------

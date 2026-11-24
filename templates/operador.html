@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Painel de operador — Igarapé Vivo{% endblock %}
+{% block title %}Painel de operador — Igarapé Limpo{% endblock %}
 
 {% block conteudo %}
 <header class="page-header operador-header">
@@ -56,6 +56,21 @@
 
 <div id="operador-status" class="msg" role="status" aria-live="polite"></div>
 <section id="operador-fila" class="operador-fila" aria-label="Ocorrências para atendimento"></section>
+<section class="lista-card" aria-labelledby="titulo-novo-ponto">
+    <div class="painel-cabecalho"><div><h2 id="titulo-novo-ponto">Cadastrar trecho monitorado</h2><p>A classificação de acesso é informada pela equipe, nunca inferida pelo sistema.</p></div></div>
+    <form id="form-novo-ponto" class="form">
+        <div class="campo"><label for="ponto-nome">Nome do trecho</label><input id="ponto-nome" name="nome" maxlength="120" required></div>
+        <div class="coordenadas">
+            <div class="campo"><label for="ponto-lat">Latitude</label><input id="ponto-lat" name="latitude" type="number" step="any" min="-90" max="90" required></div>
+            <div class="campo"><label for="ponto-lon">Longitude</label><input id="ponto-lon" name="longitude" type="number" step="any" min="-180" max="180" required></div>
+        </div>
+        <div class="campo"><label for="ponto-descricao">Descrição</label><textarea id="ponto-descricao" name="descricao" maxlength="1000"></textarea></div>
+        <div class="campo"><label for="ponto-acessibilidade">Acessibilidade (avaliação humana)</label><select id="ponto-acessibilidade" name="nivel_acessibilidade"><option value="">Não avaliado</option><option value="Acessivel">Acessível</option><option value="Moderado">Moderado</option><option value="Dificultoso">Dificultoso</option></select></div>
+        <div class="campo"><label for="ponto-observacoes-acesso">Condições de acesso</label><textarea id="ponto-observacoes-acesso" name="observacoes_acesso" maxlength="1000"></textarea></div>
+        <button class="btn btn-primario" type="submit">Cadastrar trecho</button>
+        <p id="msg-novo-ponto" class="msg" role="status" aria-live="polite"></p>
+    </form>
+</section>
 {% endblock %}
 
 {% block scripts %}

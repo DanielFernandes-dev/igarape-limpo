@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Mapa — Igarapé Vivo{% endblock %}
+{% block title %}Mapa — Igarapé Limpo{% endblock %}
 
 {% block styles %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
@@ -35,6 +35,15 @@
             <div class="filtro-grupo filtro-check">
                 <label><input type="checkbox" id="f-criticos" name="apenas_criticos"> Apenas nível alto</label>
             </div>
+            <div class="filtro-grupo">
+                <label for="f-acessibilidade">Acessibilidade</label>
+                <select id="f-acessibilidade" name="acessibilidade">
+                    <option value="">Todas</option>
+                    <option value="Acessível">Acessível</option>
+                    <option value="Moderado">Moderado</option>
+                    <option value="Dificultoso">Dificultoso</option>
+                </select>
+            </div>
             <details class="filtros-avancados">
                 <summary>Filtros avançados</summary>
                 <div class="filtros-avancados-grid">
@@ -68,9 +77,10 @@
 <div class="operational-shell">
 <header class="operational-hero">
     <div class="hero-glow" aria-hidden="true"></div>
+    <img class="hero-logo" src="{{ url_for('static', filename='images/igarape-limpo-logo.png') }}" alt="" aria-hidden="true">
     <div class="page-header-copy">
         <p class="eyebrow"><span class="material-symbols-outlined" aria-hidden="true">eco</span> Monitoramento ambiental · área operacional</p>
-        <h1>Dados ambientais com contexto geográfico.</h1>
+        <h1>Cuidar dos igarapés começa com informação.</h1>
         <p class="page-intro">Acompanhamento de focos de resíduos, pontos críticos e mudanças nos igarapés urbanos de Manaus.</p>
         <div class="hero-actions">
             <a class="btn btn-claro" href="{{ url_for('pages.nova') }}"><span class="material-symbols-outlined" aria-hidden="true">add_circle</span> Registrar ocorrência</a>

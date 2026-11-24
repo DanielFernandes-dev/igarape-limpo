@@ -10,6 +10,34 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 
 const cluster = L.markerClusterGroup({ chunkedLoading: true, maxClusterRadius: 48, showCoverageOnHover: false });
 mapa.addLayer(cluster);
+let camadaAcessibilidade = null;
+
+async function carregarPontosAcessibilidade() {
+    const nivel = document.getElementById("f-acessibilidade")?.value || "";
+    const url = new URL("/api/pontos", window.location.origin);
+    if (nivel) url.searchParams.set("acessibilidade", nivel);
+    try {
+        const resposta = await fetch(url);
+        if (!resposta.ok) throw new Error();
+        const pontos = await resposta.json();
+        if (camadaAcessibilidade) mapa.removeLayer(camadaAcessibilidade);
+        camadaAcessibilidade = L.layerGroup();
+        pontos.forEach((ponto) => {
+            if (!ponto.nivel_acessibilidade) return;
+            const cores = { "Acessível": "#6fdba8", Moderado: "#f0bd8b", Dificultoso: "#ff7e70" };
+            const marcador = L.circleMarker([ponto.latitude, ponto.longitude], {
+                radius: 13, color: "#fff", fillColor: cores[ponto.nivel_acessibilidade], fillOpacity: 0.75, weight: 4,
+            });
+            document.getElementById("f-acessibilidade")?.addEventListener("change", carregarPontosAcessibilidade);
+            marcador.bindPopup(`<strong>${escapeHtml(ponto.nome)}</strong><br>Acessibilidade: ${escapeHtml(ponto.nivel_acessibilidade)}<br><a href="/ponto/${ponto.id}">Ver histórico e limpezas</a>`);
+            camadaAcessibilidade.addLayer(marcador);
+        });
+        camadaAcessibilidade.addTo(mapa);
+    } catch (erro) {
+        const status = document.getElementById("resultado-filtros");
+        if (status) status.textContent = "Não foi possível carregar os indicadores de acessibilidade.";
+    }
+}
 
 async function carregarOcorrencias() {
     const form = document.getElementById("form-filtros");
@@ -29,6 +57,7 @@ async function carregarOcorrencias() {
         if (!resp.ok) throw new Error(data.erro || "Não foi possível carregar os dados.");
         const ocorrencias = data.ocorrencias || [];
         renderizarOcorrencias(ocorrencias);
+        await carregarPontosAcessibilidade();
         renderizarResumo(ocorrencias);
         renderizarLista(ocorrencias);
         const heroStatus = document.getElementById("hero-status");

@@ -93,6 +93,22 @@ function rotuloStatus(valor) { return valor === "Em analise" ? "Em análise" : v
 function escapeHtml(valor) { return String(valor).replace(/[&<>'"]/g, (caractere) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[caractere])); }
 
 document.getElementById("operador-atualizar").addEventListener("click", carregarFila);
+document.getElementById("form-novo-ponto")?.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+    const form = evento.currentTarget;
+    const mensagemPonto = document.getElementById("msg-novo-ponto");
+    try {
+        const resposta = await fetch("/api/pontos", { method: "POST", body: new FormData(form) });
+        const dados = await resposta.json();
+        if (!resposta.ok) throw new Error(dados.erro || "Não foi possível cadastrar o trecho.");
+        mensagemPonto.textContent = "Trecho cadastrado. Abrindo a página do ponto...";
+        mensagemPonto.className = "msg ok";
+        window.location.href = dados.url;
+    } catch (erro) {
+        mensagemPonto.textContent = erro.message;
+        mensagemPonto.className = "msg erro";
+    }
+});
 [...document.querySelectorAll("[data-filtro-status]")].forEach((botao) => botao.addEventListener("click", () => {
     filtroStatus.value = botao.dataset.filtroStatus;
     renderizarFila();

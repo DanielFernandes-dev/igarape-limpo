@@ -59,6 +59,7 @@ Fluxo funcional:
 - `auth_service.py`: autenticação, senha e usuários.
 - `ocorrencia_service.py`: validação, upload, CRUD, serialização e exportação.
 - `ponto_service.py`: regras de pontos, histórico e recorrência.
+- `limpeza_service.py`: validação de operações de limpeza e fotografias.
 - `estatistica_service.py`: indicadores, séries e ranking.
 - `integracao_service.py`: status das integrações.
 
@@ -67,6 +68,7 @@ Fluxo funcional:
 - `usuario_repository.py`.
 - `ocorrencia_repository.py`.
 - `ponto_repository.py`.
+- `limpeza_repository.py`.
 
 Os repositórios usam consultas parametrizadas por meio de `database.py`.
 
@@ -94,12 +96,14 @@ igarape-limpo/
 │   │   ├── auth_service.py
 │   │   ├── ocorrencia_service.py
 │   │   ├── ponto_service.py
+│   │   ├── limpeza_service.py
 │   │   ├── estatistica_service.py
 │   │   └── integracao_service.py
 │   ├── repositories/
 │   │   ├── usuario_repository.py
 │   │   ├── ocorrencia_repository.py
-│   │   └── ponto_repository.py
+│   │   ├── ponto_repository.py
+│   │   └── limpeza_repository.py
 │   ├── integrations/
 │   │   ├── overpass.py
 │   │   ├── openmeteo.py
@@ -133,14 +137,20 @@ Perfis:
 
 ### Ponto monitorado
 
-Representa uma referência geográfica estável, com nome, coordenadas, descrição e estado. Seu histórico é composto pelas ocorrências com o mesmo `ponto_id`.
+Representa uma referência geográfica estável, com nome, coordenadas, descrição, estado e avaliação humana de acessibilidade. A avaliação pode incluir observações, data e usuário responsável; pontos antigos continuam sem avaliação.
 
 ### Ocorrência
 
 Contém localização, data, fotografia opcional, tipo, nível, status, observações e referências opcionais a ponto e usuário.
+Cada ocorrência recebe um protocolo único `IG-AAAA-NNNNNN`. A consulta pública por protocolo devolve somente os dados da denúncia (sem identidade ou `usuario_id`).
+
+### Limpeza
+
+A tabela `limpezas` guarda operações independentes das ocorrências. Uma mudança para `Resolvida` não implica que houve limpeza. A reincidência conta ocorrências do trecho com `data_hora` posterior à última limpeza, por consulta `COUNT(*)` indexada, sem depender do tamanho do histórico enviado à interface.
 
 ```text
 USUARIO 1 ─────── N OCORRENCIA N ─────── 1 PONTO_MONITORADO
+USUARIO 1 ─────── N LIMPEZA N ────────── 1 PONTO_MONITORADO
 ```
 
 O `usuario_id` é persistido para contexto interno e removido das respostas públicas.
@@ -158,7 +168,21 @@ O `usuario_id` é persistido para contexto interno e removido das respostas púb
 7. Pillow verifica formato e integridade básica da imagem.
 8. O arquivo recebe nome UUID e é salvo em `static/uploads`.
 9. A ocorrência é associada ao usuário da sessão e persistida.
-10. A operação é registrada em log e o navegador abre o detalhe.
+10. A API devolve o protocolo único, exibido ao usuário para consulta posterior.
+
+### Acessibilidade e limpeza
+
+- Moderadores e administradores mantêm a classificação humana de acesso dos pontos.
+- Perfis elevados podem registrar limpezas com evidências opcionais; cada limpeza guarda o usuário de cadastro.
+- Indicadores de reincidência comparam as ocorrências com a data/hora da limpeza mais recente. Sem operação registrada, o sistema não afirma que houve reincidência pós-limpeza.
+- `/api/denuncias/<protocolo>` permite ao cidadão consultar status e detalhes sem dados pessoais.
+
+### Endpoints adicionais
+
+- `GET /api/denuncias/<protocolo>`: consulta pública de acompanhamento.
+- `GET /api/pontos?acessibilidade=Acessível|Moderado|Dificultoso`: filtro de pontos avaliados.
+- `POST /api/pontos/<id>/limpezas` e `GET /api/pontos/<id>/limpezas`: registro protegido e consulta de limpezas.
+- `PATCH /api/pontos/<id>`: atualização de ponto/acessibilidade protegida para perfis elevados.
 
 ### Consulta no mapa
 
@@ -211,12 +235,14 @@ Os testes automatizados validam renderização e contratos de backend; validaç�
 ### Público
 
 - Consulta de ocorrências e pontos.
+- Consulta de denúncia pelo protocolo.
 - Histórico, dashboard e exportações.
 - Adaptadores de integração conforme endpoint.
 
 ### Autenticado
 
 - Criação e atualização de ocorrência.
+- Cidadão pode consultar protocolo após enviar ocorrência.
 
 ### Moderador ou administrador
 
@@ -246,6 +272,7 @@ Implementado:
 - respostas sem hashes e identificadores internos desnecessários;
 - logs sem senha ou token;
 - erro 500 genérico na API.
+- Respostas de acompanhamento sem identidade do denunciante.
 
 Pendente para produção:
 
@@ -255,6 +282,8 @@ Pendente para produção:
 - propriedade de ocorrência;
 - remoção de metadados e otimização de imagem;
 - allowlist para destinos do gateway de sensores.
+- classificação de acessibilidade depende de avaliação humana; não existe inferência automática nem validação em campo;
+- fotografias e quantidades de limpeza são informadas pela equipe e não equivalem a comprovação independente.
 
 ## 10. Integrações externas
 
@@ -279,7 +308,7 @@ Ambos aceitam os filtros da listagem. O frontend atualiza automaticamente os lin
 
 ## 12. Testes
 
-A suíte atual possui 20 testes e usa banco e uploads temporários.
+A suíte atual possui 36 testes e usa banco e uploads temporários.
 
 Cobertura existente:
 

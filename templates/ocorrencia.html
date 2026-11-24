@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Ocorrência #{{ o.id }} — Igarapé Vivo{% endblock %}
+{% block title %}Ocorrência #{{ o.id }} — Igarapé Limpo{% endblock %}
 
 {% block conteudo %}
 <a class="voltar" href="{{ url_for('pages.index') }}">← Voltar ao mapa</a>
 <header class="page-header">
     <div class="page-header-copy">
-        <p class="eyebrow">Registro #{{ "%03d" % o.id }}</p>
+        <p class="eyebrow">Protocolo {{ o.protocolo or ("Registro #%03d" % o.id) }}</p>
         <h1>{{ o.local_nome or "Ocorrência monitorada" }}</h1>
         <p class="page-intro">Detalhes, classificação e posição geográfica deste registro.</p>
     </div>

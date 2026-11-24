@@ -16,6 +16,11 @@ async function carregarDashboard() {
         set("d-pontos-ativos", r.pontos_ativos); set("d-pontos-criticos", r.pontos_criticos); set("d-residuo", r.residuo_mais_frequente || "—");
         set("d-local", r.local_maior_ocorrencia ? `${r.local_maior_ocorrencia.nome} (${r.local_maior_ocorrencia.quantidade})` : "—");
         set("d-recorrentes", r.ocorrencias_recorrentes);
+        set("d-denuncias-pendentes", r.denuncias_pendentes);
+        set("d-total-limpezas", r.total_limpezas);
+        set("d-apos-limpeza", r.total_ocorrencias_apos_limpeza);
+        renderizarLista("d-ranking-reincidencia", r.trechos_reincidencia || [], (item) => `${item.nome}: ${item.quantidade} ocorrência(s) após limpeza`);
+        renderizarLista("d-ranking-acesso", r.trechos_maior_dificuldade || [], (item) => `${item.nome}: ${item.nivel}`);
 
         graficoBarras("grafico-tipo", r.por_tipo); graficoPizza("grafico-nivel", r.por_nivel);
         graficoLinha("grafico-evolucao", s.pontos.map((p) => p.data.slice(5)), s.pontos.map((p) => p.quantidade));
@@ -26,6 +31,22 @@ async function carregarDashboard() {
 }
 
 function set(id, valor) { document.getElementById(id).textContent = valor; }
+function renderizarLista(id, itens, rotulo) {
+    const lista = document.getElementById(id);
+    lista.replaceChildren();
+    if (!itens.length) {
+        const vazio = document.createElement("li");
+        vazio.className = "estado-vazio";
+        vazio.textContent = "Sem registros.";
+        lista.appendChild(vazio);
+        return;
+    }
+    itens.forEach((item) => {
+        const linha = document.createElement("li");
+        linha.textContent = rotulo(item);
+        lista.appendChild(linha);
+    });
+}
 function renderizarComparacao(dados) {
     set("comparacao-atual", dados.periodo_atual.total);
     set("comparacao-anterior", dados.periodo_anterior.total);

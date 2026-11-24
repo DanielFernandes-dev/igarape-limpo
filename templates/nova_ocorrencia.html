@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 
-{% block title %}Nova ocorrência — Igarapé Vivo{% endblock %}
+{% block title %}Nova ocorrência — Igarapé Limpo{% endblock %}
 
 {% block conteudo %}
 <header class="page-header">
     <div class="page-header-copy">
-        <p class="eyebrow">Novo registro de campo</p>
-        <h1>Registrar ocorrência</h1>
-        <p class="page-intro">Informe o local, classifique o resíduo e revise a posição no mapa antes de enviar.</p>
+        <p class="eyebrow">Denúncia cidadã</p>
+        <h1>Registrar trecho poluído</h1>
+        <p class="page-intro">Informe onde encontrou a poluição, descreva o resíduo e acompanhe o atendimento pelo protocolo gerado.</p>
     </div>
     <div class="page-actions"><a class="btn btn-secundario" href="{{ url_for('pages.index') }}">Cancelar e voltar</a></div>
 </header>
 
 {% if not current_user %}
-<div class="aviso" role="alert"><span>É necessário entrar na plataforma para enviar um registro.</span><a href="{{ url_for('pages.login') }}">Acessar conta</a></div>
+<div class="aviso" role="alert"><span>Entre na plataforma para enviar uma denúncia.</span><a href="{{ url_for('pages.login') }}">Acessar conta</a><a href="{{ url_for('pages.cadastro') }}">Criar conta</a></div>
 {% endif %}
 
 <section class="form-layout">
@@ -81,7 +81,7 @@
             </div>
         </fieldset>
 
-        <button type="submit" id="btn-salvar" class="btn btn-primario" {% if not current_user %}disabled{% endif %}>Salvar ocorrência</button>
+        <button type="submit" id="btn-salvar" class="btn btn-primario" {% if not current_user %}disabled{% endif %}>Enviar denúncia</button>
         <p id="msg-form" class="msg" role="status" aria-live="polite"></p>
     </form>
 
